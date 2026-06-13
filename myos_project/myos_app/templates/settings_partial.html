@@ -1,0 +1,71 @@
+<div class="page-content active" id="page-settings" data-page-key="settings" data-page-title="Settings">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Settings</div>
+      <div class="page-title-sub">Manage your account, preferences, and data</div>
+    </div>
+  </div>
+
+  <div class="ca-settings-trigger-wrap">
+    <button class="ca-settings-trigger" onclick="openAccountSettingsModal()">
+      <i class="fas fa-cog"></i> Account Settings
+    </button>
+  </div>
+
+  <div class="ca-settings-section-card">
+    <div class="ca-settings-section-header">
+      <i class="fas fa-user-circle"></i>
+      <div>
+        <div class="ca-settings-section-name">Account</div>
+        <div class="ca-settings-section-desc">Manage your profile, password, and avatar</div>
+      </div>
+    </div>
+    <button class="ca-btn-primary ca-btn-primary--auto" onclick="openAccountSettingsModal()" style="margin-top: 12px;">
+      Open Account Settings
+    </button>
+  </div>
+
+  <div class="ca-settings-section-card">
+    <div class="ca-settings-section-header">
+      <i class="fas fa-bell"></i>
+      <div>
+        <div class="ca-settings-section-name">Notifications</div>
+        <div class="ca-settings-section-desc">Control which alerts and emails you receive</div>
+      </div>
+    </div>
+    <div class="ca-pref-list">
+      <label class="ca-pref-row"><input type="checkbox" id="notif-scholarship" checked onchange="saveNotificationSettings()"><span>Scholarship deadline reminders</span></label>
+      <label class="ca-pref-row"><input type="checkbox" id="notif-tasks" checked onchange="saveNotificationSettings()"><span>Task due date alerts</span></label>
+      <label class="ca-pref-row"><input type="checkbox" id="notif-diary" onchange="saveNotificationSettings()"><span>Daily diary prompt</span></label>
+      <label class="ca-pref-row"><input type="checkbox" id="notif-finance" checked onchange="saveNotificationSettings()"><span>Finance budget alerts</span></label>
+    </div>
+  </div>
+
+  <div class="ca-settings-section-card">
+    <div class="ca-settings-section-header">
+      <i class="fas fa-shield-alt"></i>
+      <div>
+        <div class="ca-settings-section-name">Security</div>
+        <div class="ca-settings-section-desc">Two-factor authentication and login activity</div>
+      </div>
+    </div>
+    <div class="ca-pref-list">
+      <label class="ca-pref-row"><input type="checkbox"><span>Enable two-factor authentication</span></label>
+    </div>
+  </div>
+
+  <div class="ca-settings-section-card">
+    <div class="ca-settings-section-header">
+      <i class="fas fa-database"></i>
+      <div>
+        <div class="ca-settings-section-name">Data &amp; Portability</div>
+        <div class="ca-settings-section-desc">Download or export all your MyOS data</div>
+      </div>
+    </div>
+    <div class="action-row" style="margin-top: 12px;">
+      <a href="/api/finance/transactions/export.csv" class="btn-outline btn-sm" download><i class="fas fa-file-csv"></i> Export Finance CSV</a>
+      <a href="{% url 'diary_export' %}" class="btn-outline btn-sm" download><i class="fas fa-book-open"></i> Export Diary CSV</a>
+      <a href="{% url 'full_data_export' %}" class="btn-outline btn-sm" download><i class="fas fa-database"></i> Full JSON Export</a>
+    </div>
+  </div>
+</div>

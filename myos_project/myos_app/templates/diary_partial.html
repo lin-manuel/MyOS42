@@ -1,0 +1,98 @@
+<div class="page-content active" id="page-diary" data-page-key="diary" data-page-title="Diary">
+<section class="page-header">
+  <div>
+    <h1 class="page-title">Diary</h1>
+    <p class="page-title-sub">Your private daily journal</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{% url 'diary_export' %}" class="btn-outline btn-sm" download title="Export diary">
+      <i class="fas fa-download"></i> Export
+    </a>
+    <a href="{% url 'full_data_export' %}" class="btn-outline btn-sm" download title="Export all data">
+      <i class="fas fa-database"></i> Full Export
+    </a>
+    <button class="btn-add" onclick="newDiaryEntry()" title="Create new entry">
+      <i class="fas fa-pen"></i> New Entry
+    </button>
+  </div>
+</section>
+
+<div class="dash-card space-lg">
+  <div class="card-header">
+    <div class="card-title">
+      <i class="fas fa-fire" style="color:var(--accent-amber);"></i> Writing Streak
+    </div>
+    <div id="streak-badge" class="diary-streak-badge" style="background:rgba(245,158,11,.15);padding:6px 12px;border-radius:20px;font-size:.8rem;color:var(--accent-amber);">
+      <i class="fas fa-fire"></i> <span id="streak-count">-</span> days
+    </div>
+  </div>
+  <div id="streak-grid" class="streak-grid space-md" aria-label="90 day writing history"></div>
+  <div class="diary-streak-stats" style="display:flex;gap:16px;padding-top:12px;border-top:1px solid rgba(0,0,0,.08);font-size:.85rem;">
+    <span><strong>Longest:</strong> <span id="streak-longest">-</span> days</span>
+    <span><strong>Total:</strong> <span id="streak-total">-</span> entries</span>
+  </div>
+</div>
+
+<div class="diary-layout space-lg">
+  <div>
+    <div class="diary-editor">
+      <div class="diary-editor-header space-md">
+        <div class="diary-current-date" id="diary-current-date" style="font-size:1.1rem;font-weight:600;color:var(--surface-3);">Today</div>
+        <div class="subtitle-sm">Auto-saved</div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label class="subtitle-sm" style="display:block;margin-bottom:8px;color:var(--text-secondary);">Today's Mood</label>
+        <div class="mood-selector">
+          <button class="mood-btn selected" onclick="selectMood(this)" title="Motivated">😊 Motivated</button>
+          <button class="mood-btn" onclick="selectMood(this)" title="Calm">😌 Calm</button>
+          <button class="mood-btn" onclick="selectMood(this)" title="Frustrated">😤 Frustrated</button>
+          <button class="mood-btn" onclick="selectMood(this)" title="Reflective">🤔 Reflective</button>
+          <button class="mood-btn" onclick="selectMood(this)" title="Excited">🎉 Excited</button>
+          <button class="mood-btn" onclick="selectMood(this)" title="Tired">😴 Tired</button>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label class="subtitle-sm" style="display:block;margin-bottom:8px;color:var(--text-secondary);">Main Thoughts</label>
+        <textarea id="diary-main-text" placeholder="Write about your day, thoughts, ideas..." style="padding:12px;"></textarea>
+      </div>
+      <div class="grid-2 gap-md" style="margin-bottom:16px;">
+        <div class="form-field">
+          <label>Achievements</label>
+          <textarea id="diary-achievements" class="textarea-tall" placeholder="What did you accomplish?" style="padding:12px;"></textarea>
+        </div>
+        <div class="form-field">
+          <label>Lessons Learned</label>
+          <textarea id="diary-lessons" class="textarea-tall" placeholder="What did you learn?" style="padding:12px;"></textarea>
+        </div>
+      </div>
+      <div class="form-field space-md">
+        <label>Ideas &amp; Sparks 💡</label>
+        <textarea id="diary-ideas" class="textarea-medium" placeholder="Any ideas that came to you today?" style="padding:12px;"></textarea>
+      </div>
+      <div class="action-row" style="display:flex;gap:10px;">
+        <button class="btn-primary" onclick="saveDiaryEntry()">Save Entry</button>
+        <button class="btn-outline">Discard</button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="dash-card space-lg">
+      <div class="card-title">
+        <i class="fas fa-history" style="margin-right:8px;"></i> Past Entries
+      </div>
+      <div class="stack-list space-md" id="diary-past-entries">
+        <div class="table-empty">No diary entries yet.</div>
+      </div>
+      <button class="btn-outline btn-sm diary-load-more hidden" id="diary-load-more" type="button" style="width:100%;margin-top:8px;">Load More</button>
+    </div>
+
+    <div class="dash-card">
+      <div class="card-title">
+        <i class="fas fa-chart-pie" style="margin-right:8px;"></i> Mood Analysis
+      </div>
+      <div class="table-empty">Mood history will appear after multiple entries are saved.</div>
+    </div>
+  </div>
+</div>
+</div>

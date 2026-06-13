@@ -1,0 +1,61 @@
+<div class="page-content active" id="page-media" data-page-key="media" data-page-title="Anime">
+<div class="page-header">
+  <div>
+    <div class="page-title">Anime</div>
+    <div class="page-title-sub">Track anime movies and anime series separately.</div>
+  </div>
+  <a class="btn-add" href="{% url 'add_media' %}?category=ANIME&type=SERIES" data-inapp-nav="true"><i class="fas fa-plus"></i> Add Anime</a>
+</div>
+
+{% include 'media/_messages.html' %}
+{% url 'add_media' as add_media_base %}
+{% with add_anime_movie_url=add_media_base|add:'?category=ANIME&type=MOVIE' add_anime_series_url=add_media_base|add:'?category=ANIME&type=SERIES' %}
+{% include 'media/_media_tabs.html' with tab_name='anime' %}
+<div class="media-tab">
+{% include 'media/_filters.html' with show_type_filter=True %}
+<div class="media-metrics-grid">
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Total Anime</div>
+      <div class="metric-value">{{ stats.anime_count }}</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-star"></i></div>
+  </div>
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Anime Movies</div>
+      <div class="metric-value">{{ stats.anime_movies_count }}</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-film"></i></div>
+  </div>
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Anime Series</div>
+      <div class="metric-value">{{ stats.anime_series_count }}</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-tv"></i></div>
+  </div>
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Completion Rate</div>
+      <div class="metric-value">{{ stats.completion_rate }}%</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-percent"></i></div>
+  </div>
+</div>
+
+<div class="dash-card">
+  <div class="media-analytics">
+    <div class="media-chip"><strong>Episodes Watched</strong> {{ analytics.episodes_watched }}</div>
+    <div class="media-chip"><strong>Completion</strong> {{ stats.completion_rate }}%</div>
+  </div>
+</div>
+
+<div class="section-divider"><span>Anime Movies</span></div>
+{% include 'media/_media_table.html' with items=anime_movies table_title='Anime Movies' table_subtitle='Track your anime movie watchlist.' empty_text='No anime movies found.' empty_icon='fas fa-film' empty_action_url=add_anime_movie_url empty_action_label='Add Anime Movie' %}
+
+<div class="section-divider"><span>Anime Series</span></div>
+{% include 'media/_media_table.html' with items=anime_series table_title='Anime Series' table_subtitle='Track ongoing and completed anime series.' empty_text='No anime series found.' empty_icon='fas fa-tv' empty_action_url=add_anime_series_url empty_action_label='Add Anime Series' %}
+</div>
+{% endwith %}
+</div>

@@ -1,0 +1,85 @@
+<div class="dash-card media-table-card {% if not items %}is-empty{% endif %}">
+  <div class="card-header">
+    <div>
+      <div class="card-title">{{ table_title|default:'Media Library' }}</div>
+      {% if table_subtitle %}
+        <div class="card-subtitle">{{ table_subtitle }}</div>
+      {% endif %}
+    </div>
+    <span class="count-badge">{{ items|length }} items</span>
+  </div>
+
+  <div class="table-wrap">
+    <table class="media-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Progress</th>
+          <th>Watched</th>
+          <th>Platform</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+          {% with latest=item.latest_progress_entry %}
+            <tr>
+              <td>{{ item.title }}</td>
+              <td>{{ item.get_category_display }}</td>
+              <td>{{ item.get_type_display }}</td>
+              <td>
+                {% if item.status == 'PLANNED' %}
+                  <span class="status-pill planned">{{ item.get_status_display }}</span>
+                {% elif item.status == 'WATCHING' %}
+                  <span class="status-pill watching">{{ item.get_status_display }}</span>
+                {% elif item.status == 'COMPLETED' %}
+                  <span class="status-pill completed">{{ item.get_status_display }}</span>
+                {% else %}
+                  <span class="status-pill">{{ item.get_status_display }}</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="media-progress">
+                  <div class="progress-track">
+                    <div class="progress-fill" style="width: {{ item.progress_percent }}%;"></div>
+                  </div>
+                  <div class="media-progress-text">{{ item.progress_percent }}%</div>
+                </div>
+              </td>
+              <td>
+                {% if item.type == 'MOVIE' %}
+                  {% if item.status == 'COMPLETED' %}
+                    {{ item.duration|default:0 }} min
+                  {% else %}
+                    0 min
+                  {% endif %}
+                {% else %}
+                  {{ latest.episodes_watched|default:0 }} eps
+                {% endif %}
+              </td>
+              <td>{{ item.platform|default:'-' }}</td>
+              <td>
+                <div class="media-actions">
+                  <a class="btn-outline btn-sm" href="{% url 'update_progress' item.id %}" data-inapp-nav="true">Progress</a>
+                  <a class="btn-outline btn-sm" href="{% url 'edit_media' item.id %}" data-inapp-nav="true">Edit</a>
+                  <a class="btn-outline btn-sm danger" href="{% url 'delete_media' item.id %}" data-inapp-nav="true">Delete</a>
+                </div>
+              </td>
+            </tr>
+          {% endwith %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="media-empty">
+    <i class="{{ empty_icon|default:'fas fa-film' }}"></i>
+    <div class="media-empty-text">{{ empty_text|default:'No media items found.' }}</div>
+    {% if empty_action_url and empty_action_label %}
+      <a class="btn-add" href="{{ empty_action_url }}"><i class="fas fa-plus"></i> {{ empty_action_label }}</a>
+    {% endif %}
+  </div>
+</div>

@@ -1,0 +1,353 @@
+<div class="page-content active bucket-page" id="page-bucket" data-page-key="bucket" data-page-title="Bucket List">
+  <section class="page-header bucket-hero animate-ready">
+    <div class="bucket-hero-copy">
+      <div class="bucket-page-kicker">Life design</div>
+      <h1 class="page-title">Bucket List</h1>
+      <p class="page-title-sub">Shape the big experiences, milestones, and skills you want to make real.</p>
+    </div>
+    <div class="bucket-hero-side">
+      <div class="bucket-hero-progress" aria-label="Bucket list completion">
+        <div class="progress-label">
+          <span>{{ bucket_summary.completed|default:0 }} of {{ bucket_summary.total|default:0 }} completed</span>
+          <span class="progress-percent">{{ bucket_summary.completion_rate|default:0 }}%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width: {{ bucket_summary.completion_rate|default:0 }}%;"></div>
+        </div>
+      </div>
+      <button class="btn-add" type="button" onclick="openAddGoalModal()" title="Add new goal">
+        <i class="fas fa-plus"></i>
+        <span>Add Goal</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="bucket-overview-grid animate-ready" aria-label="Bucket list overview">
+    <article class="bucket-summary-card bucket-summary-card--total">
+      <div class="bucket-summary-icon"><i class="fas fa-list-check"></i></div>
+      <div>
+        <div class="bucket-summary-value">{{ bucket_summary.total|default:0 }}</div>
+        <div class="bucket-summary-label">Total goals</div>
+      </div>
+    </article>
+    <article class="bucket-summary-card bucket-summary-card--active">
+      <div class="bucket-summary-icon"><i class="fas fa-person-running"></i></div>
+      <div>
+        <div class="bucket-summary-value">{{ bucket_summary.in_progress|default:0 }}</div>
+        <div class="bucket-summary-label">In progress</div>
+      </div>
+    </article>
+    <article class="bucket-summary-card bucket-summary-card--done">
+      <div class="bucket-summary-icon"><i class="fas fa-circle-check"></i></div>
+      <div>
+        <div class="bucket-summary-value">{{ bucket_summary.completed|default:0 }}</div>
+        <div class="bucket-summary-label">Completed</div>
+      </div>
+    </article>
+    <article class="bucket-summary-card bucket-summary-card--planned">
+      <div class="bucket-summary-icon"><i class="fas fa-seedling"></i></div>
+      <div>
+        <div class="bucket-summary-value">{{ bucket_summary.not_started|default:0 }}</div>
+        <div class="bucket-summary-label">Planned</div>
+      </div>
+    </article>
+  </section>
+
+  <section class="bucket-category-panel animate-ready" aria-labelledby="bucket-categories-title">
+    <div class="bucket-section-heading">
+      <div>
+        <h2 class="bucket-section-title" id="bucket-categories-title">Explore by category</h2>
+        <p class="bucket-section-sub">Filter the list without losing sight of the whole map.</p>
+      </div>
+    </div>
+    <div class="bucket-categories" role="tablist" aria-label="Bucket categories">
+      <a
+        class="bucket-cat{% if active_category == 'all' %} active{% endif %}"
+        data-category="all"
+        data-count="{{ category_counts.all|default:0 }}"
+        href="{% url 'bucket_list' %}"
+        hx-get="{% url 'bucket_list' %}"
+        hx-target="#main-content-swap"
+        hx-push-url="true"
+        hx-swap="innerHTML transition:true"
+        hx-indicator="#page-progress-bar"
+        role="tab"
+        aria-controls="bucket-grid"
+        aria-selected="{% if active_category == 'all' %}true{% else %}false{% endif %}"
+      >
+        <span class="cat-icon" aria-hidden="true"><i class="fas fa-globe"></i></span>
+        <span class="cat-copy">
+          <span class="cat-name">All</span>
+          <span class="cat-helper">Everything</span>
+        </span>
+        <span class="cat-count">{{ category_counts.all|default:0 }}</span>
+      </a>
+      {% for cat in bucket_categories %}
+        <a
+          class="bucket-cat{% if active_category == cat.slug %} active{% endif %}"
+          data-category="{{ cat.slug }}"
+          data-count="{{ cat.count|default:0 }}"
+          href="{% url 'bucket_category' cat.slug %}"
+          hx-get="{% url 'bucket_category' cat.slug %}"
+          hx-target="#main-content-swap"
+          hx-push-url="true"
+          hx-swap="innerHTML transition:true"
+          hx-indicator="#page-progress-bar"
+          role="tab"
+          aria-controls="bucket-grid"
+          aria-selected="{% if active_category == cat.slug %}true{% else %}false{% endif %}"
+        >
+          <span class="cat-icon" aria-hidden="true"><i class="fas {{ cat.icon|default:'fa-star' }}"></i></span>
+          <span class="cat-copy">
+            <span class="cat-name">{{ cat.label }}</span>
+            <span class="cat-helper">Goals</span>
+          </span>
+          <span class="cat-count">{{ cat.count|default:0 }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="bucket-board animate-ready" aria-labelledby="bucket-board-title">
+    <div class="bucket-board-header">
+      <div>
+        <h2 class="bucket-section-title" id="bucket-board-title">{{ active_category_label|default:"All goals" }}</h2>
+        <p class="bucket-section-sub">Review, update, and complete the goals that matter now.</p>
+      </div>
+      <span class="count-badge">{{ bucket_goals|length }} shown</span>
+    </div>
+
+    <div class="bucket-board-body">
+      <div class="bucket-board-main">
+        <div class="bucket-grid" id="bucket-grid">
+          {% for goal in bucket_goals %}
+            <article
+              class="bucket-goal-card bucket-goal-card--{{ goal.category|default:'experiences' }}{% if goal.status == 'completed' %} is-completed{% endif %}"
+              data-goal-id="{{ goal.id }}"
+              data-title="{{ goal.title }}"
+              data-description="{{ goal.description }}"
+              data-category="{{ goal.category|default:'experiences' }}"
+              data-status="{{ goal.status|default:'not_started' }}"
+              data-year="{{ goal.target_year|default:'' }}"
+              data-cost="{{ goal.estimated_cost|default:'' }}"
+              data-priority="{{ goal.priority|default:'normal' }}"
+              data-progress="{% if goal.status == 'completed' %}100{% elif goal.status == 'in_progress' %}{{ goal.progress|default_if_none:60 }}{% else %}{{ goal.progress|default_if_none:0 }}{% endif %}"
+            >
+              <div class="bucket-card-top">
+                <div>
+                  <div class="bucket-card-eyebrow">{{ goal.get_category_display|default:'Experiences' }}</div>
+                  <h3 class="bucket-card-title">{{ goal.title }}</h3>
+                </div>
+                <span class="bucket-status {% if goal.status == 'completed' %}status-completed{% elif goal.status == 'in_progress' %}status-in-progress{% else %}status-not-started{% endif %}">
+                  {% if goal.status == 'completed' %}
+                    <i class="fas fa-check-circle"></i>
+                  {% elif goal.status == 'in_progress' %}
+                    <i class="fas fa-spinner"></i>
+                  {% else %}
+                    <i class="far fa-circle"></i>
+                  {% endif %}
+                  {{ goal.get_status_display|default:'Not Started' }}
+                </span>
+              </div>
+
+              <p class="bucket-desc">{{ goal.description|default:'No description yet.' }}</p>
+
+              <div class="bucket-card-meta" aria-label="Goal details">
+                <span class="bucket-meta-item">
+                  <i class="far fa-calendar"></i>
+                  <span>{% if goal.target_year %}{{ goal.target_year }}{% else %}No target year{% endif %}</span>
+                </span>
+                <span class="bucket-meta-item bucket-priority priority-{{ goal.priority|default:'normal' }}">
+                  <i class="fas fa-flag"></i>
+                  <span>{{ goal.get_priority_display|default:'Normal' }}</span>
+                </span>
+                {% if goal.estimated_cost %}
+                  <span class="bucket-meta-item">
+                    <i class="fas fa-coins"></i>
+                    <span>{{ goal.estimated_cost|floatformat:0 }}</span>
+                  </span>
+                {% endif %}
+              </div>
+
+              <div class="bucket-progress">
+                <div class="progress-track" aria-hidden="true">
+                  <div class="progress-fill" style="width: {% if goal.status == 'completed' %}100{% elif goal.status == 'in_progress' %}{{ goal.progress|default_if_none:60 }}{% else %}{{ goal.progress|default_if_none:0 }}{% endif %}%;"></div>
+                </div>
+                <div class="progress-label">
+                  <span>Progress</span>
+                  <span class="progress-percent">{% if goal.status == 'completed' %}100{% elif goal.status == 'in_progress' %}{{ goal.progress|default_if_none:60 }}{% else %}{{ goal.progress|default_if_none:0 }}{% endif %}%</span>
+                </div>
+              </div>
+
+              <div class="bucket-card-actions">
+                <button
+                  type="button"
+                  class="btn-outline btn-sm"
+                  onclick="openAddGoalModal(this)"
+                  data-goal-id="{{ goal.id }}"
+                  aria-label="Edit {{ goal.title }}"
+                  title="Edit goal"
+                >
+                  <i class="fas fa-pen"></i>
+                  <span>Edit</span>
+                </button>
+                {% if goal.status != 'completed' %}
+                  <form method="post" action="{% url 'edit_bucket_goal' goal.id %}" class="bucket-inline-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <input type="hidden" name="action" value="complete">
+                    <button type="submit" class="btn-outline btn-sm">
+                      <i class="fas fa-check"></i>
+                      <span>Mark done</span>
+                    </button>
+                  </form>
+                {% endif %}
+                <form method="post" action="{% url 'delete_bucket_goal' goal.id %}" class="bucket-inline-form" onsubmit="return confirm('Delete this goal?');">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                  <button type="submit" class="btn-outline btn-sm danger" aria-label="Delete {{ goal.title }}">
+                    <i class="fas fa-trash"></i>
+                    <span>Delete</span>
+                  </button>
+                </form>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+
+        <div class="bucket-empty{% if bucket_goals %} hidden{% endif %}" id="bucket-empty">
+          <div class="bucket-empty-icon"><i class="far fa-compass"></i></div>
+          <h2>Start your bucket list</h2>
+          <p>Add the first goal you want to plan, remember, and eventually check off.</p>
+          <button class="btn-primary bucket-empty-btn" type="button" onclick="openAddGoalModal()">
+            <i class="fas fa-plus"></i>
+            <span>Create First Goal</span>
+          </button>
+        </div>
+      </div>
+
+      <aside class="bucket-side-panel" aria-label="Bucket list focus">
+        <div class="bucket-side-card bucket-side-card--focus">
+          <div class="bucket-side-kicker">Current view</div>
+          <div class="bucket-side-title">{{ active_category_label|default:"All goals" }}</div>
+          <div class="bucket-side-metric-row">
+            <span>{{ bucket_goals|length }} shown</span>
+            <span>{{ bucket_summary.completion_rate|default:0 }}% complete</span>
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-fill" style="width: {{ bucket_summary.completion_rate|default:0 }}%;"></div>
+          </div>
+        </div>
+
+        <div class="bucket-side-card">
+          <div class="bucket-side-kicker">Status mix</div>
+          <div class="bucket-status-stack">
+            <div class="bucket-status-row">
+              <span><i class="fas fa-person-running"></i> In progress</span>
+              <strong>{{ bucket_summary.in_progress|default:0 }}</strong>
+            </div>
+            <div class="bucket-status-row">
+              <span><i class="far fa-circle"></i> Planned</span>
+              <strong>{{ bucket_summary.not_started|default:0 }}</strong>
+            </div>
+            <div class="bucket-status-row">
+              <span><i class="fas fa-circle-check"></i> Completed</span>
+              <strong>{{ bucket_summary.completed|default:0 }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="bucket-side-card">
+          <div class="bucket-side-kicker">Category mix</div>
+          <div class="bucket-mini-list">
+            {% for cat in bucket_categories %}
+              <span class="bucket-mini-row">
+                <span><i class="fas {{ cat.icon|default:'fa-star' }}"></i> {{ cat.label }}</span>
+                <strong>{{ cat.count|default:0 }}</strong>
+              </span>
+            {% endfor %}
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <div class="modal-overlay hidden" id="bucket-goal-modal-overlay">
+    <div class="modal-card bucket-modal-card" role="dialog" aria-modal="true" aria-labelledby="bucket-goal-modal-title">
+      <div class="modal-header bucket-modal-header">
+        <div class="bucket-modal-title-row">
+          <span class="bucket-modal-icon" aria-hidden="true"><i class="fas fa-star"></i></span>
+          <div>
+            <div class="modal-title" id="bucket-goal-modal-title">Add Bucket Goal</div>
+            <div class="modal-sub">Capture the goal, timing, priority, and status in one place.</div>
+          </div>
+        </div>
+        <button class="modal-close" type="button" data-close-modal="bucket-goal-modal-overlay" aria-label="Close bucket goal modal">
+          <i class="fas fa-xmark"></i>
+        </button>
+      </div>
+      <form
+        method="post"
+        class="bucket-modal-form"
+        id="bucket-goal-form"
+        action="{% url 'add_bucket_goal' %}"
+        data-add-url="{% url 'add_bucket_goal' %}"
+        data-edit-url-template="{% url 'edit_bucket_goal' 0 %}"
+        data-ajax="true"
+      >
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <div class="modal-form-grid">
+          <div class="form-field modal-span-2">
+            <label for="bucket-goal-title">Title</label>
+            <input id="bucket-goal-title" name="title" type="text" placeholder="Climb Mount Kilimanjaro" required>
+          </div>
+          <div class="form-field">
+            <label for="bucket-goal-category">Category</label>
+            <select id="bucket-goal-category" name="category" required>
+              <option value="" disabled selected>Select category</option>
+              {% for cat in bucket_categories %}
+                <option value="{{ cat.slug }}">{{ cat.label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="bucket-goal-status">Status</label>
+            <select id="bucket-goal-status" name="status" required>
+              <option value="not_started">Not Started</option>
+              <option value="in_progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+          <div class="form-field modal-span-2">
+            <label for="bucket-goal-description">Description</label>
+            <textarea id="bucket-goal-description" name="description" rows="3" placeholder="Why does this goal matter?"></textarea>
+          </div>
+          <div class="form-field">
+            <label for="bucket-goal-year">Target Year</label>
+            <input id="bucket-goal-year" name="target_year" type="number" min="{{ bucket_current_year|default:2026 }}" max="2100" placeholder="{{ bucket_current_year|default:2026 }}">
+          </div>
+          <div class="form-field">
+            <label for="bucket-goal-cost">Estimated Cost</label>
+            <input id="bucket-goal-cost" name="estimated_cost" type="number" min="0" step="0.01" placeholder="5000">
+          </div>
+          <div class="form-field">
+            <label for="bucket-goal-priority">Priority</label>
+            <select id="bucket-goal-priority" name="priority">
+              <option value="low">Low</option>
+              <option value="normal" selected>Normal</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-outline" type="button" data-close-modal="bucket-goal-modal-overlay">Cancel</button>
+          <button class="btn-primary" type="submit">
+            <i class="fas fa-save"></i>
+            <span>Save Goal</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,93 @@
+<div class="page-content active" id="page-notifications" data-page-key="notifications" data-page-title="Notification Center">
+<section class="notifications-hero animate-ready">
+  <div>
+    <div class="page-title">Notification Center</div>
+    <div class="page-title-sub">Track reminders, finance signals, and education deadlines in one calm workspace.</div>
+  </div>
+  <div class="notifications-hero-actions">
+    <button class="btn-outline" id="notification-page-mark-all-btn" type="button">Mark All as Read</button>
+  </div>
+</section>
+
+<section class="notifications-summary-grid">
+  <article class="notification-stat-card">
+    <div class="notification-stat-label">Total</div>
+    <div class="notification-stat-value" id="notifications-total-count">{{ notification_page_summary.total_count }}</div>
+    <div class="notification-stat-copy">All active project signals currently in the feed.</div>
+  </article>
+  <article class="notification-stat-card notification-stat-card--unread">
+    <div class="notification-stat-label">Unread</div>
+    <div class="notification-stat-value" id="notifications-unread-count">{{ notification_page_summary.unread_count }}</div>
+    <div class="notification-stat-copy">Items you have not reviewed yet.</div>
+  </article>
+  <article class="notification-stat-card">
+    <div class="notification-stat-label">Needs Attention</div>
+    <div class="notification-stat-value">{{ notification_page_summary.attention_count }}</div>
+    <div class="notification-stat-copy">Warnings and critical updates that may need action soon.</div>
+  </article>
+  <article class="notification-stat-card">
+    <div class="notification-stat-label">Today</div>
+    <div class="notification-stat-value">{{ notification_page_summary.today_count }}</div>
+    <div class="notification-stat-copy">Signals created or refreshed during the current day.</div>
+  </article>
+</section>
+
+<section class="notifications-feed-shell animate-ready" id="notifications-page">
+  <div class="dash-card notifications-feed-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Recent Activity</div>
+        <div class="card-subtitle">Each item opens the relevant part of the product and can be marked as read individually.</div>
+      </div>
+    </div>
+
+    <div class="notifications-feed-list">
+      {% if notification_page_items %}
+        {% for notification in notification_page_items %}
+          <article class="notification-feed-item notification-feed-item--{{ notification.tone }}{% if not notification.is_read %} unread{% endif %}" data-notification-id="{{ notification.id }}">
+            <div class="notification-feed-main">
+              <div class="notification-feed-icon notification-feed-icon--{{ notification.tone }}">
+                <i class="fas {{ notification.icon }}"></i>
+              </div>
+              <div class="notification-feed-copy">
+                <div class="notification-feed-topline">
+                  <span class="notification-feed-kicker">{{ notification.source_label }}</span>
+                  <span class="notification-feed-time">{{ notification.time_label }}</span>
+                </div>
+                <div class="notification-feed-title-row">
+                  <div class="notification-feed-title">{{ notification.title }}</div>
+                  {% if not notification.is_read %}
+                    <span class="notification-item-unread">Unread</span>
+                  {% endif %}
+                </div>
+                <div class="notification-feed-message">{{ notification.message }}</div>
+                {% if notification.chips %}
+                  <div class="notification-feed-chip-row">
+                    {% for chip in notification.chips %}
+                      <span class="notification-chip">{{ chip }}</span>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+            <div class="notification-feed-actions">
+              {% if notification.url and notification.url != '#' %}
+                <a class="btn-outline btn-sm" href="{{ notification.url }}" data-inapp-nav="true">Open</a>
+              {% endif %}
+              {% if not notification.is_read %}
+                <button class="btn-outline btn-sm" type="button" data-notification-mark-read="{{ notification.id }}">Mark Read</button>
+              {% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      {% else %}
+        <div class="notifications-empty-state">
+          <div class="notifications-empty-icon"><i class="fas fa-bell-slash"></i></div>
+          <div class="card-title">You are caught up</div>
+          <div class="page-title-sub">Once reminders, finance alerts, or education deadlines need attention, they will appear here automatically.</div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+</div>

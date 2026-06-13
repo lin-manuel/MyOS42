@@ -1,0 +1,58 @@
+{% extends "accounts/auth_base.html" %}
+
+{% block title %}MyOS — Sign In{% endblock %}
+
+{% block content %}
+  <div class="auth-logo">
+    <div class="brand-name">MyOS</div>
+    <div class="brand-sub">Personal Operating System</div>
+  </div>
+
+  <h2 class="u-inline-83" style="margin-bottom:12px;color:var(--coffee)">Welcome back</h2>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert-banner">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" class="auth-form active">
+    {% csrf_token %}
+    <div class="field-group">
+      <label for="email">Email Address</label>
+      <input id="email" name="email" type="email" value="{{ form.email.value|default:'' }}" required>
+    </div>
+    <div class="field-group">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required>
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="remember_me" name="remember_me">
+      <label for="remember_me">Remember me on this device</label>
+    </div>
+
+    {% if form.errors %}
+      <div class="alert-banner">{{ form.errors.as_text }}</div>
+    {% endif %}
+
+    <button type="submit" class="btn-primary" style="width:100%">Sign In to MyOS</button>
+  </form>
+
+  <div style="margin-top:12px;padding:12px;border:1px solid var(--cream-soft);border-radius:12px;background:var(--white);font-size:.82rem;color:var(--bronze);line-height:1.5">
+    <div style="font-weight:600;color:var(--coffee);margin-bottom:6px">Account Access</div>
+    <div>This sign-in page only accepts existing users.</div>
+    <div>Create or update accounts directly in the database, then use those credentials here.</div>
+  </div>
+
+  <div style="margin-top:14px;text-align:center;font-size:.85rem;color:var(--bronze)">
+    <a href="{% url 'accounts:password_reset_request' %}" style="color:var(--gold-deep)">Forgot password?</a>
+  </div>
+  <div style="margin-top:12px;padding:12px;border:1px solid var(--cream-soft);border-radius:12px;background:var(--white);font-size:.82rem;color:var(--bronze);line-height:1.5">
+    <div style="font-weight:600;color:var(--coffee);margin-bottom:6px">Forgot Password — How It Works</div>
+    <div>1. Click “Forgot password?” and enter the email address linked to your MyOS account.</div>
+    <div>2. We’ll email you a 6‑digit verification code. It expires in 10 minutes and can be used once.</div>
+    <div>3. Enter the code and choose a new password. We enforce strong password rules for safety.</div>
+    <div>4. If the email isn’t registered, we won’t reveal that — for privacy and security.</div>
+    <div style="margin-top:6px">Tip: Check Spam/Promotions and you can request a new code if it expires.</div>
+  </div>
+{% endblock %}

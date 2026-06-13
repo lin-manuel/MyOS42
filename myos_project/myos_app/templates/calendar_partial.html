@@ -1,0 +1,35 @@
+<div class="page-content active" id="page-calendar" data-page-key="calendar" data-page-title="Calendar">
+<section class="page-header">
+  <div>
+    <h1 class="page-title">Calendar</h1>
+    <p class="page-title-sub">All your deadlines, reminders, and tasks in one view.</p>
+  </div>
+  <div class="page-header-actions">
+    <button class="btn-outline btn-sm" id="cal-prev" aria-label="Previous month" title="Previous month">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <span class="cal-month-label" id="cal-month-label" style="min-width:140px;text-align:center;">Loading...</span>
+    <button class="btn-outline btn-sm" id="cal-next" aria-label="Next month" title="Next month">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+    <button class="btn-outline btn-sm" id="cal-today">Today</button>
+  </div>
+</section>
+
+<div class="dash-card space-lg">
+  <div class="cal-weekday-header">
+    <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+  </div>
+  <div class="cal-grid" id="cal-grid">
+    <div class="cal-loading">Loading calendar...</div>
+  </div>
+</div>
+
+<div class="dash-card space-lg" id="cal-event-detail" style="display:none;">
+  <div class="card-header">
+    <div class="card-title" id="cal-detail-date">Events</div>
+  </div>
+  <div id="cal-detail-list"></div>
+</div>
+
+</div>

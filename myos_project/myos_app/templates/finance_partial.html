@@ -1,0 +1,396 @@
+<div class="page-content active" id="page-finance" data-page-key="finance" data-page-title="Finance Command Center">
+<section class="page-header space-lg">
+  <div>
+    <h1 class="page-title">Finance Command Center</h1>
+    <p class="page-title-sub">Ledger, budgets, goals, scholarship planning, and startup capital</p>
+  </div>
+  <button class="btn-add" id="quick-add-transaction-btn" type="button" title="Add transaction">
+    <i class="fas fa-plus"></i> Add Transaction
+  </button>
+</section>
+
+<section class="stats-grid-glass finance-metric-grid space-lg" id="finance-metric-cards"></section>
+
+<section class="finance-layout space-lg">
+  <div class="finance-main-col">
+    <div class="finance-tabs-block">
+      <div class="tab-bar finance-tab-bar">
+        <button class="tab-btn active" onclick="switchTab('fin','ledger')">
+          <i class="fas fa-book" style="margin-right:6px;"></i> Ledger
+        </button>
+        <button class="tab-btn" onclick="switchTab('fin','budgets')">
+          <i class="fas fa-chart-line" style="margin-right:6px;"></i> Budgets
+        </button>
+        <button class="tab-btn" onclick="switchTab('fin','savings')">
+          <i class="fas fa-piggy-bank" style="margin-right:6px;"></i> Savings
+        </button>
+        <button class="tab-btn" onclick="switchTab('fin','application')">
+          <i class="fas fa-graduation-cap" style="margin-right:6px;"></i> Scholarships
+        </button>
+        <button class="tab-btn" onclick="switchTab('fin','projects')">
+          <i class="fas fa-rocket" style="margin-right:6px;"></i> Projects
+        </button>
+        <button class="tab-btn" onclick="switchTab('fin','analytics')" id="finance-analytics">
+          <i class="fas fa-chart-pie" style="margin-right:6px;"></i> Analytics
+        </button>
+      </div>
+
+      <div class="tab-panel active" id="fin-ledger">
+        <div class="dash-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">
+                <i class="fas fa-wallet" style="margin-right:8px;color:var(--accent-lime);"></i> Transaction Ledger
+              </div>
+              <div class="card-title-sub">Search, filter, sort, and export your financial history</div>
+            </div>
+            <button class="btn-outline btn-sm" type="button" id="ledger-export-csv-btn" title="Export to CSV">
+              <i class="fas fa-download"></i> Export
+            </button>
+          </div>
+
+          <div class="ledger-toolbar space-md" id="ledger-toolbar">
+            <input id="ledger-search" type="text" placeholder="Search description or tag..." aria-label="Search transactions">
+            <input id="ledger-date-from" type="date" aria-label="Date from">
+            <input id="ledger-date-to" type="date" aria-label="Date to">
+            <select id="ledger-category-filter" aria-label="Category filter"><option value="">All categories</option></select>
+            <select id="ledger-account-filter" aria-label="Account filter">
+              <option value="">All accounts</option>
+              <option value="cash">Cash</option>
+              <option value="bank">Bank</option>
+              <option value="mobile_money">Mobile Money</option>
+            </select>
+            <select id="ledger-type-filter" aria-label="Type filter">
+              <option value="">All types</option>
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+              <option value="savings">Savings</option>
+              <option value="transfer">Transfer</option>
+            </select>
+            <input id="ledger-amount-min" type="number" min="0" step="0.01" placeholder="Min amount" aria-label="Minimum amount">
+            <input id="ledger-amount-max" type="number" min="0" step="0.01" placeholder="Max amount" aria-label="Maximum amount">
+            <select id="ledger-sort" aria-label="Sort transactions">
+              <option value="date_desc">Date (Newest)</option>
+              <option value="date_asc">Date (Oldest)</option>
+              <option value="amount_desc">Amount (High → Low)</option>
+              <option value="amount_asc">Amount (Low → High)</option>
+              <option value="category_asc">Category (A → Z)</option>
+            </select>
+            <button class="btn-outline btn-sm" type="button" id="ledger-apply-filters-btn">Apply Filters</button>
+          </div>
+
+          <div class="table-wrap space-md">
+            <table class="data-table ledger-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>Account</th>
+                  <th>Amount</th>
+                  <th>Tags</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="ledger-table-body"></tbody>
+            </table>
+          </div>
+          <div class="ledger-pagination" id="ledger-pagination"></div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="fin-budgets">
+        <div class="dash-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Budget Management</div>
+              <div class="card-subtitle">Set monthly category limits and monitor utilization in real time.</div>
+            </div>
+            <button class="btn-add" type="button" id="add-budget-btn"><i class="fas fa-plus"></i> Add Budget</button>
+          </div>
+          <div class="budget-grid" id="budget-grid"></div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="fin-savings">
+        <div class="dash-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Savings Goals</div>
+              <div class="card-subtitle">Track progress, deadlines, and suggested monthly contributions.</div>
+            </div>
+            <button class="btn-add" type="button" id="add-goal-btn"><i class="fas fa-plus"></i> Add Goal</button>
+          </div>
+          <div class="savings-grid" id="savings-goals-grid"></div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="fin-application">
+        <div class="dash-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Scholarship / Application Financial Planner</div>
+              <div class="card-subtitle">Passport, exams, visa, documents, and travel costs in one plan.</div>
+            </div>
+            <button class="btn-add" type="button" id="add-application-cost-btn"><i class="fas fa-plus"></i> Add Cost Item</button>
+          </div>
+
+          <div class="application-summary" id="application-summary"></div>
+
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Estimated</th>
+                  <th>Actual</th>
+                  <th>Status</th>
+                  <th>Deadline</th>
+                  <th>Notes</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="application-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="fin-projects">
+        <div class="dash-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Project &amp; Startup Budget Integration</div>
+              <div class="card-subtitle">Control project spending, remaining runway, and ROI targets.</div>
+            </div>
+            <button class="btn-add" type="button" id="add-project-budget-btn"><i class="fas fa-plus"></i> Add Project Budget</button>
+          </div>
+          <div class="project-budget-grid" id="project-budget-grid"></div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="fin-analytics">
+        <div class="split-grid">
+          <div class="dash-card chart-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Monthly Income vs Expenses</div>
+                <div class="card-subtitle">Trend over the last 6 months</div>
+              </div>
+            </div>
+            <div class="chart-canvas-wrap"><canvas id="finance-income-expense-chart" aria-label="Monthly income and expenses chart"></canvas></div>
+          </div>
+
+          <div class="dash-card chart-card">
+            <div class="card-header"><div class="card-title">Expense Category Distribution</div></div>
+            <div class="chart-canvas-wrap"><canvas id="finance-category-chart" aria-label="Expense category distribution chart"></canvas></div>
+          </div>
+
+          <div class="dash-card chart-card">
+            <div class="card-header"><div class="card-title">Savings Growth</div></div>
+            <div class="chart-canvas-wrap"><canvas id="finance-savings-growth-chart" aria-label="Savings growth over time"></canvas></div>
+          </div>
+
+          <div class="dash-card chart-card">
+            <div class="card-header"><div class="card-title">Budget Utilization</div></div>
+            <div class="chart-canvas-wrap"><canvas id="finance-budget-utilization-chart" aria-label="Budget utilization chart"></canvas></div>
+          </div>
+
+          <div class="dash-card chart-card">
+            <div class="card-header"><div class="card-title">Application Cost Breakdown</div></div>
+            <div class="chart-canvas-wrap"><canvas id="finance-application-breakdown-chart" aria-label="Application cost breakdown chart"></canvas></div>
+          </div>
+
+          <div class="dash-card chart-card">
+            <div class="card-header"><div class="card-title">Project ROI Tracking</div></div>
+            <div class="chart-canvas-wrap"><canvas id="finance-project-roi-chart" aria-label="Project ROI chart"></canvas></div>
+          </div>
+        </div>
+
+        <div class="split-grid">
+          <div class="dash-card">
+            <div class="card-header">
+              <div class="card-title">Automation: Recurring Forecast</div>
+              <button class="btn-outline" id="refresh-forecast-btn" type="button">Refresh</button>
+            </div>
+            <div class="compact-list" id="recurring-forecast-list"></div>
+          </div>
+
+          <div class="dash-card">
+            <div class="card-header">
+              <div class="card-title">Budget Alerts</div>
+              <button class="btn-outline" id="mark-all-alerts-read-btn" type="button">Mark All Read</button>
+            </div>
+            <div class="insight-list" id="budget-alerts-list"></div>
+          </div>
+
+          <div class="dash-card analytics-main-chart">
+            <div class="card-header"><div class="card-title">Financial Insights</div></div>
+            <div class="insight-list" id="finance-insights-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="finance-side-col">
+    <div class="dash-card">
+      <div class="card-header">
+        <div class="card-title">Quick Actions</div>
+      </div>
+      <div class="stack-list">
+        <button class="btn-add" type="button" id="quick-add-recurring-btn"><i class="fas fa-rotate"></i> Add Recurring</button>
+        <button class="btn-add" type="button" id="quick-add-category-btn"><i class="fas fa-tags"></i> Add Category</button>
+        <a class="btn-add" href="{% url 'education' %}" data-inapp-nav="true"><i class="fas fa-graduation-cap"></i> Scholarship Tracker</a>
+        <a class="btn-add" href="{% url 'projects' %}" data-inapp-nav="true"><i class="fas fa-rocket"></i> Project Workspace</a>
+      </div>
+    </div>
+
+    <div class="dash-card">
+      <div class="card-header">
+        <div class="card-title">Categories</div>
+        <button class="btn-outline btn-mini" type="button" id="manage-categories-btn"><i class="fas fa-plus"></i> Add</button>
+      </div>
+      <div class="compact-list finance-categories-list" id="finance-categories-list"></div>
+    </div>
+
+    <div class="dash-card">
+      <div class="card-header">
+        <div class="card-title">Financial Health Snapshot</div>
+      </div>
+      <div id="finance-health-snapshot" class="stack-list"></div>
+    </div>
+  </aside>
+</section>
+
+<!-- Transaction Modal -->
+<div class="modal-overlay hidden" id="transaction-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="card-title" id="transaction-modal-title">Add Transaction</div>
+      <button class="modal-close" type="button" data-close-modal="transaction-modal-overlay">×</button>
+    </div>
+    <form id="transaction-form" class="modal-form-grid">
+      <input type="hidden" id="transaction-id">
+      <div class="form-field"><label for="transaction-date">Date</label><input id="transaction-date" type="date" required></div>
+      <div class="form-field"><label for="transaction-description">Description</label><input id="transaction-description" type="text" required></div>
+      <div class="form-field"><label for="transaction-category">Category</label><select id="transaction-category" required></select></div>
+      <div class="form-field"><label for="transaction-account">Account</label><select id="transaction-account"><option value="cash">Cash</option><option value="bank">Bank</option><option value="mobile_money">Mobile Money</option></select></div>
+      <div class="form-field"><label for="transaction-type">Type</label><select id="transaction-type"><option value="income">Income</option><option value="expense">Expense</option><option value="savings">Savings</option><option value="transfer">Transfer</option></select></div>
+      <div class="form-field"><label for="transaction-amount">Amount</label><input id="transaction-amount" type="number" min="0" step="0.01" required></div>
+      <div class="form-field"><label for="transaction-tags">Tags (comma separated)</label><input id="transaction-tags" type="text"></div>
+      <div class="form-field"><label for="transaction-savings-goal">Savings Goal (optional)</label><select id="transaction-savings-goal"><option value="">None</option></select></div>
+      <div class="form-field"><label for="transaction-application-cost">Application Cost (optional)</label><select id="transaction-application-cost"><option value="">None</option></select></div>
+      <div class="form-field"><label for="transaction-project-budget">Project Budget (optional)</label><select id="transaction-project-budget"><option value="">None</option></select></div>
+      <div class="form-field modal-span-2"><label for="transaction-notes">Notes</label><textarea id="transaction-notes"></textarea></div>
+      <div class="modal-actions modal-span-2">
+        <button class="btn-outline" type="button" data-close-modal="transaction-modal-overlay">Cancel</button>
+        <button class="btn-primary" type="submit">Save Transaction</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Budget Modal -->
+<div class="modal-overlay hidden" id="budget-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header"><div class="card-title" id="budget-modal-title">Add Budget</div><button class="modal-close" type="button" data-close-modal="budget-modal-overlay">×</button></div>
+    <form id="budget-form" class="modal-form-grid">
+      <input type="hidden" id="budget-id">
+      <div class="form-field"><label for="budget-category">Category</label><select id="budget-category" required></select></div>
+      <div class="form-field"><label for="budget-period-start">Month</label><input id="budget-period-start" type="date" required></div>
+      <div class="form-field"><label for="budget-monthly-limit">Monthly Limit</label><input id="budget-monthly-limit" type="number" min="0" step="0.01" required></div>
+      <div class="form-field"><label for="budget-threshold">Warning Threshold %</label><input id="budget-threshold" type="number" min="1" max="100" step="1" value="90" required></div>
+      <div class="form-field"><label for="budget-active">Active</label><select id="budget-active"><option value="1">Yes</option><option value="0">No</option></select></div>
+      <div class="modal-actions modal-span-2"><button class="btn-outline" type="button" data-close-modal="budget-modal-overlay">Cancel</button><button class="btn-primary" type="submit">Save Budget</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- Savings Goal Modal -->
+<div class="modal-overlay hidden" id="goal-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header"><div class="card-title" id="goal-modal-title">Add Savings Goal</div><button class="modal-close" type="button" data-close-modal="goal-modal-overlay">×</button></div>
+    <form id="goal-form" class="modal-form-grid">
+      <input type="hidden" id="goal-id">
+      <div class="form-field"><label for="goal-name">Goal Name</label><input id="goal-name" type="text" required></div>
+      <div class="form-field"><label for="goal-target-amount">Target Amount</label><input id="goal-target-amount" type="number" min="0" step="0.01" required></div>
+      <div class="form-field"><label for="goal-starting-amount">Current Savings</label><input id="goal-starting-amount" type="number" min="0" step="0.01" value="0"></div>
+      <div class="form-field"><label for="goal-deadline">Deadline</label><input id="goal-deadline" type="date"></div>
+      <div class="form-field"><label for="goal-status">Status</label><select id="goal-status"><option value="active">Active</option><option value="completed">Completed</option><option value="paused">Paused</option></select></div>
+      <div class="modal-actions modal-span-2"><button class="btn-outline" type="button" data-close-modal="goal-modal-overlay">Cancel</button><button class="btn-primary" type="submit">Save Goal</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- Application Cost Modal -->
+<div class="modal-overlay hidden" id="application-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header"><div class="card-title" id="application-modal-title">Add Application Cost</div><button class="modal-close" type="button" data-close-modal="application-modal-overlay">×</button></div>
+    <form id="application-form" class="modal-form-grid">
+      <input type="hidden" id="application-id">
+      <div class="form-field"><label for="application-item-type">Item Type</label><select id="application-item-type"><option value="passport">Passport</option><option value="sat">SAT</option><option value="ielts">IELTS</option><option value="toefl">TOEFL</option><option value="goethe">Goethe</option><option value="visa">Visa</option><option value="certified_documents">Certified documents</option><option value="application_fees">Application fees</option><option value="travel">Travel</option><option value="other">Other</option></select></div>
+      <div class="form-field"><label for="application-estimated">Estimated Cost</label><input id="application-estimated" type="number" min="0" step="0.01" required></div>
+      <div class="form-field"><label for="application-actual">Actual Cost</label><input id="application-actual" type="number" min="0" step="0.01"></div>
+      <div class="form-field"><label for="application-status">Status</label><select id="application-status"><option value="planned">Planned</option><option value="in_progress">In Progress</option><option value="paid">Paid</option><option value="waived">Waived</option><option value="cancelled">Cancelled</option></select></div>
+      <div class="form-field"><label for="application-deadline">Deadline</label><input id="application-deadline" type="date"></div>
+      <div class="form-field modal-span-2"><label for="application-notes">Notes</label><textarea id="application-notes"></textarea></div>
+      <div class="modal-actions modal-span-2"><button class="btn-outline" type="button" data-close-modal="application-modal-overlay">Cancel</button><button class="btn-primary" type="submit">Save Item</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- Project Budget Modal -->
+<div class="modal-overlay hidden" id="project-budget-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header"><div class="card-title" id="project-budget-modal-title">Add Project Budget</div><button class="modal-close" type="button" data-close-modal="project-budget-modal-overlay">×</button></div>
+    <form id="project-budget-form" class="modal-form-grid">
+      <input type="hidden" id="project-budget-id">
+      <div class="form-field"><label for="project-budget-name">Project Name</label><input id="project-budget-name" type="text" required></div>
+      <div class="form-field"><label for="project-budget-amount">Budget</label><input id="project-budget-amount" type="number" min="0" step="0.01" required></div>
+      <div class="form-field"><label for="project-budget-spent-adjustment">Manual Spent Adjustment</label><input id="project-budget-spent-adjustment" type="number" min="0" step="0.01" value="0"></div>
+      <div class="form-field"><label for="project-budget-roi-target">ROI Target %</label><input id="project-budget-roi-target" type="number" step="0.01"></div>
+      <div class="form-field"><label for="project-budget-roi-actual">ROI Actual %</label><input id="project-budget-roi-actual" type="number" step="0.01"></div>
+      <div class="form-field"><label for="project-budget-status">Status</label><select id="project-budget-status"><option value="active">Active</option><option value="completed">Completed</option><option value="on_hold">On Hold</option></select></div>
+      <div class="modal-actions modal-span-2"><button class="btn-outline" type="button" data-close-modal="project-budget-modal-overlay">Cancel</button><button class="btn-primary" type="submit">Save Project Budget</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- Recurring Template Modal -->
+<div class="modal-overlay hidden" id="recurring-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header"><div class="card-title" id="recurring-modal-title">Add Recurring Template</div><button class="modal-close" type="button" data-close-modal="recurring-modal-overlay">×</button></div>
+    <form id="recurring-form" class="modal-form-grid">
+      <input type="hidden" id="recurring-id">
+      <div class="form-field"><label for="recurring-name">Name</label><input id="recurring-name" type="text" required></div>
+      <div class="form-field"><label for="recurring-category">Category</label><select id="recurring-category" required></select></div>
+      <div class="form-field"><label for="recurring-account">Account</label><select id="recurring-account"><option value="cash">Cash</option><option value="bank">Bank</option><option value="mobile_money">Mobile Money</option></select></div>
+      <div class="form-field"><label for="recurring-amount">Amount</label><input id="recurring-amount" type="number" min="0" step="0.01" required></div>
+      <div class="form-field"><label for="recurring-cadence">Cadence</label><select id="recurring-cadence"><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select></div>
+      <div class="form-field"><label for="recurring-next-due">Next Due Date</label><input id="recurring-next-due" type="date" required></div>
+      <div class="form-field"><label for="recurring-end-date">End Date</label><input id="recurring-end-date" type="date"></div>
+      <div class="form-field"><label for="recurring-active">Active</label><select id="recurring-active"><option value="1">Yes</option><option value="0">No</option></select></div>
+      <div class="modal-actions modal-span-2"><button class="btn-outline" type="button" data-close-modal="recurring-modal-overlay">Cancel</button><button class="btn-primary" type="submit">Save Recurring</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- Category Modal -->
+<div class="modal-overlay hidden" id="category-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header"><div class="card-title" id="category-modal-title">Add Category</div><button class="modal-close" type="button" data-close-modal="category-modal-overlay">×</button></div>
+    <form id="category-form" class="modal-form-grid">
+      <input type="hidden" id="category-id">
+      <div class="form-field"><label for="category-name">Name</label><input id="category-name" type="text" required></div>
+      <div class="form-field"><label for="category-slug">Slug (optional)</label><input id="category-slug" type="text" placeholder="auto-generated"></div>
+      <div class="form-field"><label for="category-kind">Kind</label><select id="category-kind"><option value="income">Income</option><option value="expense">Expense</option><option value="savings">Savings</option><option value="application">Application</option><option value="business">Business</option><option value="investment">Investment</option><option value="transfer">Transfer</option><option value="other">Other</option></select></div>
+      <div class="form-field"><label for="category-color">Color</label><input id="category-color" type="color" value="#8B5A2B"></div>
+      <div class="form-field"><label for="category-icon">Icon class</label><input id="category-icon" type="text" value="fa-wallet" placeholder="fa-wallet"></div>
+      <div class="form-field"><label for="category-sort-order">Sort Order</label><input id="category-sort-order" type="number" min="0" step="1" value="0"></div>
+      <div class="form-field"><label for="category-active">Active</label><select id="category-active"><option value="1">Yes</option><option value="0">No</option></select></div>
+      <div class="modal-actions modal-span-2"><button class="btn-outline" type="button" data-close-modal="category-modal-overlay">Cancel</button><button class="btn-primary" type="submit">Save Category</button></div>
+    </form>
+  </div>
+</div>
+</div>

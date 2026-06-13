@@ -1,0 +1,15 @@
+[run]
+branch = True
+source =
+    myos_backend/apps
+    myos_backend/analytics
+omit =
+    */migrations/*
+    */tests/*
+    myos_backend/manage.py
+    myos_backend/config/settings/*
+
+[report]
+fail_under = 80
+show_missing = True
+skip_covered = True

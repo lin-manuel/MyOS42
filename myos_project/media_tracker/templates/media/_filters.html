@@ -1,0 +1,38 @@
+<form method="get" class="media-filter-bar">
+  <div class="media-filter-group">
+    <label for="id_q">Search</label>
+    <input id="id_q" type="text" name="q" value="{{ filters.q }}" placeholder="Title, genre, studio...">
+  </div>
+  <div class="media-filter-group">
+    <label for="id_status">Status</label>
+    <select id="id_status" name="status">
+      <option value="">All</option>
+      {% for value, label in status_choices %}
+        <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="media-filter-group">
+    <label for="id_platform">Platform</label>
+    <input id="id_platform" type="text" name="platform" value="{{ filters.platform }}" placeholder="Netflix, Prime...">
+  </div>
+  <div class="media-filter-group">
+    <label for="id_year">Year</label>
+    <input id="id_year" type="number" name="year" value="{{ filters.year }}" min="1888" max="2200">
+  </div>
+  {% if show_type_filter %}
+    <div class="media-filter-group">
+      <label for="id_type">Type</label>
+      <select id="id_type" name="type">
+        <option value="">All</option>
+        {% for value, label in type_choices %}
+          <option value="{{ value }}" {% if filters.type == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  {% endif %}
+  <div class="media-filter-actions">
+    <button type="submit" class="btn-add">Apply Filters</button>
+    <a class="btn-outline" href="{{ request.path }}">Reset</a>
+  </div>
+</form>

@@ -1,0 +1,10 @@
+{
+  "name": "myos-project",
+  "private": true,
+  "scripts": {
+    "build:tailwind": "tailwindcss -i ./myos_app/static/css/tailwind.input.css -o ./myos_app/static/css/tailwind.min.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.17"
+  }
+}

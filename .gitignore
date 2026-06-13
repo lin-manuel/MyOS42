@@ -1,0 +1,33 @@
+.env
+*.env
+**/.env
+myos_project/.env
+myos_backend/.env
+*.pyc
+__pycache__/
+*.sqlite3
+db.sqlite3
+/media/
+/staticfiles/
+.DS_Store
+*.log
+venv/
+env/
+.venv/
+node_modules/
+
+# Python
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+
+# Django
+local_settings.py
+
+# OS
+Thumbs.db
+
+# VS Code
+.vscode/

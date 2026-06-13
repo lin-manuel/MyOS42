@@ -1,0 +1,20 @@
+<div class="page-content active" id="page-media" data-page-key="media" data-page-title="Delete Media">
+<div class="page-header">
+  <div>
+    <div class="page-title">Delete Media</div>
+    <div class="page-title-sub">This action cannot be undone.</div>
+  </div>
+  <a class="btn-add" href="{% url 'media' %}" data-inapp-nav="true">Back to Media</a>
+</div>
+
+{% include 'media/_messages.html' %}
+
+<div class="dash-card">
+  <p>Delete <strong>{{ media_item.title }}</strong> from your tracker?</p>
+  <form method="post" action="{{ request.get_full_path }}" hx-post="{{ request.get_full_path }}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar">
+    {% csrf_token %}
+    <button type="submit" class="btn-add">Confirm delete</button>
+    <a class="btn-add" href="{% url 'media' %}" data-inapp-nav="true">Cancel</a>
+  </form>
+</div>
+</div>

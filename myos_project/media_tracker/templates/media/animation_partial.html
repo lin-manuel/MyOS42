@@ -1,0 +1,54 @@
+<div class="page-content active" id="page-media" data-page-key="media" data-page-title="Animation">
+<div class="page-header">
+  <div>
+    <div class="page-title">Animation</div>
+    <div class="page-title-sub">Track animation movies and animation series.</div>
+  </div>
+  <a class="btn-add" href="{% url 'add_media' %}?category=ANIMATION&type=SERIES" data-inapp-nav="true"><i class="fas fa-plus"></i> Add Animation</a>
+</div>
+
+{% include 'media/_messages.html' %}
+{% url 'add_media' as add_media_base %}
+{% with add_animation_movie_url=add_media_base|add:'?category=ANIMATION&type=MOVIE' add_animation_series_url=add_media_base|add:'?category=ANIMATION&type=SERIES' %}
+{% include 'media/_media_tabs.html' with tab_name='animation' %}
+<div class="media-tab">
+{% include 'media/_filters.html' with show_type_filter=True %}
+<div class="media-metrics-grid">
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Total Animation</div>
+      <div class="metric-value">{{ stats.animation_count }}</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-layer-group"></i></div>
+  </div>
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Animation Movies</div>
+      <div class="metric-value">{{ stats.animation_movies_count }}</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-film"></i></div>
+  </div>
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Animation Series</div>
+      <div class="metric-value">{{ stats.animation_series_count }}</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-tv"></i></div>
+  </div>
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Completion Rate</div>
+      <div class="metric-value">{{ stats.completion_rate }}%</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-percent"></i></div>
+  </div>
+</div>
+
+<div class="section-divider"><span>Animation Movies</span></div>
+{% include 'media/_media_table.html' with items=animation_movies table_title='Animation Movies' table_subtitle='Track animation films and shorts.' empty_text='No animation movies found.' empty_icon='fas fa-film' empty_action_url=add_animation_movie_url empty_action_label='Add Animation Movie' %}
+
+<div class="section-divider"><span>Animation Series</span></div>
+{% include 'media/_media_table.html' with items=animation_series table_title='Animation Series' table_subtitle='Track episodic animation series.' empty_text='No animation series found.' empty_icon='fas fa-tv' empty_action_url=add_animation_series_url empty_action_label='Add Animation Series' %}
+</div>
+{% endwith %}
+</div>

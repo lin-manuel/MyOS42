@@ -1,0 +1,56 @@
+{% extends "accounts/auth_base.html" %}
+
+{% block title %}MyOS — Login Activity{% endblock %}
+
+{% block content %}
+  <div class="auth-logo">
+    <div class="brand-name">MyOS</div>
+    <div class="brand-sub">Personal Operating System</div>
+  </div>
+
+  <h2 class="u-inline-83" style="margin-bottom:12px;color:var(--coffee)">Security activity</h2>
+
+  <div style="margin-bottom:20px;color:var(--bronze);font-size:.85rem">
+    Recent logins and trusted devices for your account.
+  </div>
+
+  <div class="card" style="margin-bottom:16px;padding:16px;border-radius:12px;background:var(--white)">
+    <h4 style="margin:0 0 10px;color:var(--coffee)">Recent activity</h4>
+    {% if activities %}
+      <ul style="list-style:none;padding:0;margin:0">
+        {% for activity in activities %}
+          <li style="padding:8px 0;border-bottom:1px solid var(--cream-soft)">
+            <strong>{{ activity.status|title }}</strong> — {{ activity.timestamp|date:"M d, Y H:i" }}
+            <div style="font-size:.8rem;color:var(--bronze)">
+              {{ activity.email_attempted }} · {{ activity.ip_address|default:"unknown IP" }}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div style="color:var(--bronze);font-size:.85rem">No activity yet.</div>
+    {% endif %}
+  </div>
+
+  <div class="card" style="padding:16px;border-radius:12px;background:var(--white)">
+    <h4 style="margin:0 0 10px;color:var(--coffee)">Trusted devices</h4>
+    {% if trusted_devices %}
+      <ul style="list-style:none;padding:0;margin:0">
+        {% for device in trusted_devices %}
+          <li style="padding:8px 0;border-bottom:1px solid var(--cream-soft)">
+            <strong>{{ device.device_name|default:"Device" }}</strong>
+            <div style="font-size:.8rem;color:var(--bronze)">
+              {{ device.ip_address|default:"unknown IP" }} · last seen {{ device.last_seen|date:"M d, Y H:i" }}
+            </div>
+            <form method="post" action="{% url 'accounts:remove_trusted_device' device.id %}" style="margin-top:6px">
+              {% csrf_token %}
+              <button class="btn-outline btn-sm" type="submit">Remove</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div style="color:var(--bronze);font-size:.85rem">No trusted devices.</div>
+    {% endif %}
+  </div>
+{% endblock %}

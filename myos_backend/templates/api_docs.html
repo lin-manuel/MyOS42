@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MyOS API Docs</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; background: #f7f7f4; color: #1f1f1a; }
+    code { background: #ece9df; padding: 0.1rem 0.3rem; border-radius: 4px; }
+    .card { background: #fff; padding: 1rem 1.25rem; border: 1px solid #ddd6c7; border-radius: 12px; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>MyOS API</h1>
+  <div class="card">
+    <p>Version: <code>{{ api_version }}</code></p>
+    <p>DRF available in current environment: <code>{{ drf_available }}</code></p>
+    <p>OpenAPI JSON: <a href="/api/docs/openapi.json"><code>/api/docs/openapi.json</code></a></p>
+    <p>Health: <a href="/api/health/"><code>/api/health/</code></a></p>
+    <p>Metrics: <a href="/api/metrics/"><code>/api/metrics/</code></a></p>
+  </div>
+  <div class="card">
+    <p>Primary versioned base path: <code>/api/v1/</code></p>
+    <p>Legacy compatibility base path: <code>/api/</code></p>
+  </div>
+</body>
+</html>

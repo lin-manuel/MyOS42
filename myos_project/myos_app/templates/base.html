@@ -1,0 +1,421 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}MyOS - Personal Operating System{% endblock %}</title>
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <meta name="htmx-config" content='{"defaultSwapDelay": 0, "defaultSettleDelay": 20, "historyCacheSize": 10}'>
+  <meta name="view-transition" content="same-origin">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+  <link rel="stylesheet" href="{% static 'css/tailwind.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=20260430-premium-ui">
+  <link rel="icon" type="image/png" href="{% static 'favicon.png' %}">
+</head>
+<body data-page="{{ active_page|default:'dashboard' }}" data-authenticated="{{ request.user.is_authenticated|yesno:'1,0' }}" data-theme="light" class="min-h-screen bg-neutral-50 font-sans text-neutral-950 antialiased">
+  <div id="page-loader" aria-hidden="true">
+    <div class="page-loader-inner">
+      <div class="page-loader-logo">MyOS</div>
+      <div class="page-loader-bar"><span></span></div>
+    </div>
+  </div>
+  <div class="page-progress-bar" id="page-progress-bar" aria-hidden="true"></div>
+
+  <div id="auth-overlay" class="auth-overlay">
+    <div class="auth-box ds-card">
+      <div class="mb-6 flex items-center gap-3">
+        <div class="brand-mark" aria-hidden="true">M</div>
+        <div>
+          <div class="text-xl font-bold tracking-tight text-neutral-950">MyOS</div>
+          <div class="text-sm text-neutral-500">Personal Operating System</div>
+        </div>
+      </div>
+      <form class="auth-form active" id="login-form" onsubmit="handleLogin(event)">
+        <h1 class="mb-2 text-2xl font-bold tracking-tight text-neutral-950">Welcome back</h1>
+        <p class="mb-6 text-sm text-neutral-500">Sign in to your personal command center.</p>
+        <label class="ds-field">
+          <span>Email Address</span>
+          <input type="email" placeholder="you@example.com" id="login-email" autocomplete="email" required autofocus>
+        </label>
+        <label class="ds-field">
+          <span>Password</span>
+          <input id="login-password" type="password" placeholder="Password" autocomplete="current-password" required>
+        </label>
+        <label class="mt-4 flex items-center gap-2 text-sm text-neutral-500">
+          <input class="ds-checkbox" type="checkbox" id="remember-me">
+          Remember me on this device
+        </label>
+        <button type="submit" class="ds-btn ds-btn-primary mt-6 w-full">Sign In to MyOS</button>
+        <a class="mt-4 block text-center text-sm font-medium text-primary-600 hover:text-primary-700" href="{% url 'accounts:password_reset_request' %}">Forgot password?</a>
+      </form>
+    </div>
+  </div>
+
+  <input id="global-upload-input" class="upload-input-hidden" type="file" aria-hidden="true" tabindex="-1">
+
+  <div id="app" class="app-shell">
+    <aside class="sidebar myos-sidebar" id="app-sidebar">
+      <div class="sidebar-brand">
+        <a class="sidebar-brand-main" href="{% url 'dashboard' %}" hx-get="{% url 'dashboard' %}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar" aria-label="MyOS dashboard">
+          <div class="brand-mark" aria-hidden="true">M</div>
+          <div class="brand-copy">
+            <div class="brand-name">MyOS</div>
+            <div class="brand-sub">Personal Operating System</div>
+          </div>
+        </a>
+        <button class="sidebar-toggle-btn" type="button" id="sidebar-collapse-btn" aria-label="Collapse sidebar" aria-expanded="true">
+          <i class="fas fa-angles-left"></i>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Primary navigation">
+        <div class="nav-section-label">Overview</div>
+        <a class="nav-item {% if active_page == 'dashboard' %}active{% endif %}" data-tooltip="Dashboard" href="{% url 'dashboard' %}" hx-get="{% url 'dashboard' %}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar"><i class="fas fa-table-cells-large"></i><span class="nav-label">Dashboard</span></a>
+
+        <div class="nav-section-label">My Life</div>
+        <a class="nav-item {% if active_page == 'personal' %}active{% endif %}" data-tooltip="Personal Info" href="{% url 'personal' %}" hx-get="{% url 'personal' %}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar"><i class="far fa-user"></i><span class="nav-label">Personal Info</span></a>
+        <a class="nav-item {% if active_page == 'diary' %}active{% endif %}" data-tooltip="Diary" href="{% url 'diary' %}" hx-get="{% url 'diary' %}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar"><i class="far fa-bookmark"></i><span class="nav-label">Diary</span></a>
+        <a class="nav-item {% if active_page == 'reminders' %}active{% endif %}" data-tooltip="Reminders & TODOs" href="{% url 'reminders' %}" hx-get="{% url 'reminders' %}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar"><i class="far fa-bell"></i><span class="nav-label">Reminders &amp; TODOs</span></a>
+        <a class="nav-item {% if active_page == 'bucket' %}active{% endif %}" data-tooltip="Bucket List" href="{% url 'bucket' %}" hx-get="{% url 'bucket' %}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar"><i class="far fa-star"></i><span class="nav-label">Bucket List</span></a>
+
+        <div class="nav-section-label">Growth</div>
+        <a class="nav-item {% if active_page == 'education' %}active{% endif %}" data-tooltip="Education" href="{% url 'education' %}" hx-get="{% url 'education' %}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar"><i class="fas fa-graduation-cap"></i><span class="nav-label">Education</span></a>
+        <a class="nav-item {% if active_page == 'projects' %}active{% endif %}" data-tooltip="Projects" href="{% url 'projects' %}" hx-get="{% url 'projects' %}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar"><i class="fas fa-rocket"></i><span class="nav-label">Projects</span></a>
+
+        <div class="nav-section-label">Money</div>
+        <a class="nav-item {% if active_page == 'finance' %}active{% endif %}" data-tooltip="Finance" href="{% url 'finance' %}" hx-get="{% url 'finance' %}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar"><i class="far fa-credit-card"></i><span class="nav-label">Finance</span></a>
+
+        <div class="nav-section-label">System</div>
+        <a class="nav-item {% if active_page == 'settings' %}active{% endif %}" data-tooltip="Settings" href="{% url 'settings' %}" hx-get="{% url 'settings' %}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar"><i class="fas fa-sliders"></i><span class="nav-label">Settings</span></a>
+        <a class="nav-item" data-tooltip="Sign Out" href="#" onclick="signOut(); return false;"><i class="fas fa-arrow-right-from-bracket"></i><span class="nav-label">Sign Out</span></a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="user-avatar">IK</div>
+          <div class="min-w-0">
+            <div class="user-name" id="sidebar-user-name">User</div>
+            <div class="user-email" id="sidebar-user-email">No email set</div>
+          </div>
+        </div>
+        <div class="sidebar-tip">
+          <div class="sidebar-tip-title">Level up your life</div>
+          <p>Track progress and close loops consistently.</p>
+          <a href="{% url 'dashboard' %}" hx-get="{% url 'dashboard' %}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar">View Progress</a>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main app-main">
+      <header class="topbar">
+        <button class="topbar-btn topbar-btn--sidebar mobile-nav-toggle" id="mobile-nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="topbar-search" role="search">
+          <i class="fas fa-search" aria-hidden="true"></i>
+          <input
+            type="text"
+            placeholder="Search anything..."
+            aria-label="Global search"
+            role="searchbox"
+            aria-autocomplete="list"
+            aria-controls="command-palette-list"
+            autocomplete="off"
+            spellcheck="false"
+            id="global-search-input"
+          >
+        </div>
+        <div class="topbar-actions">
+          <div class="topbar-context" aria-live="polite">
+            <div class="topbar-context-kicker">Workspace</div>
+            <div class="topbar-context-title" id="topbar-page-title">{{ active_page|default:'dashboard'|title }}</div>
+          </div>
+          <button class="topbar-btn" type="button" onclick="toggleTheme()" aria-label="Toggle theme" title="Toggle theme">
+            <i class="far fa-sun"></i>
+          </button>
+          <button class="topbar-btn" id="notifications-btn" type="button" aria-label="Notifications" title="Notifications">
+            <i class="far fa-bell"></i>
+            <span class="notif-badge{% if notification_summary.unread_count %} is-visible{% endif %}" id="notif-badge">{{ notification_summary.unread_count }}</span>
+          </button>
+          <button class="topbar-btn topbar-btn--primary" id="quick-add-btn" type="button" aria-label="Quick add" title="Quick add">
+            <i class="fas fa-plus"></i>
+          </button>
+          <button class="topbar-profile" id="topbar-profile-trigger" type="button" aria-live="polite" aria-label="Workspace profile">
+            <div class="topbar-profile-avatar" id="topbar-profile-avatar">IK</div>
+            <div class="topbar-profile-copy">
+              <div class="topbar-profile-name" id="topbar-profile-name">My Workspace</div>
+              <div class="topbar-profile-meta" id="topbar-profile-meta">Shortcuts ready</div>
+            </div>
+            <i class="fas fa-chevron-down topbar-profile-chevron"></i>
+          </button>
+
+          <div class="notif-panel hidden" id="notif-panel" aria-hidden="true" data-unread-count="{{ notification_summary.unread_count }}">
+            <div class="notif-header">
+              <div>
+                <div class="notif-title">Notifications</div>
+                <div class="notif-count-label" id="notif-count-label">{{ notification_summary.unread_count }} unread</div>
+              </div>
+              <a class="notif-view-link" href="{% url 'notifications' %}" hx-get="{% url 'notifications' %}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar">Open center</a>
+            </div>
+            <div class="notif-list">
+              {% if notification_panel_items %}
+                {% for notification in notification_panel_items %}
+                  <button
+                    type="button"
+                    class="notif-item notif-item--{{ notification.tone }}{% if not notification.is_read %} unread{% endif %}"
+                    data-notification-id="{{ notification.id }}"
+                    data-mark-url="{{ notification.mark_read_url }}"
+                    data-url="{{ notification.url|default:'#' }}"
+                    data-read="{{ notification.is_read|yesno:'1,0' }}"
+                  >
+                    <span class="notif-icon notif-icon--{{ notification.tone }}"><i class="fas {{ notification.icon }}"></i></span>
+                    <span class="notif-body">
+                      <span class="notif-row">
+                        <span class="notif-kicker">{{ notification.source_label }}</span>
+                        <span class="notif-meta">{{ notification.time_label }}</span>
+                      </span>
+                      <span class="notif-text">{{ notification.title }}</span>
+                      <span class="notif-subtext">{{ notification.message }}</span>
+                    </span>
+                    {% if not notification.is_read %}<span class="notif-dot" aria-hidden="true"></span>{% endif %}
+                  </button>
+                {% endfor %}
+              {% else %}
+                <div class="notif-empty">
+                  <div class="notif-empty-icon"><i class="far fa-bell-slash"></i></div>
+                  <div class="notif-empty-title">All clear</div>
+                  <div class="notif-empty-copy">New reminders, finance alerts, and education deadlines will show up here.</div>
+                </div>
+              {% endif %}
+            </div>
+            <div class="notif-footer">
+              <a class="ds-btn ds-btn-secondary ds-btn-sm" href="{% url 'notifications' %}" hx-get="{% url 'notifications' %}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar">View All</a>
+              <button class="ds-btn ds-btn-ghost ds-btn-sm" type="button" id="notif-mark-read-btn">Mark All Read</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="page-transition-veil" aria-hidden="true"></div>
+      <div id="main-content-swap">
+        {% block page_content %}{% endblock %}
+      </div>
+    </main>
+  </div>
+
+  <button class="sidebar-backdrop" id="sidebar-backdrop" type="button" aria-label="Close navigation"></button>
+
+  <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+    <a class="mobile-bottom-link {% if active_page == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}" hx-get="{% url 'dashboard' %}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar"><i class="fas fa-house"></i><span>Home</span></a>
+    <a class="mobile-bottom-link {% if active_page == 'projects' %}active{% endif %}" href="{% url 'projects' %}" hx-get="{% url 'projects' %}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar"><i class="fas fa-rocket"></i><span>Projects</span></a>
+    <a class="mobile-bottom-link {% if active_page == 'reminders' %}active{% endif %}" href="{% url 'reminders' %}" hx-get="{% url 'reminders' %}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar"><i class="far fa-bell"></i><span>Tasks</span></a>
+    <a class="mobile-bottom-link {% if active_page == 'finance' %}active{% endif %}" href="{% url 'finance' %}" hx-get="{% url 'finance' %}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar"><i class="far fa-credit-card"></i><span>Finance</span></a>
+    <a class="mobile-bottom-link {% if active_page == 'settings' %}active{% endif %}" href="{% url 'settings' %}" hx-get="{% url 'settings' %}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar"><i class="fas fa-sliders"></i><span>Settings</span></a>
+  </nav>
+
+  <div class="modal-overlay hidden" id="quick-add-modal-overlay" aria-hidden="true">
+    <div class="modal-card quick-add-card">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">Quick Create</div>
+          <div class="modal-sub">Capture the next thing without leaving your flow.</div>
+        </div>
+        <button class="modal-close" type="button" data-close-modal="quick-add-modal-overlay" aria-label="Close"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div class="quick-add-layout">
+        <div class="quick-add-options" role="tablist" aria-label="Quick create type">
+          <button class="quick-add-option active" type="button" data-form="task" onclick="openQuickForm('task')"><i class="fas fa-list-check"></i> Task</button>
+          <button class="quick-add-option" type="button" data-form="reminder" onclick="openQuickForm('reminder')"><i class="far fa-bell"></i> Reminder</button>
+          <button class="quick-add-option" type="button" data-form="note" onclick="openQuickForm('note')"><i class="far fa-note-sticky"></i> Note</button>
+          <button class="quick-add-option" type="button" data-form="expense" onclick="openQuickForm('expense')"><i class="far fa-credit-card"></i> Expense</button>
+          <button class="quick-add-option" type="button" data-form="goal" onclick="openQuickForm('goal')"><i class="fas fa-bullseye"></i> Goal</button>
+          <button class="quick-add-option" type="button" data-form="bucket" onclick="openQuickForm('bucket')"><i class="far fa-star"></i> Bucket</button>
+          <button class="quick-add-option" type="button" data-form="event" onclick="openQuickForm('event')"><i class="far fa-calendar"></i> Event</button>
+        </div>
+
+        <div class="quick-add-forms">
+          <form class="quick-add-form active" data-form="task" data-endpoint="{{ quick_add_endpoints.task|default:'/api/tasks/create/' }}">
+            {% csrf_token %}
+            <div class="modal-form-grid">
+              <label class="ds-field modal-span-2"><span>Title</span><input name="title" type="text" placeholder="Draft scholarship plan" required></label>
+              <label class="ds-field"><span>Due Date</span><input name="due_date" type="date"></label>
+              <label class="ds-field"><span>Priority</span><select name="priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></label>
+              <label class="ds-field modal-span-2"><span>Tag</span><input name="focus_area" type="text" placeholder="Work, Personal, Study"></label>
+            </div>
+            <div class="modal-actions"><button class="ds-btn ds-btn-secondary" type="button" data-close-modal="quick-add-modal-overlay">Cancel</button><button class="ds-btn ds-btn-primary" type="submit">Create Task</button></div>
+          </form>
+
+          <form class="quick-add-form" data-form="reminder" data-endpoint="{% url 'reminders_create' %}">
+            {% csrf_token %}
+            <div class="modal-form-grid">
+              <label class="ds-field modal-span-2"><span>Reminder Title</span><input name="title" type="text" placeholder="Pay tuition deposit" required></label>
+              <label class="ds-field"><span>Date</span><input name="reminder_date" type="date"></label>
+              <label class="ds-field"><span>Time</span><input name="reminder_time" type="time"></label>
+              <label class="ds-field"><span>Cadence</span><select name="cadence"><option value="once" selected>One time</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select></label>
+              <label class="ds-field"><span>Channel</span><select name="channel"><option value="in_app" selected>In app</option><option value="email">Email</option><option value="sms">SMS</option><option value="whatsapp">WhatsApp</option></select></label>
+            </div>
+            <div class="modal-actions"><button class="ds-btn ds-btn-secondary" type="button" data-close-modal="quick-add-modal-overlay">Cancel</button><button class="ds-btn ds-btn-primary" type="submit">Create Reminder</button></div>
+          </form>
+
+          <form class="quick-add-form" data-form="note" data-endpoint="{{ quick_add_endpoints.note|default:'/api/diary/save/' }}">
+            {% csrf_token %}
+            <div class="modal-form-grid">
+              <label class="ds-field modal-span-2"><span>Note Title</span><input name="title" type="text" placeholder="Daily reflection"></label>
+              <label class="ds-field modal-span-2"><span>Note</span><textarea name="content" rows="4" placeholder="Write your note..."></textarea></label>
+            </div>
+            <div class="modal-actions"><button class="ds-btn ds-btn-secondary" type="button" data-close-modal="quick-add-modal-overlay">Cancel</button><button class="ds-btn ds-btn-primary" type="submit">Add Note</button></div>
+          </form>
+
+          <form class="quick-add-form" data-form="expense" data-endpoint="{{ quick_add_endpoints.expense|default:'/api/finance/transactions/create/' }}">
+            {% csrf_token %}
+            <div class="modal-form-grid">
+              <label class="ds-field modal-span-2"><span>Description</span><input name="description" type="text" placeholder="Laptop accessories" required></label>
+              <label class="ds-field"><span>Amount</span><input name="amount" type="number" min="0" step="0.01" placeholder="120.00"></label>
+              <label class="ds-field"><span>Type</span><select name="tx_type"><option value="expense" selected>Expense</option><option value="income">Income</option></select></label>
+            </div>
+            <div class="modal-actions"><button class="ds-btn ds-btn-secondary" type="button" data-close-modal="quick-add-modal-overlay">Cancel</button><button class="ds-btn ds-btn-primary" type="submit">Track Expense</button></div>
+          </form>
+
+          <form class="quick-add-form" data-form="goal" data-endpoint="{{ quick_add_endpoints.goal|default:'/api/finance/savings-goals/create/' }}">
+            {% csrf_token %}
+            <div class="modal-form-grid">
+              <label class="ds-field modal-span-2"><span>Goal Title</span><input name="name" type="text" placeholder="Build a 6-month runway" required></label>
+              <label class="ds-field"><span>Target Amount</span><input name="target_amount" type="number" min="0" step="0.01" placeholder="20000"></label>
+              <label class="ds-field"><span>Target Date</span><input name="deadline" type="date"></label>
+            </div>
+            <div class="modal-actions"><button class="ds-btn ds-btn-secondary" type="button" data-close-modal="quick-add-modal-overlay">Cancel</button><button class="ds-btn ds-btn-primary" type="submit">Create Goal</button></div>
+          </form>
+
+          <form class="quick-add-form" data-form="bucket" data-endpoint="{% url 'add_bucket_goal' %}">
+            {% csrf_token %}
+            <div class="modal-form-grid">
+              <label class="ds-field modal-span-2"><span>Bucket Item</span><input name="title" type="text" placeholder="Climb Mount Kilimanjaro" required></label>
+              <label class="ds-field"><span>Category</span><select name="category"><option value="travel">Travel</option><option value="achievements">Achievements</option><option value="experiences">Experiences</option><option value="learning">Learning</option><option value="wealth">Wealth</option></select></label>
+              <label class="ds-field"><span>Target Year</span><input name="target_year" type="number" min="2024" max="2100" placeholder="2027"></label>
+            </div>
+            <div class="modal-actions"><button class="ds-btn ds-btn-secondary" type="button" data-close-modal="quick-add-modal-overlay">Cancel</button><button class="ds-btn ds-btn-primary" type="submit">Add Bucket Item</button></div>
+          </form>
+
+          <form class="quick-add-form" data-form="event" data-endpoint="{{ quick_add_endpoints.event|default:'' }}">
+            {% csrf_token %}
+            <div class="modal-form-grid">
+              <label class="ds-field modal-span-2"><span>Event Title</span><input name="title" type="text" placeholder="Strategy review" required></label>
+              <label class="ds-field"><span>Date</span><input name="date" type="date"></label>
+              <label class="ds-field"><span>Time</span><input name="time" type="time"></label>
+            </div>
+            <div class="modal-actions"><button class="ds-btn ds-btn-secondary" type="button" data-close-modal="quick-add-modal-overlay">Cancel</button><button class="ds-btn ds-btn-primary" type="submit">Add Event</button></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="command-palette-overlay hidden" id="command-palette-overlay" aria-hidden="true">
+    <div class="command-palette-card">
+      <div class="command-palette-header">Command Menu</div>
+      <div class="command-input-wrap">
+        <i class="fas fa-search"></i>
+        <input id="command-palette-input" type="text" placeholder="Search pages and actions..." autocomplete="off">
+        <span class="command-hint">Ctrl K</span>
+      </div>
+      <div class="command-list" id="command-palette-list"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay hidden" id="account-settings-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="account-settings-title">
+    <div class="modal-card account-settings-card">
+      <button class="modal-close" onclick="closeModal('account-settings-modal')" aria-label="Close"><i class="fas fa-xmark"></i></button>
+      <h2 class="modal-title" id="account-settings-title">Account Settings</h2>
+      <div id="account-settings-main-menu" class="account-settings-list">
+        <button class="settings-menu-row" onclick="showAccountSettingsPanel('email')"><span>Change my email</span><i class="fas fa-chevron-right"></i></button>
+        <button class="settings-menu-row" onclick="showAccountSettingsPanel('password')"><span>Change my password</span><i class="fas fa-chevron-right"></i></button>
+        <button class="settings-menu-row" onclick="showAccountSettingsPanel('notifications')"><span>Communication preferences</span><i class="fas fa-chevron-right"></i></button>
+        <button class="settings-menu-row settings-menu-row--danger" onclick="showAccountSettingsPanel('delete')"><span>Delete my account</span><i class="fas fa-chevron-right"></i></button>
+      </div>
+      <div id="account-settings-panel-email" class="ca-settings-panel hidden">
+        <button class="ds-btn ds-btn-ghost ds-btn-sm" onclick="showAccountSettingsPanel('main')"><i class="fas fa-arrow-left"></i> Back</button>
+        <label class="ds-field mt-4"><span>New Email Address</span><input type="email" id="new-email-input" placeholder="you@example.com"></label>
+        <label class="ds-field"><span>Confirm Password</span><input type="password" id="email-confirm-password" placeholder="Current password"></label>
+        <button class="ds-btn ds-btn-primary" onclick="saveEmailChange()">Update Email</button>
+      </div>
+      <div id="account-settings-panel-password" class="ca-settings-panel hidden">
+        <button class="ds-btn ds-btn-ghost ds-btn-sm" onclick="showAccountSettingsPanel('main')"><i class="fas fa-arrow-left"></i> Back</button>
+        <label class="ds-field mt-4"><span>Current Password</span><input type="password" id="current-password-input" placeholder="Current password"></label>
+        <label class="ds-field"><span>New Password</span><input type="password" id="new-password-input" placeholder="New password"></label>
+        <label class="ds-field"><span>Confirm New Password</span><input type="password" id="confirm-password-input" placeholder="Confirm new password"></label>
+        <button class="ds-btn ds-btn-primary" onclick="savePasswordChange()">Update Password</button>
+      </div>
+      <div id="account-settings-panel-notifications" class="ca-settings-panel hidden">
+        <button class="ds-btn ds-btn-ghost ds-btn-sm" onclick="showAccountSettingsPanel('main')"><i class="fas fa-arrow-left"></i> Back</button>
+        <div class="mt-4 grid gap-3">
+          <label class="settings-toggle-row"><input type="checkbox" id="notif-scholarship" checked><span>Scholarship deadlines</span></label>
+          <label class="settings-toggle-row"><input type="checkbox" id="notif-tasks" checked><span>Task due date alerts</span></label>
+          <label class="settings-toggle-row"><input type="checkbox" id="notif-diary"><span>Daily diary prompt</span></label>
+          <label class="settings-toggle-row"><input type="checkbox" id="notif-finance" checked><span>Finance budget alerts</span></label>
+        </div>
+        <button class="ds-btn ds-btn-primary mt-5" onclick="saveNotificationPrefs()">Save Preferences</button>
+      </div>
+      <div id="account-settings-panel-delete" class="ca-settings-panel hidden">
+        <button class="ds-btn ds-btn-ghost ds-btn-sm" onclick="showAccountSettingsPanel('main')"><i class="fas fa-arrow-left"></i> Back</button>
+        <p class="mt-4 text-sm text-danger-600">This action is permanent and cannot be undone.</p>
+        <label class="ds-field"><span>Type DELETE to confirm</span><input type="text" id="delete-confirm-input" placeholder="DELETE"></label>
+        <button class="ds-btn ds-btn-danger" onclick="confirmAccountDelete()">Permanently Delete Account</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.3/Sortable.min.js"></script>
+  <div id="toast-container" role="region" aria-label="Notifications" aria-live="polite"></div>
+  <script src="{% static 'js/main.js' %}?v=20260430-premium-ui" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const body = document.body;
+      const loader = document.getElementById('page-loader');
+      const collapseBtn = document.getElementById('sidebar-collapse-btn');
+      const mobileToggle = document.getElementById('mobile-nav-toggle');
+      const backdrop = document.getElementById('sidebar-backdrop');
+
+      requestAnimationFrame(() => {
+        loader?.classList.add('is-loaded');
+        setTimeout(() => loader?.remove(), 500);
+      });
+
+      const setSidebarState = (collapsed) => {
+        body.classList.toggle('sidebar-collapsed', collapsed);
+        collapseBtn?.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        collapseBtn?.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+        collapseBtn?.querySelector('i')?.classList.toggle('fa-angles-right', collapsed);
+        collapseBtn?.querySelector('i')?.classList.toggle('fa-angles-left', !collapsed);
+        try {
+          localStorage.setItem('myos-sidebar-collapsed', collapsed ? '1' : '0');
+        } catch (error) {
+          /* storage is optional */
+        }
+      };
+
+      try {
+        setSidebarState(localStorage.getItem('myos-sidebar-collapsed') === '1');
+      } catch (error) {
+        setSidebarState(false);
+      }
+
+      collapseBtn?.addEventListener('click', () => setSidebarState(!body.classList.contains('sidebar-collapsed')));
+      mobileToggle?.addEventListener('click', () => {
+        body.classList.toggle('sidebar-open');
+        mobileToggle.setAttribute('aria-expanded', body.classList.contains('sidebar-open') ? 'true' : 'false');
+      });
+      backdrop?.addEventListener('click', () => {
+        body.classList.remove('sidebar-open');
+        mobileToggle?.setAttribute('aria-expanded', 'false');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+{% load static %}
+<div class="page-content active ds-page" id="page-dashboard" data-page-key="dashboard" data-page-title="Dashboard">
+  <div class="dashboard-shell">
+    <section class="dashboard-primary">
+      <article class="ds-card hero-card">
+        <div class="hero-copy">
+          <div class="ds-eyebrow">Personal Operating System</div>
+          <h1 class="hero-title" id="greeting-text">Good evening, {{ request.user.first_name|default:request.user.username|default:"there" }}</h1>
+          <p class="hero-subtitle">A calm command center for money, tasks, learning, projects, and daily reflection.</p>
+          <div class="hero-meta-row">
+            <span class="hero-pill"><i class="far fa-calendar"></i><span id="big-date">Loading today...</span></span>
+            <span class="hero-pill"><i class="far fa-clock"></i><span id="big-clock">00:00:00</span></span>
+            <span class="hero-pill hero-pill--soft"><i class="fas fa-bolt"></i>Stay focused and keep building.</span>
+          </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          {% with hero_image=dashboard_hero_image|default:'assets/dashboardimgs/workspace-scene-laptop.png' %}
+            <img src="{% static hero_image %}" alt="" loading="eager">
+          {% endwith %}
+        </div>
+      </article>
+
+      <article class="ds-card progress-card">
+        <div class="ds-card-header">
+          <div>
+            <div class="ds-card-title"><i class="fas fa-chart-line"></i> My Progress</div>
+            <p class="ds-card-subtitle">Your core life system sections at a glance.</p>
+          </div>
+          <span class="ds-badge ds-badge-info" id="progress-fraction">2 of 6 sections complete</span>
+        </div>
+        <div class="progress-track progress-track-lg" aria-hidden="true">
+          <div class="progress-fill" id="progress-bar-fill" style="width: 33%"></div>
+        </div>
+        <div class="progress-steps">
+          <div class="progress-step is-complete"><span><i class="fas fa-check"></i></span><strong>Personal</strong><small>Completed</small></div>
+          <div class="progress-step"><span><i class="far fa-circle"></i></span><strong>Diary</strong><small>0 / 1</small></div>
+          <div class="progress-step is-complete"><span><i class="fas fa-check"></i></span><strong>Finance</strong><small>Completed</small></div>
+          <div class="progress-step"><span><i class="far fa-folder"></i></span><strong>Projects</strong><small>0 / 1</small></div>
+          <div class="progress-step"><span><i class="far fa-credit-card"></i></span><strong>Education</strong><small>0 / 1</small></div>
+          <div class="progress-step"><span><i class="far fa-circle"></i></span><strong>Goals</strong><small>0 / 1</small></div>
+        </div>
+      </article>
+
+      <div class="metrics-grid">
+        <a class="metric-link-card metric-link-card--finance ds-card" href="{% url 'finance' %}" data-inapp-nav="true">
+          <span class="metric-icon metric-icon--success"><i class="far fa-credit-card"></i></span>
+          <span class="metric-copy">
+            <span class="metric-label">Savings</span>
+            <strong class="metric-value">KES 0.00</strong>
+            <span class="metric-trend">No finance data yet</span>
+          </span>
+        </a>
+        <a class="metric-link-card metric-link-card--projects ds-card" href="{% url 'projects' %}" data-inapp-nav="true">
+          <span class="metric-icon metric-icon--purple"><i class="fas fa-rocket"></i></span>
+          <span class="metric-copy">
+            <span class="metric-label">Active Projects</span>
+            <strong class="metric-value">0</strong>
+            <span class="metric-trend">No projects tracked yet</span>
+          </span>
+        </a>
+        <a class="metric-link-card metric-link-card--diary ds-card" href="{% url 'diary' %}" data-inapp-nav="true">
+          <span class="metric-icon metric-icon--amber"><i class="far fa-bookmark"></i></span>
+          <span class="metric-copy">
+            <span class="metric-label">Diary Consistency</span>
+            <strong class="metric-value">0 days</strong>
+            <span class="metric-trend">No entries yet</span>
+          </span>
+        </a>
+        <a class="metric-link-card metric-link-card--tasks ds-card" href="{% url 'reminders' %}" data-inapp-nav="true">
+          <span class="metric-icon metric-icon--primary"><i class="far fa-square-check"></i></span>
+          <span class="metric-copy">
+            <span class="metric-label">Weekly Output</span>
+            <strong class="metric-value">0 tasks</strong>
+            <span class="metric-trend">No task history yet</span>
+          </span>
+        </a>
+      </div>
+
+      <div class="dashboard-grid">
+        <article class="ds-card dashboard-panel dashboard-panel--tasks">
+          <div class="ds-card-header">
+            <div>
+              <div class="ds-card-title"><i class="fas fa-list-check"></i> Today's Tasks</div>
+              <p class="ds-card-subtitle" id="dashboard-task-filter-label">Tasks due today or selected on the calendar.</p>
+            </div>
+            <a class="ds-link" href="{% url 'reminders' %}" data-inapp-nav="true">View all <i class="fas fa-arrow-right"></i></a>
+          </div>
+          <div id="task-list" class="task-list">
+            <div class="table-empty">No tasks created yet.</div>
+          </div>
+          <div class="progress-track mt-5"><div class="progress-fill" id="task-progress-fill" style="width:0%"></div></div>
+          <div class="progress-label"><span id="task-progress-text">0 / 0 tasks done</span><span id="task-progress-percent">0%</span></div>
+        </article>
+
+        <article class="ds-card dashboard-panel">
+          <div class="ds-card-header">
+            <div>
+              <div class="ds-card-title"><i class="far fa-credit-card"></i> Financial Summary</div>
+              <p class="ds-card-subtitle">Income, expenses, and savings snapshot.</p>
+            </div>
+            <a class="ds-link" href="{% url 'finance' %}" data-inapp-nav="true">Open <i class="fas fa-arrow-right"></i></a>
+          </div>
+          <div class="finance-summary-list">
+            <div class="finance-row"><span class="finance-label">Monthly Income</span><span class="finance-amount income">KES 0.00</span></div>
+            <div class="finance-row"><span class="finance-label">Expenses</span><span class="finance-amount expense">KES 0.00</span></div>
+            <div class="finance-row"><span class="finance-label">Savings</span><span class="finance-amount savings">KES 0.00</span></div>
+          </div>
+          <div class="finance-empty-ring" aria-hidden="true"></div>
+          <p class="panel-footnote">Connect entries in Finance to populate this view.</p>
+        </article>
+
+        <article class="ds-card dashboard-panel dashboard-panel--calendar">
+          <div class="calendar-header">
+            <div>
+              <div class="ds-card-title"><i class="far fa-calendar"></i> Calendar</div>
+              <p class="ds-card-subtitle" id="dashboard-selected-date-label">Select a date to filter tasks.</p>
+            </div>
+            <div class="calendar-nav">
+              <button class="icon-action-btn" type="button" aria-label="Previous month" onclick="prevDashboardMonth()"><i class="fas fa-chevron-left"></i></button>
+              <button class="icon-action-btn" type="button" aria-label="Next month" onclick="nextDashboardMonth()"><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+          <div class="calendar-month-label" id="dashboard-calendar-month">Month YYYY</div>
+          <div id="dashboard-calendar-grid" class="calendar-grid"></div>
+          <div class="calendar-day-agenda" id="dashboard-selected-date-list">
+            <div class="table-empty">No date selected.</div>
+          </div>
+        </article>
+
+        <article class="ds-card dashboard-panel">
+          <div class="ds-card-header">
+            <div>
+              <div class="ds-card-title"><i class="far fa-calendar-check"></i> Upcoming Events</div>
+              <p class="ds-card-subtitle">Deadlines, reminders, and calendar items.</p>
+            </div>
+            <a class="ds-link" href="{% url 'calendar' %}" data-inapp-nav="true">Calendar <i class="fas fa-arrow-right"></i></a>
+          </div>
+          <div class="compact-list" id="dashboard-education-alert-list">
+            <div class="table-empty">Loading upcoming events...</div>
+          </div>
+        </article>
+
+        <article class="ds-card dashboard-panel">
+          <div class="ds-card-header">
+            <div>
+              <div class="ds-card-title"><i class="fas fa-rocket"></i> Active Projects</div>
+              <p class="ds-card-subtitle">The workstreams currently in motion.</p>
+            </div>
+            <a class="ds-link" href="{% url 'projects' %}" data-inapp-nav="true">See all <i class="fas fa-arrow-right"></i></a>
+          </div>
+          <div class="stack-list">
+            <div class="project-preview-row">
+              <span class="project-preview-icon"><i class="fas fa-plus"></i></span>
+              <div>
+                <strong>No active projects</strong>
+                <p>Start building something amazing.</p>
+              </div>
+            </div>
+          </div>
+          <button class="ds-btn ds-btn-ghost ds-btn-sm mt-4" type="button" onclick="toggleQuickAdd(true); openQuickForm('event');"><i class="fas fa-plus"></i> New Project Note</button>
+        </article>
+
+        <article class="ds-card dashboard-panel">
+          <div class="ds-card-header">
+            <div>
+              <div class="ds-card-title"><i class="far fa-bookmark"></i> Recent Diary Entry</div>
+              <p class="ds-card-subtitle">A reflection preview from your journal.</p>
+            </div>
+            <a class="ds-link" href="{% url 'diary' %}" data-inapp-nav="true">Open <i class="fas fa-arrow-right"></i></a>
+          </div>
+          <div class="diary-preview"><div class="diary-date">No entries yet</div>Create your first diary entry to see a preview here.</div>
+        </article>
+      </div>
+    </section>
+
+    <aside class="dashboard-aside">
+      <article class="ds-card focus-card">
+        <div class="ds-card-header">
+          <div>
+            <div class="ds-card-title">Focus Timer</div>
+            <p class="ds-card-subtitle">Pomodoro</p>
+          </div>
+          <button class="icon-action-btn" type="button" aria-label="Timer settings"><i class="fas fa-ellipsis"></i></button>
+        </div>
+        <div class="timer-ring" aria-label="25 minutes remaining">
+          <span>25:00</span>
+          <small>Focus on your goals</small>
+        </div>
+        <button class="ds-btn ds-btn-primary w-full" type="button"><i class="fas fa-play"></i> Start Focus</button>
+      </article>
+
+      <article class="ds-card quote-card">
+        <div class="ds-card-header">
+          <div class="ds-card-title">Daily Quote</div>
+          <button class="icon-action-btn" type="button" aria-label="Refresh quote"><i class="fas fa-rotate"></i></button>
+        </div>
+        <blockquote>Discipline is the bridge between goals and accomplishment.</blockquote>
+        <cite>- Jim Rohn</cite>
+      </article>
+
+      <article class="ds-card quick-actions-card">
+        <div class="ds-card-title">Quick Actions</div>
+        <div class="quick-actions-list">
+          <button type="button" onclick="toggleQuickAdd(true); openQuickForm('note');"><span><i class="far fa-note-sticky"></i> New Note</span><i class="fas fa-chevron-right"></i></button>
+          <button type="button" onclick="toggleQuickAdd(true); openQuickForm('reminder');"><span><i class="far fa-bell"></i> Add Reminder</span><i class="fas fa-chevron-right"></i></button>
+          <button type="button" onclick="toggleQuickAdd(true); openQuickForm('expense');"><span><i class="far fa-credit-card"></i> Track Expense</span><i class="fas fa-chevron-right"></i></button>
+          <button type="button" onclick="toggleQuickAdd(true); openQuickForm('task');"><span><i class="far fa-square-check"></i> Add Task</span><i class="fas fa-chevron-right"></i></button>
+          <a href="{% url 'diary' %}" data-inapp-nav="true"><span><i class="far fa-bookmark"></i> Write in Diary</span><i class="fas fa-chevron-right"></i></a>
+        </div>
+      </article>
+    </aside>
+  </div>
+
+  <div class="alert-banner dashboard-alert hidden" id="dashboard-education-alert-banner" aria-live="polite">
+    <i class="fas fa-circle-info"></i>
+    <span id="alert-text">Loading education deadline alerts...</span>
+  </div>
+</div>

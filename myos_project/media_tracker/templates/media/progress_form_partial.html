@@ -1,0 +1,51 @@
+<div class="page-content active" id="page-media" data-page-key="media" data-page-title="Update Progress">
+<div class="page-header">
+  <div>
+    <div class="page-title">Update Progress</div>
+    <div class="page-title-sub">{{ media_item.title }}</div>
+  </div>
+  <a class="btn-add" href="{% url 'media' %}" data-inapp-nav="true">Back to Media</a>
+</div>
+
+{% include 'media/_messages.html' %}
+{% include 'media/_media_tabs.html' with tab_name='dashboard' %}
+
+{% if latest_progress %}
+  <div class="dash-card">
+    Last saved: {{ latest_progress.date_watched }} | Episodes watched: {{ latest_progress.episodes_watched }}
+    {% if latest_progress.rating %}| Rating: {{ latest_progress.rating }}/10{% endif %}
+  </div>
+{% endif %}
+
+<div class="dash-card">
+  <form method="post" action="{{ request.get_full_path }}" hx-post="{{ request.get_full_path }}" hx-target="#main-content-swap" hx-push-url="true" hx-swap="innerHTML transition:true" hx-indicator="#page-progress-bar" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div>
+        {% for error in form.non_field_errors %}
+          <div>{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="cards-grid">
+      {% for field in form %}
+        <div>
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+          {% for error in field.errors %}
+            <div>{{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="u-inline-1" style="margin-top: 1rem; display: flex; gap: 0.75rem;">
+      <button type="submit" class="btn-add">Save progress</button>
+      <a class="btn-add" href="{% url 'media' %}" data-inapp-nav="true">Cancel</a>
+    </div>
+  </form>
+</div>
+</div>

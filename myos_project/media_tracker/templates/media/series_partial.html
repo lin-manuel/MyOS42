@@ -1,0 +1,52 @@
+<div class="page-content active" id="page-media" data-page-key="media" data-page-title="Series">
+<div class="page-header">
+  <div>
+    <div class="page-title">Series</div>
+    <div class="page-title-sub">Track episodic progress and completion pace.</div>
+  </div>
+  <a class="btn-add" href="{% url 'add_media' %}?category=SERIES&type=SERIES" data-inapp-nav="true"><i class="fas fa-plus"></i> Add Series</a>
+</div>
+
+{% include 'media/_messages.html' %}
+{% url 'add_media' as add_media_base %}
+{% with add_series_url=add_media_base|add:'?category=SERIES&type=SERIES' %}
+{% include 'media/_media_tabs.html' with tab_name='series' %}
+<div class="media-tab">
+{% include 'media/_filters.html' with show_type_filter=False %}
+<div class="media-metrics-grid">
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Tracked Series</div>
+      <div class="metric-value">{{ stats.total }}</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-tv"></i></div>
+  </div>
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Completed</div>
+      <div class="metric-value">{{ stats.completed }}</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-check-circle"></i></div>
+  </div>
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">In Progress</div>
+      <div class="metric-value">{{ analytics.series_in_progress }}</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-spinner"></i></div>
+  </div>
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Avg Episodes / Week</div>
+      <div class="metric-value">{{ analytics.average_episodes_per_week }}</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-calendar-check"></i></div>
+  </div>
+</div>
+
+<div class="section-divider"><span>Series Watchlist</span></div>
+
+{% include 'media/_media_table.html' with items=series table_title='Series Library' table_subtitle='Track seasons, episodes, and platforms in one place.' empty_text='No series found.' empty_icon='fas fa-tv' empty_action_url=add_series_url empty_action_label='Add Series' %}
+</div>
+{% endwith %}
+</div>

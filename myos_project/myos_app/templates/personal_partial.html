@@ -1,0 +1,194 @@
+<div class="page-content active" id="page-personal" data-page-key="personal" data-page-title="Personal Identity Vault">
+<section class="personal-vault-hero" id="personal-vault">
+  <div>
+    <div class="page-title">Personal Identity Vault</div>
+    <div class="page-title-sub">Securely manage identity details, accounts, official documents, and security references.</div>
+  </div>
+  <div class="personal-vault-hero-actions">
+    <button class="btn-outline" type="button" id="personal-refresh-btn"><i class="fas fa-rotate"></i> Refresh</button>
+  </div>
+</section>
+
+<div class="dash-card personal-progress-card">
+  <div class="card-header">
+    <div class="card-title">Profile Completion</div>
+    <div id="personal-completion-score" class="personal-score">0%</div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="personal-completion-fill" style="width:0%"></div></div>
+  <div class="progress-label"><span id="personal-completion-label">Starting setup...</span><span id="personal-completion-sub">0 / 6 steps</span></div>
+  <div class="compact-list" id="personal-completion-suggestions"></div>
+</div>
+
+<div class="wizard-steps personal-wizard-steps" id="personal-steps">
+  <div class="wizard-step active" onclick="goPersonalStep(1)"><span class="step-num" id="personal-step-icon-1">○</span>Basic Identity</div>
+  <div class="wizard-step" onclick="goPersonalStep(2)"><span class="step-num" id="personal-step-icon-2">○</span>Contact Info</div>
+  <div class="wizard-step" onclick="goPersonalStep(3)"><span class="step-num" id="personal-step-icon-3">○</span>Identity Docs</div>
+  <div class="wizard-step" onclick="goPersonalStep(4)"><span class="step-num" id="personal-step-icon-4">○</span>Digital Accounts</div>
+  <div class="wizard-step" onclick="goPersonalStep(5)"><span class="step-num" id="personal-step-icon-5">○</span>Public Profiles</div>
+  <div class="wizard-step" onclick="goPersonalStep(6)"><span class="step-num" id="personal-step-icon-6">○</span>Security Refs</div>
+</div>
+
+<div class="dash-card">
+  <div class="wizard-panel active" id="personal-panel-1">
+    <div class="card-title card-title-spaced">Step 1 — Basic Identity Information</div>
+    <div class="form-grid">
+      <div class="form-field"><label for="vault-first-name">First Name</label><input id="vault-first-name" type="text"></div>
+      <div class="form-field"><label for="vault-last-name">Last Name</label><input id="vault-last-name" type="text"></div>
+      <div class="form-field"><label for="vault-dob">Date of Birth</label><input id="vault-dob" type="date"></div>
+      <div class="form-field"><label for="vault-gender">Gender</label><select id="vault-gender"><option value="">Select</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option><option value="prefer_not_to_say">Prefer not to say</option></select></div>
+      <div class="form-field"><label for="vault-nationality">Nationality</label><input id="vault-nationality" type="text"></div>
+      <div class="form-field"><label for="vault-language-input">Languages (tag input)</label><div class="personal-tag-input"><input id="vault-language-input" type="text" placeholder="English"><button class="btn-outline btn-mini" type="button" id="add-language-tag-btn">Add</button></div></div>
+      <div class="form-field modal-span-2"><label>Language Tags</label><div class="personal-tags" id="vault-language-tags"></div></div>
+    </div>
+
+    <div class="section-divider"><span>Profile Photo</span></div>
+    <div class="personal-photo-layout">
+      <div class="education-upload-dropzone" id="personal-photo-drop-zone">
+        <i class="fas fa-user-circle"></i>
+        <div>Drag and drop profile photo here</div>
+        <div class="muted-note">or choose file below (JPG/PNG only)</div>
+        <input id="vault-profile-photo" type="file" accept=".jpg,.jpeg,.png">
+      </div>
+      <div class="personal-photo-preview" id="personal-photo-preview-card">
+        <div class="muted-note">No photo uploaded yet</div>
+      </div>
+    </div>
+
+    <div class="wizard-nav"><div></div><button class="btn-primary" type="button" id="save-step1-btn">Save & Next →</button></div>
+  </div>
+
+  <div class="wizard-panel" id="personal-panel-2">
+    <div class="card-title card-title-spaced">Step 2 — Contact Information</div>
+    <div class="form-grid">
+      <div class="form-field"><label for="vault-primary-email">Primary Email</label><input id="vault-primary-email" type="email"></div>
+      <div class="form-field"><label for="vault-secondary-email">Secondary Email</label><input id="vault-secondary-email" type="email"></div>
+      <div class="form-field"><label>Additional Emails</label><div class="personal-tag-input"><input id="vault-additional-email-input" type="email" placeholder="extra@email.com"><button class="btn-outline btn-mini" type="button" id="add-email-btn">Add</button></div></div>
+      <div class="form-field"><label for="vault-primary-phone">Primary Phone</label><input id="vault-primary-phone" type="tel" placeholder="+254700000000"></div>
+      <div class="form-field"><label for="vault-secondary-phone">Secondary Phone</label><input id="vault-secondary-phone" type="tel"></div>
+      <div class="form-field"><label>Other Phone Numbers</label><div class="personal-tag-input"><input id="vault-other-phone-input" type="tel" placeholder="+254..." ><button class="btn-outline btn-mini" type="button" id="add-phone-btn">Add</button></div></div>
+      <div class="form-field modal-span-2"><label>Additional Emails</label><div class="personal-tags" id="vault-additional-emails"></div></div>
+      <div class="form-field modal-span-2"><label>Other Phone Numbers</label><div class="personal-tags" id="vault-other-phones"></div></div>
+      <div class="form-field"><label for="vault-home-address">Home Address</label><input id="vault-home-address" type="text"></div>
+      <div class="form-field"><label for="vault-city">City</label><input id="vault-city" type="text"></div>
+      <div class="form-field"><label for="vault-country">Country</label><input id="vault-country" type="text"></div>
+      <div class="form-field"><label for="vault-postal-code">Postal Code</label><input id="vault-postal-code" type="text"></div>
+    </div>
+    <div class="wizard-nav"><button class="btn-outline" type="button" onclick="goPersonalStep(1)">← Back</button><button class="btn-primary" type="button" id="save-step2-btn">Save & Next →</button></div>
+  </div>
+
+  <div class="wizard-panel" id="personal-panel-3">
+    <div class="card-title card-title-spaced">Step 3 — Identity Documents</div>
+    <div class="form-grid">
+      <div class="form-field"><label for="vault-national-id">National ID Number</label><input id="vault-national-id" type="text"></div>
+      <div class="form-field"><label for="vault-passport-number">Passport Number</label><input id="vault-passport-number" type="text"></div>
+      <div class="form-field"><label for="vault-passport-expiry">Passport Expiry Date</label><input id="vault-passport-expiry" type="date"></div>
+      <div class="form-field"><label for="vault-drivers-license">Driver's License Number</label><input id="vault-drivers-license" type="text"></div>
+      <div class="form-field"><label for="vault-student-id">Student ID</label><input id="vault-student-id" type="text"></div>
+    </div>
+
+    <div class="section-divider"><span>Secure Identity File Upload</span></div>
+    <div class="education-upload-dropzone" id="personal-identity-drop-zone">
+      <i class="fas fa-file-shield"></i>
+      <div>Drag and drop PDF/JPG/PNG files here</div>
+      <div class="muted-note">Files are validated and stored securely</div>
+    </div>
+    <div class="form-grid">
+      <div class="form-field"><label for="vault-identity-file-type">Document Type</label><select id="vault-identity-file-type"><option value="national_id_scan">National ID Scan</option><option value="passport_scan">Passport Scan</option><option value="certificate">Certificate</option><option value="academic_document">Academic Document</option><option value="other">Other</option></select></div>
+      <div class="form-field"><label for="vault-identity-file">Select File</label><input id="vault-identity-file" type="file" accept=".pdf,.jpg,.jpeg,.png"></div>
+      <div class="form-field"><label>&nbsp;</label><button class="btn-add" type="button" id="upload-identity-file-btn"><i class="fas fa-upload"></i> Upload File</button></div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Type</th><th>File</th><th>Updated</th><th>Actions</th></tr></thead>
+        <tbody id="vault-identity-files-table"></tbody>
+      </table>
+    </div>
+    <div class="compact-list" id="vault-expiry-alerts"></div>
+
+    <div class="wizard-nav"><button class="btn-outline" type="button" onclick="goPersonalStep(2)">← Back</button><button class="btn-primary" type="button" id="save-step3-btn">Save & Next →</button></div>
+  </div>
+
+  <div class="wizard-panel" id="personal-panel-4">
+    <div class="card-title card-title-spaced">Step 4 — Digital Accounts Registry</div>
+    <div class="education-toolbar">
+      <input id="vault-account-search" type="text" placeholder="Search platform, username, email...">
+      <select id="vault-account-platform-filter"><option value="">All Platforms</option><option value="google">Google</option><option value="github">GitHub</option><option value="linkedin">LinkedIn</option><option value="twitter_x">Twitter / X</option><option value="instagram">Instagram</option><option value="facebook">Facebook</option><option value="tiktok">TikTok</option><option value="discord">Discord</option><option value="reddit">Reddit</option><option value="custom">Custom</option></select>
+      <button class="btn-outline" type="button" id="apply-account-filters-btn">Apply</button>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Platform</th><th>Username</th><th>Email Used</th><th>Profile Link</th><th>Notes</th><th>Actions</th></tr></thead>
+        <tbody id="vault-digital-accounts-table"></tbody>
+      </table>
+    </div>
+    <div class="section-spaced"><button class="btn-add fit-content" type="button" id="add-digital-account-btn"><i class="fas fa-plus"></i> Add Account</button></div>
+    <div class="wizard-nav"><button class="btn-outline" type="button" onclick="goPersonalStep(3)">← Back</button><button class="btn-primary" type="button" onclick="goPersonalStep(5)">Next →</button></div>
+  </div>
+
+  <div class="wizard-panel" id="personal-panel-5">
+    <div class="card-title card-title-spaced">Step 5 — Public Social Profiles</div>
+    <div class="form-grid">
+      <div class="form-field"><label for="vault-linkedin">LinkedIn</label><input id="vault-linkedin" type="url" placeholder="https://linkedin.com/in/..." ></div>
+      <div class="form-field"><label for="vault-twitter">Twitter / X</label><input id="vault-twitter" type="url" placeholder="https://x.com/..." ></div>
+      <div class="form-field"><label for="vault-instagram">Instagram</label><input id="vault-instagram" type="url"></div>
+      <div class="form-field"><label for="vault-github">GitHub</label><input id="vault-github" type="url"></div>
+      <div class="form-field"><label for="vault-portfolio">Portfolio Website</label><input id="vault-portfolio" type="url"></div>
+      <div class="form-field"><label for="vault-blog">Personal Blog</label><input id="vault-blog" type="url"></div>
+      <div class="form-field"><label for="vault-youtube">YouTube Channel</label><input id="vault-youtube" type="url"></div>
+    </div>
+    <div class="section-divider"><span>Preview Links</span></div>
+    <div class="compact-list" id="vault-social-preview"></div>
+    <div class="wizard-nav"><button class="btn-outline" type="button" onclick="goPersonalStep(4)">← Back</button><button class="btn-primary" type="button" id="save-step5-btn">Save & Next →</button></div>
+  </div>
+
+  <div class="wizard-panel" id="personal-panel-6">
+    <div class="card-title card-title-spaced">Step 6 — Security & Password References</div>
+    <div class="alert-banner"><i class="fas fa-lock"></i> For security, actual passwords are never stored. Only reference data and operational hints are allowed.</div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Platform</th><th>Username</th><th>Email Used</th><th>Password Hint</th><th>2FA</th><th>Password Manager</th><th>Actions</th></tr></thead>
+        <tbody id="vault-password-references-table"></tbody>
+      </table>
+    </div>
+    <div class="section-spaced"><button class="btn-add fit-content" type="button" id="add-password-reference-btn"><i class="fas fa-plus"></i> Add Password Reference</button></div>
+    <div class="wizard-nav"><button class="btn-outline" type="button" onclick="goPersonalStep(5)">← Back</button><button class="btn-primary" type="button" id="save-vault-btn">Save Vault ✓</button></div>
+  </div>
+</div>
+
+<!-- Digital Account Modal -->
+<div class="modal-overlay hidden" id="vault-digital-account-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header"><div class="card-title" id="vault-digital-account-modal-title">Add Digital Account</div><button class="modal-close" type="button" data-close-modal="vault-digital-account-modal-overlay">×</button></div>
+    <form id="vault-digital-account-form" class="modal-form-grid">
+      <input type="hidden" id="vault-digital-account-id">
+      <div class="form-field"><label for="vault-account-platform">Platform</label><select id="vault-account-platform"><option value="google">Google</option><option value="github">GitHub</option><option value="linkedin">LinkedIn</option><option value="twitter_x">Twitter / X</option><option value="instagram">Instagram</option><option value="facebook">Facebook</option><option value="tiktok">TikTok</option><option value="discord">Discord</option><option value="reddit">Reddit</option><option value="custom">Custom</option></select></div>
+      <div class="form-field"><label for="vault-account-custom-platform">Custom Platform Name</label><input id="vault-account-custom-platform" type="text"></div>
+      <div class="form-field"><label for="vault-account-username">Username</label><input id="vault-account-username" type="text"></div>
+      <div class="form-field"><label for="vault-account-email">Email Used</label><input id="vault-account-email" type="email"></div>
+      <div class="form-field modal-span-2"><label for="vault-account-profile-link">Profile Link</label><input id="vault-account-profile-link" type="url"></div>
+      <div class="form-field modal-span-2"><label for="vault-account-notes">Notes</label><textarea id="vault-account-notes"></textarea></div>
+      <div class="modal-actions modal-span-2"><button class="btn-outline" type="button" data-close-modal="vault-digital-account-modal-overlay">Cancel</button><button class="btn-primary" type="submit">Save Account</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- Password Reference Modal -->
+<div class="modal-overlay hidden" id="vault-password-reference-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header"><div class="card-title" id="vault-password-reference-modal-title">Add Password Reference</div><button class="modal-close" type="button" data-close-modal="vault-password-reference-modal-overlay">×</button></div>
+    <form id="vault-password-reference-form" class="modal-form-grid">
+      <input type="hidden" id="vault-password-reference-id">
+      <div class="form-field"><label for="vault-ref-platform">Platform</label><input id="vault-ref-platform" type="text"></div>
+      <div class="form-field"><label for="vault-ref-username">Username</label><input id="vault-ref-username" type="text"></div>
+      <div class="form-field"><label for="vault-ref-email">Email Used</label><input id="vault-ref-email" type="email"></div>
+      <div class="form-field"><label for="vault-ref-password-hint">Password Hint</label><input id="vault-ref-password-hint" type="text"></div>
+      <div class="form-field"><label for="vault-ref-two-factor">Two-Factor Enabled</label><select id="vault-ref-two-factor"><option value="0">No</option><option value="1">Yes</option></select></div>
+      <div class="form-field"><label for="vault-ref-password-manager">Password Manager Used</label><select id="vault-ref-password-manager"><option value="bitwarden">Bitwarden</option><option value="1password">1Password</option><option value="proton_pass">Proton Pass</option><option value="other">Other</option></select></div>
+      <div class="form-field modal-span-2"><label for="vault-ref-backup-location">Backup Codes Location</label><input id="vault-ref-backup-location" type="text"></div>
+      <div class="form-field modal-span-2"><label for="vault-ref-notes">Notes</label><textarea id="vault-ref-notes"></textarea></div>
+      <div class="modal-actions modal-span-2"><button class="btn-outline" type="button" data-close-modal="vault-password-reference-modal-overlay">Cancel</button><button class="btn-primary" type="submit">Save Reference</button></div>
+    </form>
+  </div>
+</div>
+</div>

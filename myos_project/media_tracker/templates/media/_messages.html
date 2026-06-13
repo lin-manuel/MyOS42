@@ -1,0 +1,7 @@
+{% if messages %}
+  <div class="dash-card">
+    {% for message in messages %}
+      <div>{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}

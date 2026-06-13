@@ -1,0 +1,7 @@
+<div class="tab-bar">
+  <a class="tab-btn {% if tab_name == 'dashboard' %}active{% endif %}" href="{% url 'media' %}" data-inapp-nav="true">Dashboard</a>
+  <a class="tab-btn {% if tab_name == 'movies' %}active{% endif %}" href="{% url 'movies_view' %}" data-inapp-nav="true">Movies</a>
+  <a class="tab-btn {% if tab_name == 'series' %}active{% endif %}" href="{% url 'series_view' %}" data-inapp-nav="true">Series</a>
+  <a class="tab-btn {% if tab_name == 'anime' %}active{% endif %}" href="{% url 'anime_view' %}" data-inapp-nav="true">Anime</a>
+  <a class="tab-btn {% if tab_name == 'animation' %}active{% endif %}" href="{% url 'animation_view' %}" data-inapp-nav="true">Animation</a>
+</div>

@@ -1,0 +1,127 @@
+<div class="page-content active" id="page-projects" data-page-key="projects" data-page-title="Projects">
+<section class="page-header">
+  <div>
+    <h1 class="page-title">Projects</h1>
+    <p class="page-title-sub">Business ideas, coding projects and creative endeavours</p>
+  </div>
+  <button class="btn-add" type="button" id="add-project-btn" title="Create new project">
+    <i class="fas fa-plus"></i> New Project
+  </button>
+</section>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('prj','overview')">
+    <i class="fas fa-th-large" style="margin-right:6px;"></i> All Projects
+  </button>
+  <button class="tab-btn" onclick="switchTab('prj','tasks')">
+    <i class="fas fa-tasks" style="margin-right:6px;"></i> Tasks &amp; Milestones
+  </button>
+  <button class="tab-btn" onclick="switchTab('prj','analytics')">
+    <i class="fas fa-chart-bar" style="margin-right:6px;"></i> Analytics
+  </button>
+</div>
+
+<div class="tab-panel active" id="prj-overview">
+  <div class="cards-grid" id="projects-grid">
+    <div class="dash-card">
+      <div class="empty-state" style="min-height:200px;">
+        <div class="empty-state-icon"><i class="fas fa-inbox"></i></div>
+        <div class="empty-state-title">No projects yet</div>
+        <div class="empty-state-text">Create your first project to get started organizing your ideas and goals.</div>
+        <button class="btn-add btn-sm" type="button" id="add-project-btn-empty">
+          <i class="fas fa-plus"></i> New Project
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-panel" id="prj-tasks">
+  <div class="dash-card">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fas fa-flag-checkered" style="margin-right:8px;color:var(--accent-lime);"></i> Milestones &amp; Tasks
+      </div>
+    </div>
+    <div class="stack-list space-md">
+      <div class="soft-panel" id="project-milestones-list">
+        <div class="empty-state-text">No milestones available.</div>
+      </div>
+    </div>
+    <div class="section-divider"><span><i class="fas fa-tasks" style="margin-right:6px;"></i> Timeline (Gantt)</span></div>
+    <div class="stack-list space-md" id="project-timeline-list">
+      <div class="empty-state-text">No timeline data available.</div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-panel" id="prj-analytics">
+  <div class="split-grid">
+    <div class="dash-card chart-card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fas fa-chart-column" style="margin-right:8px;color:var(--accent-lime);"></i> Activity
+        </div>
+        <span class="subtitle-sm">Last 6 months</span>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="projects-activity-chart" aria-label="Project monthly activity bar chart"></canvas></div>
+    </div>
+    <div class="dash-card chart-card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fas fa-chart-pie" style="margin-right:8px;color:var(--accent-lime);"></i> Status Distribution
+        </div>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="projects-status-chart" aria-label="Project status pie chart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="project-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <div class="card-title" id="project-modal-title">Add New Project</div>
+        <div class="card-title-sub">Organize your ideas and track progress</div>
+      </div>
+      <button class="modal-close" type="button" data-close-modal="project-modal-overlay" title="Close modal">×</button>
+    </div>
+    <form id="project-form" class="modal-form-grid">
+      <input type="hidden" id="project-id">
+      <div class="form-field modal-span-2">
+        <label for="project-title">Project Title</label>
+        <input id="project-title" type="text" placeholder="Name your project..." required>
+      </div>
+      <div class="form-field modal-span-2">
+        <label for="project-description">Description</label>
+        <textarea id="project-description" placeholder="What is this project about?"></textarea>
+      </div>
+      <div class="form-field">
+        <label for="project-status">Status</label>
+        <select id="project-status">
+          <option value="idea">💡 Idea</option>
+          <option value="pending">⏳ Pending</option>
+          <option value="in_progress">🚀 In Progress</option>
+          <option value="completed">✅ Completed</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="project-progress">Progress (%)</label>
+        <input id="project-progress" type="number" min="0" max="100" step="1" value="0">
+      </div>
+      <div class="form-field">
+        <label for="project-start-date">Start Date</label>
+        <input id="project-start-date" type="date">
+      </div>
+      <div class="form-field">
+        <label for="project-end-date">End Date</label>
+        <input id="project-end-date" type="date">
+      </div>
+      <div class="modal-actions modal-span-2">
+        <button class="btn-outline" type="button" data-close-modal="project-modal-overlay">Cancel</button>
+        <button class="btn-primary" type="submit">Save Project</button>
+      </div>
+    </form>
+  </div>
+</div>
+</div>

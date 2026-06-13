@@ -1,0 +1,227 @@
+{% load static %}
+<div class="page-content active ds-page" id="page-reminders" data-page-key="reminders" data-page-title="Reminders & TODOs">
+  <section class="page-heading">
+    <div>
+      <div class="ds-eyebrow">Execution Hub</div>
+      <h1>Reminders &amp; TODOs</h1>
+      <p>Organize tasks, schedule nudges, and keep the calendar in sync with the work that matters.</p>
+    </div>
+    <div class="page-heading-actions">
+      <button class="ds-btn ds-btn-secondary" type="button" onclick="toggleQuickAdd(true); openQuickForm('reminder');"><i class="far fa-bell"></i> Add Reminder</button>
+      <button class="ds-btn ds-btn-primary" type="button" onclick="toggleQuickAdd(true); openQuickForm('task');"><i class="fas fa-plus"></i> Add Task</button>
+    </div>
+  </section>
+
+  <div class="reminders-toolbar">
+    <div class="segmented-control" role="tablist" aria-label="Task and reminder views">
+      <button class="active" type="button" data-reminders-tab="tasks" role="tab" aria-selected="true"><i class="fas fa-list-check"></i> Tasks</button>
+      <button type="button" data-reminders-tab="reminders" role="tab" aria-selected="false"><i class="far fa-bell"></i> Reminders</button>
+    </div>
+    <div class="filter-pills" aria-label="Task filters">
+      <button class="active" type="button" data-task-filter="all">All</button>
+      <button type="button" data-task-filter="personal">Personal</button>
+      <button type="button" data-task-filter="work">Work</button>
+      <button type="button" data-task-filter="study">Study</button>
+    </div>
+  </div>
+
+  <div class="reminders-metric-grid">
+    <article class="ds-card metric-static-card">
+      <span class="metric-icon metric-icon--primary"><i class="fas fa-list-check"></i></span>
+      <div><p>Total Tasks</p><strong id="reminders-total-tasks">0</strong><small>All time tasks</small></div>
+    </article>
+    <article class="ds-card metric-static-card">
+      <span class="metric-icon metric-icon--success"><i class="fas fa-check"></i></span>
+      <div><p>Completed</p><strong id="reminders-completed-count">0</strong><small>This month</small></div>
+    </article>
+    <article class="ds-card metric-static-card">
+      <span class="metric-icon metric-icon--amber"><i class="far fa-clock"></i></span>
+      <div><p>In Progress</p><strong id="reminders-focus-open">0</strong><small>Currently active</small></div>
+    </article>
+    <article class="ds-card metric-static-card">
+      <span class="metric-icon metric-icon--danger"><i class="far fa-calendar-xmark"></i></span>
+      <div><p>Overdue</p><strong id="reminders-overdue-count">0</strong><small>Need attention</small></div>
+    </article>
+  </div>
+
+  <div class="alert-banner reminders-attention-banner hidden" id="reminders-overdue-banner" aria-live="polite">
+    <i class="fas fa-triangle-exclamation"></i>
+    <span id="reminders-overdue-banner-text">You are all caught up.</span>
+  </div>
+
+  <section class="reminders-layout">
+    <main class="reminders-main-column">
+      <div class="reminders-tab-panel active" id="reminders-tab-tasks" data-reminders-panel="tasks">
+        <article class="ds-card task-composer-card">
+          <form class="task-inline-form" id="reminders-task-form">
+            <label class="ds-field task-inline-title">
+              <span>Task</span>
+              <input type="text" name="title" placeholder="What needs to get done?" required>
+            </label>
+            <label class="ds-field">
+              <span>Date</span>
+              <input type="date" name="due_date">
+            </label>
+            <label class="ds-field">
+              <span>Tag</span>
+              <select name="focus_area">
+                <option value="Personal">Personal</option>
+                <option value="Work">Work</option>
+                <option value="Study">Study</option>
+              </select>
+            </label>
+            <label class="ds-field">
+              <span>Priority</span>
+              <select name="priority">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+              </select>
+            </label>
+            <button class="ds-btn ds-btn-primary" type="submit"><i class="fas fa-plus"></i> Add</button>
+          </form>
+        </article>
+
+        <article class="ds-card task-group-card">
+          <div class="task-group-header">
+            <div><i class="far fa-sun"></i><strong id="reminders-today-title">Today</strong><span id="reminders-today-count">0</span></div>
+            <button class="icon-action-btn" type="button" onclick="toggleQuickAdd(true); openQuickForm('task');" aria-label="Add task"><i class="fas fa-plus"></i></button>
+          </div>
+          <div class="task-group-list" id="reminders-today-list">
+            <div class="table-empty">No tasks due today.</div>
+          </div>
+        </article>
+
+        <article class="ds-card task-group-card">
+          <div class="task-group-header">
+            <div><i class="far fa-calendar"></i><strong>Upcoming</strong><span id="reminders-upcoming-count">0</span></div>
+            <button class="icon-action-btn" type="button" onclick="toggleQuickAdd(true); openQuickForm('task');" aria-label="Add upcoming task"><i class="fas fa-plus"></i></button>
+          </div>
+          <div class="task-group-list" id="reminders-upcoming-list">
+            <div class="table-empty">No upcoming tasks.</div>
+          </div>
+        </article>
+
+        <article class="ds-card task-group-card">
+          <div class="task-group-header">
+            <div><i class="fas fa-check"></i><strong>Completed</strong><span id="reminders-completed-task-count">0</span></div>
+            <a class="ds-link" href="{% url 'calendar' %}" data-inapp-nav="true">Calendar <i class="fas fa-arrow-right"></i></a>
+          </div>
+          <div class="task-group-list" id="reminders-completed-task-list">
+            <div class="table-empty">No completed tasks yet.</div>
+          </div>
+        </article>
+      </div>
+
+      <div class="reminders-tab-panel" id="reminders-tab-reminders" data-reminders-panel="reminders">
+        <article class="ds-card reminder-composer-card">
+          <div class="ds-card-header">
+            <div>
+              <div class="ds-card-title"><i class="far fa-bell"></i> Capture a Reminder</div>
+              <p class="ds-card-subtitle">Schedule follow-ups, routines, or deadline nudges.</p>
+            </div>
+          </div>
+          <form class="reminders-composer-form" id="reminder-capture-form">
+            <div class="reminders-form-grid">
+              <label class="ds-field reminders-span-2"><span>Reminder Title</span><input type="text" name="title" placeholder="Renew passport photos" required></label>
+              <label class="ds-field"><span>Date</span><input type="date" name="reminder_date"></label>
+              <label class="ds-field"><span>Time</span><input type="time" name="reminder_time"></label>
+              <label class="ds-field"><span>Cadence</span><select name="cadence"><option value="once" selected>One time</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select></label>
+              <label class="ds-field"><span>Channel</span><select name="channel"><option value="in_app" selected>In app</option><option value="email">Email</option><option value="sms">SMS</option><option value="whatsapp">WhatsApp</option></select></label>
+              <label class="ds-field reminders-span-2"><span>Details</span><textarea name="details" rows="3" placeholder="Add context, links, or the exact action you want to remember."></textarea></label>
+            </div>
+            <div class="modal-actions reminders-inline-actions">
+              <button class="ds-btn ds-btn-secondary" type="reset">Clear</button>
+              <button class="ds-btn ds-btn-primary" type="submit">Save Reminder</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="ds-card">
+          <div class="ds-card-header">
+            <div>
+              <div class="ds-card-title"><i class="far fa-clock"></i> Reminder Timeline</div>
+              <p class="ds-card-subtitle" id="reminders-timeline-subtitle">Upcoming reminders arranged by urgency.</p>
+            </div>
+          </div>
+          <div class="reminders-timeline" id="reminders-timeline">
+            <div class="table-empty">No reminders scheduled yet.</div>
+          </div>
+        </article>
+
+        <article class="ds-card">
+          <div class="ds-card-header">
+            <div>
+              <div class="ds-card-title"><i class="fas fa-check"></i> Completed Reminders</div>
+              <p class="ds-card-subtitle">Finished reminders stay here as a lightweight log.</p>
+            </div>
+          </div>
+          <div class="reminders-completed-list" id="reminders-completed-list">
+            <div class="table-empty">No completed reminders yet.</div>
+          </div>
+        </article>
+      </div>
+    </main>
+
+    <aside class="reminders-side-column">
+      <article class="ds-card mini-calendar-card">
+        <div class="calendar-header">
+          <div>
+            <div class="ds-card-title">Calendar</div>
+            <p class="ds-card-subtitle" id="reminders-selected-date-label">Tasks and reminders by day.</p>
+          </div>
+          <div class="calendar-nav">
+            <button class="icon-action-btn" type="button" id="reminders-calendar-prev" aria-label="Previous month"><i class="fas fa-chevron-left"></i></button>
+            <button class="icon-action-btn" type="button" id="reminders-calendar-next" aria-label="Next month"><i class="fas fa-chevron-right"></i></button>
+          </div>
+        </div>
+        <div class="calendar-month-label" id="reminders-calendar-month">Month YYYY</div>
+        <div class="calendar-grid calendar-grid--compact" id="reminders-calendar-grid"></div>
+        <button class="ds-btn ds-btn-ghost ds-btn-sm w-full" type="button" id="reminders-clear-date-filter">Clear date filter</button>
+      </article>
+
+      <article class="ds-card">
+        <div class="ds-card-header">
+          <div>
+            <div class="ds-card-title">Upcoming Reminders</div>
+            <p class="ds-card-subtitle">Next scheduled nudges.</p>
+          </div>
+          <button class="ds-link" type="button" data-reminders-tab-jump="reminders">View all</button>
+        </div>
+        <div class="reminders-agenda-list" id="reminders-agenda-list">
+          <div class="table-empty">No agenda items queued.</div>
+        </div>
+      </article>
+
+      <article class="ds-card productivity-card">
+        <div class="ds-card-header">
+          <div>
+            <div class="ds-card-title">Productivity</div>
+            <p class="ds-card-subtitle">Completion overview.</p>
+          </div>
+        </div>
+        <div class="productivity-ring"><span id="reminders-completion-rate">0%</span><small>Productive</small></div>
+        <div class="productivity-legend">
+          <span><i class="legend-dot legend-dot--success"></i>Completed <strong id="reminders-completion-copy">0</strong></span>
+          <span><i class="legend-dot legend-dot--primary"></i>In Progress <strong id="reminders-focus-copy">0</strong></span>
+          <span><i class="legend-dot legend-dot--danger"></i>Overdue <strong id="reminders-overdue-copy">0</strong></span>
+          <span><i class="legend-dot"></i>This Week <strong id="reminders-week-copy">0</strong></span>
+        </div>
+      </article>
+
+      <article class="ds-card">
+        <div class="ds-card-title">Delivery Channels</div>
+        <div class="reminders-channel-list" id="reminders-channel-list">
+          <div class="table-empty">No delivery channels in use yet.</div>
+        </div>
+      </article>
+
+      <article class="ds-card">
+        <div class="ds-card-title">Cadence Snapshot</div>
+        <div class="reminders-cadence-list" id="reminders-cadence-list">
+          <div class="table-empty">No recurring cadence configured yet.</div>
+        </div>
+      </article>
+    </aside>
+  </section>
+</div>

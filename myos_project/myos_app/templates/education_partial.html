@@ -1,0 +1,958 @@
+<div class="page-content active" id="page-education" data-page-key="education" data-page-title="Education Command Center">
+<section class="education-hero" id="education-command-center">
+  <div>
+    <div class="page-title kinetic-title">Education Command Center</div>
+    <div class="page-title-sub">Manage academic history, scholarship applications, reusable documents, and deadline-driven execution.</div>
+  </div>
+  <div class="education-hero-actions">
+    <button class="btn-add" type="button" id="quick-add-level-btn"><i class="fas fa-school"></i> Add Academic Level</button>
+    <button class="btn-add" type="button" id="quick-add-scholarship-btn"><i class="fas fa-award"></i> Add Scholarship</button>
+    <button class="btn-add" type="button" id="quick-add-document-btn"><i class="fas fa-file-upload"></i> Upload Document</button>
+  </div>
+</section>
+
+<div class="alert-banner" id="education-alert-banner"><i class="fas fa-clock"></i> Loading deadline alerts...</div>
+<div class="compact-list" id="education-deadline-alerts"></div>
+
+<div class="tab-bar education-tab-bar">
+  <button class="tab-btn active" onclick="switchTab('edu','levels')">Academic Levels</button>
+  <button class="tab-btn" onclick="switchTab('edu','scholarships')">Scholarship Tracker</button>
+  <button class="tab-btn" onclick="switchTab('edu','documents')">General Documents</button>
+  <button class="tab-btn" onclick="switchTab('edu','direction')">🧭 Direction</button>
+  <button class="tab-btn" onclick="switchTab('edu','knowledge')">🧠 Knowledge Hub</button>
+  <button class="tab-btn" onclick="switchTab('edu','action')">⚡ Learning Rhythms</button>
+  <button class="tab-btn" onclick="switchTab('edu','optimization')">📈 Optimization</button>
+  <button class="tab-btn" onclick="switchTab('edu','college')">🎓 College Tracker</button>
+</div>
+
+<div class="tab-panel active" id="edu-levels">
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Academic Levels</div>
+        <div class="card-subtitle">Primary, Secondary, University, and Certifications with expandable detail + uploads.</div>
+      </div>
+      <button class="btn-outline" type="button" id="add-level-btn"><i class="fas fa-plus"></i> Add Level</button>
+    </div>
+    <div class="education-level-grid" id="academic-level-grid"></div>
+  </div>
+
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">National / Certification Exams</div>
+        <div class="card-subtitle">Track exam records for levels where certification exams are completed.</div>
+      </div>
+      <button class="btn-outline" type="button" id="add-exam-btn"><i class="fas fa-plus"></i> Add Exam</button>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Exam Name</th>
+            <th>Year</th>
+            <th>Candidate #</th>
+            <th>Grade / Score</th>
+            <th>Certificate</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="exam-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="tab-panel" id="edu-scholarships">
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Scholarship Tracker</div>
+        <div class="card-subtitle">Search, filter, checklist progress, submission data, and status flow.</div>
+      </div>
+      <button class="btn-outline" type="button" id="add-scholarship-btn"><i class="fas fa-plus"></i> Add Scholarship</button>
+    </div>
+
+    <div class="education-toolbar">
+      <input id="scholarship-search" type="text" placeholder="Search scholarship, country, field..." aria-label="Search scholarships">
+      <select id="scholarship-status-filter" aria-label="Filter scholarship status">
+        <option value="">All statuses</option>
+        <option value="researching">Researching</option>
+        <option value="preparing_documents">Preparing Documents</option>
+        <option value="application_submitted">Application Submitted</option>
+        <option value="interview_stage">Interview Stage</option>
+        <option value="accepted">Accepted</option>
+        <option value="rejected">Rejected</option>
+        <option value="waitlisted">Waitlisted</option>
+      </select>
+      <button class="btn-outline" type="button" id="apply-scholarship-filters-btn">Apply</button>
+    </div>
+
+    <div class="education-scholarship-grid" id="scholarship-grid"></div>
+  </div>
+</div>
+
+<div class="tab-panel" id="edu-documents">
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">General Application Documents Vault</div>
+        <div class="card-subtitle">Upload once, reuse across scholarship requirements, version and expiry tracked.</div>
+      </div>
+      <button class="btn-outline" type="button" id="add-document-btn"><i class="fas fa-plus"></i> Add Document</button>
+    </div>
+
+    <div class="education-upload-dropzone" id="education-document-drop-zone">
+      <i class="fas fa-cloud-upload-alt"></i>
+      <div>Drag and drop document here, or click “Add Document”.</div>
+      <div class="muted-note">Supported: PDF, DOCX, PNG, JPG (max 10MB)</div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Document</th>
+            <th>Type</th>
+            <th>Version</th>
+            <th>Expiration</th>
+            <th>Last Updated</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="document-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="tab-panel" id="edu-direction">
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Learning Strategy &amp; Goals</div>
+        <div class="card-subtitle">Align your daily learning to your long-term vision.</div>
+      </div>
+      <button class="btn-primary" type="button" id="save-learning-why-btn">Save North Star</button>
+    </div>
+    <div class="form-field">
+      <label for="learning-why-statement">My Learning "Why"</label>
+      <textarea id="learning-why-statement" placeholder="Write your core purpose for learning — the reason that keeps you going on hard days."></textarea>
+    </div>
+  </div>
+
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Skill Inventory</div>
+        <div class="card-subtitle">Identify current knowledge gaps and skills to master.</div>
+      </div>
+      <button class="btn-outline" type="button" id="add-skill-btn">Add Skill</button>
+    </div>
+    <div class="learning-skill-grid" id="skill-inventory-grid"></div>
+  </div>
+
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Growth Roadmap</div>
+        <div class="card-subtitle">Define what success looks like at 3–6 months and 10 years.</div>
+      </div>
+      <div class="education-card-actions">
+        <button class="btn-outline" type="button" id="add-roadmap-milestone-btn">Add Milestone</button>
+        <button class="btn-primary" type="button" id="save-roadmap-btn">Save Roadmap</button>
+      </div>
+    </div>
+    <div class="education-roadmap-grid">
+      <div class="form-field">
+        <label for="roadmap-short">3–6 Month Vision</label>
+        <textarea id="roadmap-short" placeholder="Picture the next season of growth: what would make you proud, energized, and clearly moving forward?"></textarea>
+      </div>
+      <div class="form-field">
+        <label for="roadmap-long">10-Year Vision</label>
+        <textarea id="roadmap-long" placeholder="Describe the future you are building toward and the impact your learning will make over a decade."></textarea>
+      </div>
+    </div>
+    <div class="education-roadmap-inline-form hidden" id="roadmap-inline-form">
+      <div class="form-field">
+        <label for="roadmap-milestone-name">Milestone</label>
+        <input id="roadmap-milestone-name" type="text" placeholder="Finish Python foundations">
+      </div>
+      <div class="form-field">
+        <label for="roadmap-milestone-date">Target Date</label>
+        <input id="roadmap-milestone-date" type="date">
+      </div>
+      <div class="education-card-actions">
+        <button class="btn-outline" type="button" id="cancel-roadmap-milestone-btn">Cancel</button>
+        <button class="btn-primary" type="button" id="save-roadmap-milestone-btn">Save Milestone</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table" id="roadmap-milestone-table">
+        <thead>
+          <tr>
+            <th>Milestone</th>
+            <th>Target Date</th>
+            <th>Done</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="roadmap-milestone-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="tab-panel" id="edu-knowledge">
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Capture Mechanism</div>
+        <div class="card-subtitle">Frictionlessly capture thoughts, quotes, podcast insights, and ideas.</div>
+      </div>
+      <button class="btn-primary" type="button" id="capture-submit-btn">Capture</button>
+    </div>
+    <div class="modal-form-grid education-capture-grid">
+      <div class="form-field modal-span-2">
+        <label for="capture-input">Capture</label>
+        <textarea id="capture-input" placeholder="Drop a thought, quote, or insight here…"></textarea>
+      </div>
+      <div class="form-field">
+        <label for="capture-source">Source</label>
+        <input id="capture-source" type="text" placeholder="Book, podcast, mentor, class...">
+      </div>
+      <div class="form-field">
+        <label for="capture-type">Type</label>
+        <select id="capture-type">
+          <option value="Book Quote">Book Quote</option>
+          <option value="Podcast">Podcast</option>
+          <option value="Article">Article</option>
+          <option value="Thought">Thought</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="capture-inbox-list" id="capture-inbox-list"></div>
+  </div>
+
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">P.A.R.A. Knowledge Base</div>
+        <div class="card-subtitle">Projects (active), Areas (ongoing), Resources (interests), Archives (inactive).</div>
+      </div>
+    </div>
+    <div class="para-grid" id="para-grid">
+      <details class="para-column education-para-column" data-para-category="projects" open>
+        <summary class="para-column-header">
+          <span class="para-column-title">📁 Projects</span>
+          <span class="para-count-badge" id="para-projects-count">0</span>
+        </summary>
+        <div class="education-para-body">
+          <div class="education-para-list" id="para-projects-list" data-para-category="projects"></div>
+          <button class="btn-outline" type="button" data-para-add="projects">Add Note Directly</button>
+        </div>
+      </details>
+      <details class="para-column education-para-column" data-para-category="areas" open>
+        <summary class="para-column-header">
+          <span class="para-column-title">🧭 Areas</span>
+          <span class="para-count-badge" id="para-areas-count">0</span>
+        </summary>
+        <div class="education-para-body">
+          <div class="education-para-list" id="para-areas-list" data-para-category="areas"></div>
+          <button class="btn-outline" type="button" data-para-add="areas">Add Note Directly</button>
+        </div>
+      </details>
+      <details class="para-column education-para-column" data-para-category="resources" open>
+        <summary class="para-column-header">
+          <span class="para-column-title">📚 Resources</span>
+          <span class="para-count-badge" id="para-resources-count">0</span>
+        </summary>
+        <div class="education-para-body">
+          <div class="education-para-list" id="para-resources-list" data-para-category="resources"></div>
+          <button class="btn-outline" type="button" data-para-add="resources">Add Note Directly</button>
+        </div>
+      </details>
+      <details class="para-column education-para-column" data-para-category="archive" open>
+        <summary class="para-column-header">
+          <span class="para-column-title">🗄️ Archive</span>
+          <span class="para-count-badge" id="para-archive-count">0</span>
+        </summary>
+        <div class="education-para-body">
+          <div class="education-para-list" id="para-archive-list" data-para-category="archive"></div>
+          <button class="btn-outline" type="button" data-para-add="archive">Add Note Directly</button>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Active Processing Techniques</div>
+        <div class="card-subtitle">Turn passive consumption into deep mastery.</div>
+      </div>
+    </div>
+    <div class="education-feynman-card">
+      <div class="education-feynman-title">Feynman Technique</div>
+      <ol class="education-feynman-steps">
+        <li>Choose a concept.</li>
+        <li>Teach it in plain language.</li>
+        <li>Identify gaps.</li>
+        <li>Simplify further.</li>
+      </ol>
+    </div>
+    <form class="modal-form-grid education-feynman-form" id="feynman-form">
+      <div class="form-field">
+        <label for="feynman-concept">Concept</label>
+        <input id="feynman-concept" type="text" placeholder="Neural networks">
+      </div>
+      <div class="form-field modal-span-2">
+        <label for="feynman-plain-language">Plain Language Explanation</label>
+        <textarea id="feynman-plain-language"></textarea>
+      </div>
+      <div class="form-field">
+        <label for="feynman-gaps">Gaps Identified</label>
+        <textarea id="feynman-gaps"></textarea>
+      </div>
+      <div class="form-field">
+        <label for="feynman-simplified">Simplified Version</label>
+        <textarea id="feynman-simplified"></textarea>
+      </div>
+      <div class="modal-actions modal-span-2">
+        <button class="btn-primary" type="submit">Save Practice Entry</button>
+      </div>
+    </form>
+    <div class="education-feynman-log-list" id="feynman-log-list"></div>
+  </div>
+</div>
+
+<div class="tab-panel" id="edu-action">
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Deep Work Time-Blocking</div>
+        <div class="card-subtitle">Dedicate focused slots for demanding learning tasks.</div>
+      </div>
+    </div>
+    <div class="education-deep-work-summary" id="learning-deep-work-summary">Total deep work hours this week: 0 hrs</div>
+    <div class="education-time-block-grid" id="learning-time-block-grid"></div>
+  </div>
+
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">70-20-10 Learning Balance</div>
+        <div class="card-subtitle">70% doing, 20% from others, 10% formal study.</div>
+      </div>
+    </div>
+    <div class="modal-form-grid education-balance-form-grid">
+      <div class="form-field">
+        <label for="learning-balance-doing">By Doing (projects, practice)</label>
+        <input id="learning-balance-doing" type="number" min="0" step="0.5" value="0">
+      </div>
+      <div class="form-field">
+        <label for="learning-balance-others">From Others (mentors, peers)</label>
+        <input id="learning-balance-others" type="number" min="0" step="0.5" value="0">
+      </div>
+      <div class="form-field">
+        <label for="learning-balance-formal">Formal Study (courses, books)</label>
+        <input id="learning-balance-formal" type="number" min="0" step="0.5" value="0">
+      </div>
+    </div>
+    <div class="learning-balance-row">
+      <div class="learning-donut" id="learning-balance-donut"></div>
+      <div class="learning-balance-legend">
+        <div class="balance-legend-item"><span class="balance-dot" style="background: var(--olive);"></span><span id="learning-balance-doing-label">Doing: 0 hrs</span></div>
+        <div class="balance-legend-item"><span class="balance-dot" style="background: var(--sage);"></span><span id="learning-balance-others-label">From Others: 0 hrs</span></div>
+        <div class="balance-legend-item"><span class="balance-dot" style="background: var(--ivory-soft); border: 1px solid rgba(27,45,34,.12);"></span><span id="learning-balance-formal-label">Formal Study: 0 hrs</span></div>
+        <div class="balance-legend-item"><span class="balance-dot" style="background: linear-gradient(135deg, var(--gold), var(--gold-deep));"></span><span>Ideal ratio: 70 / 20 / 10</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Micro-Learning Routines</div>
+        <div class="card-subtitle">Small, consistent habits that compound over time.</div>
+      </div>
+    </div>
+    <form class="modal-form-grid" id="micro-routine-form">
+      <div class="form-field">
+        <label for="micro-routine-name">Habit</label>
+        <input id="micro-routine-name" type="text" placeholder="Listen to audiobook during commute">
+      </div>
+      <div class="form-field">
+        <label for="micro-routine-trigger">Trigger (When/Where)</label>
+        <input id="micro-routine-trigger" type="text" placeholder="Morning commute">
+      </div>
+      <div class="form-field">
+        <label for="micro-routine-frequency">Frequency</label>
+        <select id="micro-routine-frequency">
+          <option value="Daily">Daily</option>
+          <option value="Weekly">Weekly</option>
+        </select>
+      </div>
+      <div class="modal-actions modal-span-2">
+        <button class="btn-primary" type="submit">Add Micro-Routine</button>
+      </div>
+    </form>
+    <div class="micro-routine-list" id="micro-routine-list"></div>
+  </div>
+</div>
+
+<div class="tab-panel" id="edu-optimization">
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Weekly Reflection Log</div>
+        <div class="card-subtitle">A 30-minute weekly session to analyse what you learned.</div>
+      </div>
+    </div>
+    <form class="modal-form-grid" id="reflection-form">
+      <div class="form-field">
+        <label for="reflection-week-ending">Week Ending</label>
+        <input id="reflection-week-ending" type="date">
+      </div>
+      <div class="form-field modal-span-2">
+        <label for="reflection-what-learned">What I Learned</label>
+        <textarea id="reflection-what-learned"></textarea>
+      </div>
+      <div class="form-field">
+        <label for="reflection-went-well">What Went Well</label>
+        <textarea id="reflection-went-well"></textarea>
+      </div>
+      <div class="form-field">
+        <label for="reflection-to-improve">What to Improve</label>
+        <textarea id="reflection-to-improve"></textarea>
+      </div>
+      <div class="form-field modal-span-2">
+        <label for="reflection-next-week-focus">Next Week's Focus</label>
+        <textarea id="reflection-next-week-focus"></textarea>
+      </div>
+      <div class="modal-actions modal-span-2">
+        <button class="btn-primary" type="submit">Save Reflection</button>
+      </div>
+    </form>
+    <div class="reflection-log-list" id="reflection-log-list"></div>
+  </div>
+
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Skill Progress Checklists</div>
+        <div class="card-subtitle">Use milestones to track objective progress toward learning outcomes.</div>
+      </div>
+    </div>
+    <div class="education-skill-progress-list" id="skill-progress-list"></div>
+  </div>
+
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Resource Audit</div>
+        <div class="card-subtitle">Periodically review your learning tools and sources.</div>
+      </div>
+      <button class="btn-outline" type="button" id="add-resource-btn">Add Resource</button>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table" id="resource-audit-table">
+        <thead>
+          <tr>
+            <th>Resource Name</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Last Reviewed</th>
+            <th>Rating</th>
+            <th>Notes</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="resource-audit-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="tab-panel" id="edu-college">
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">College Application Tracker</div>
+        <div class="card-subtitle">A full application pipeline for researching, applying, interviewing, and deciding.</div>
+      </div>
+    </div>
+    <div class="college-stats-bar" id="college-stats-bar"></div>
+  </div>
+
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Application Pipeline</div>
+        <div class="card-subtitle">Drag applications across stages as they move forward.</div>
+      </div>
+      <button class="btn-outline" type="button" id="add-college-app-btn">Add Application</button>
+    </div>
+    <div class="college-pipeline" id="college-pipeline"></div>
+  </div>
+
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Deadline Calendar Strip</div>
+        <div class="card-subtitle">Upcoming deadlines across the next 90 days.</div>
+      </div>
+    </div>
+    <div class="college-deadline-strip" id="college-deadline-strip"></div>
+  </div>
+
+  <div class="dash-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Essays &amp; Personal Statements Tracker</div>
+        <div class="card-subtitle">Track prompts, word counts, drafting status, and edits.</div>
+      </div>
+      <button class="btn-outline" type="button" id="add-college-essay-btn">Add Essay</button>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table" id="college-essays-table">
+        <thead>
+          <tr>
+            <th>University</th>
+            <th>Essay Prompt</th>
+            <th>Word Count</th>
+            <th>Status</th>
+            <th>Last Edited</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="college-essays-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Academic Level Modal -->
+<div class="modal-overlay hidden" id="education-level-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="card-title" id="education-level-modal-title">Add Academic Level</div>
+      <button class="modal-close" type="button" data-close-modal="education-level-modal-overlay">×</button>
+    </div>
+    <form id="education-level-form" class="modal-form-grid">
+      <input type="hidden" id="education-level-id">
+      <div class="form-field"><label for="education-level-type">Level</label><select id="education-level-type" required><option value="primary">Primary School</option><option value="secondary">Secondary School</option><option value="university">University</option><option value="certification">Certifications / Courses</option></select></div>
+      <div class="form-field"><label for="education-level-status">Status</label><select id="education-level-status"><option value="completed">Completed</option><option value="in_progress">In Progress</option><option value="planned">Planned</option></select></div>
+      <div class="form-field"><label for="education-school-name">School / Institution Name</label><input id="education-school-name" type="text"></div>
+      <div class="form-field"><label for="education-admission-number">Admission / Student Number</label><input id="education-admission-number" type="text"></div>
+      <div class="form-field"><label for="education-location">Location</label><input id="education-location" type="text"></div>
+      <div class="form-field"><label for="education-start-year">Start Year</label><input id="education-start-year" type="number" min="1900" max="2100"></div>
+      <div class="form-field"><label for="education-end-year">End Year</label><input id="education-end-year" type="number" min="1900" max="2100"></div>
+      <div class="form-field"><label for="education-expected-grad-year">Expected Graduation</label><input id="education-expected-grad-year" type="number" min="1900" max="2100"></div>
+      <div class="form-field"><label for="education-subjects">Subjects Taken</label><textarea id="education-subjects"></textarea></div>
+      <div class="form-field"><label for="education-grades">Grades</label><textarea id="education-grades"></textarea></div>
+      <div class="form-field"><label for="education-certification-toggle">Certification Exam Completed?</label><select id="education-certification-toggle"><option value="0">No</option><option value="1">Yes</option></select></div>
+      <div class="form-field"><label for="education-certificate-file">Certificate Upload</label><input id="education-certificate-file" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"></div>
+
+      <div class="form-field"><label for="education-university-name">University Name</label><input id="education-university-name" type="text"></div>
+      <div class="form-field"><label for="education-country">Country</label><input id="education-country" type="text"></div>
+      <div class="form-field"><label for="education-degree">Degree</label><input id="education-degree" type="text"></div>
+      <div class="form-field"><label for="education-major-program">Major / Program</label><input id="education-major-program" type="text"></div>
+      <div class="form-field"><label for="education-gpa">GPA</label><input id="education-gpa" type="text"></div>
+      <div class="form-field"><label for="education-transcript-file">Transcript Upload</label><input id="education-transcript-file" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"></div>
+      <div class="form-field modal-span-2"><label for="education-research-topic">Research Topic</label><textarea id="education-research-topic"></textarea></div>
+      <div class="form-field"><label for="education-internships">Internships</label><textarea id="education-internships"></textarea></div>
+      <div class="form-field"><label for="education-clubs">Clubs / Activities</label><textarea id="education-clubs"></textarea></div>
+      <div class="form-field"><label for="education-awards">Awards</label><textarea id="education-awards"></textarea></div>
+      <div class="form-field"><label for="education-level-notes">Notes</label><textarea id="education-level-notes"></textarea></div>
+
+      <div class="modal-actions modal-span-2">
+        <button class="btn-outline" type="button" data-close-modal="education-level-modal-overlay">Cancel</button>
+        <button class="btn-primary" type="submit">Save Academic Level</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Exam Modal -->
+<div class="modal-overlay hidden" id="education-exam-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="card-title" id="education-exam-modal-title">Add Certification Exam</div>
+      <button class="modal-close" type="button" data-close-modal="education-exam-modal-overlay">×</button>
+    </div>
+    <form id="education-exam-form" class="modal-form-grid">
+      <input type="hidden" id="education-exam-id">
+      <div class="form-field"><label for="education-exam-level">Academic Level</label><select id="education-exam-level" required></select></div>
+      <div class="form-field"><label for="education-exam-name">Exam Name</label><input id="education-exam-name" type="text" required></div>
+      <div class="form-field"><label for="education-exam-year">Exam Year</label><input id="education-exam-year" type="number" min="1900" max="2100"></div>
+      <div class="form-field"><label for="education-candidate-number">Candidate Number</label><input id="education-candidate-number" type="text"></div>
+      <div class="form-field"><label for="education-grade-score">Grade / Score</label><input id="education-grade-score" type="text"></div>
+      <div class="form-field"><label for="education-exam-certificate-file">Certificate Upload</label><input id="education-exam-certificate-file" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"></div>
+      <div class="form-field modal-span-2"><label for="education-exam-notes">Notes</label><textarea id="education-exam-notes"></textarea></div>
+      <div class="modal-actions modal-span-2">
+        <button class="btn-outline" type="button" data-close-modal="education-exam-modal-overlay">Cancel</button>
+        <button class="btn-primary" type="submit">Save Exam</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Scholarship Modal -->
+<div class="modal-overlay hidden" id="education-scholarship-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="card-title" id="education-scholarship-modal-title">Add Scholarship</div>
+      <button class="modal-close" type="button" data-close-modal="education-scholarship-modal-overlay">×</button>
+    </div>
+    <form id="education-scholarship-form" class="modal-form-grid">
+      <input type="hidden" id="education-scholarship-id">
+      <div class="form-field"><label for="education-scholarship-name">Scholarship Name</label><input id="education-scholarship-name" type="text" required></div>
+      <div class="form-field"><label for="education-scholarship-country">Country</label><input id="education-scholarship-country" type="text"></div>
+      <div class="form-field"><label for="education-scholarship-university">University (optional)</label><input id="education-scholarship-university" type="text"></div>
+      <div class="form-field"><label for="education-scholarship-field">Field of Study</label><input id="education-scholarship-field" type="text"></div>
+      <div class="form-field"><label for="education-scholarship-degree">Degree Level</label><input id="education-scholarship-degree" type="text"></div>
+      <div class="form-field"><label for="education-scholarship-website">Official Website</label><input id="education-scholarship-website" type="url"></div>
+      <div class="form-field"><label for="education-scholarship-deadline">Application Deadline</label><input id="education-scholarship-deadline" type="date"></div>
+      <div class="form-field"><label for="education-tuition-coverage">Tuition Coverage</label><input id="education-tuition-coverage" type="text" placeholder="Full / Partial"></div>
+      <div class="form-field"><label for="education-monthly-stipend">Monthly Stipend</label><input id="education-monthly-stipend" type="number" min="0" step="0.01"></div>
+      <div class="form-field"><label for="education-travel-coverage">Travel Coverage</label><select id="education-travel-coverage"><option value="0">No</option><option value="1">Yes</option></select></div>
+      <div class="form-field"><label for="education-accommodation">Accommodation</label><select id="education-accommodation"><option value="0">No</option><option value="1">Yes</option></select></div>
+      <div class="form-field modal-span-2"><label for="education-other-benefits">Other Benefits</label><textarea id="education-other-benefits"></textarea></div>
+      <div class="modal-actions modal-span-2">
+        <button class="btn-outline" type="button" data-close-modal="education-scholarship-modal-overlay">Cancel</button>
+        <button class="btn-primary" type="submit">Save Scholarship</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Scholarship Application Modal -->
+<div class="modal-overlay hidden" id="education-application-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="card-title">Application Submission Details</div>
+      <button class="modal-close" type="button" data-close-modal="education-application-modal-overlay">×</button>
+    </div>
+    <form id="education-application-form" class="modal-form-grid">
+      <input type="hidden" id="education-application-id">
+      <div class="form-field"><label for="education-application-status">Application Status</label><select id="education-application-status"><option value="researching">Researching</option><option value="preparing_documents">Preparing Documents</option><option value="application_submitted">Application Submitted</option><option value="interview_stage">Interview Stage</option><option value="accepted">Accepted</option><option value="rejected">Rejected</option><option value="waitlisted">Waitlisted</option></select></div>
+      <div class="form-field"><label for="education-is-submitted">Application Submitted?</label><select id="education-is-submitted"><option value="0">No</option><option value="1">Yes</option></select></div>
+      <div class="form-field"><label for="education-submission-date">Submission Date</label><input id="education-submission-date" type="date"></div>
+      <div class="form-field"><label for="education-application-id-field">Application ID</label><input id="education-application-id-field" type="text"></div>
+      <div class="form-field modal-span-2"><label for="education-portal-link">Application Portal Link</label><input id="education-portal-link" type="url"></div>
+      <div class="form-field modal-span-2"><label for="education-application-notes">Notes</label><textarea id="education-application-notes"></textarea></div>
+      <div class="modal-actions modal-span-2">
+        <button class="btn-outline" type="button" data-close-modal="education-application-modal-overlay">Cancel</button>
+        <button class="btn-primary" type="submit">Save Application</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Requirement Modal -->
+<div class="modal-overlay hidden" id="education-requirement-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="card-title" id="education-requirement-modal-title">Add Requirement</div>
+      <button class="modal-close" type="button" data-close-modal="education-requirement-modal-overlay">×</button>
+    </div>
+    <form id="education-requirement-form" class="modal-form-grid">
+      <input type="hidden" id="education-requirement-id">
+      <input type="hidden" id="education-requirement-scholarship-id">
+      <div class="form-field"><label for="education-requirement-name">Requirement</label><input id="education-requirement-name" type="text" required></div>
+      <div class="form-field"><label for="education-requirement-sort">Sort Order</label><input id="education-requirement-sort" type="number" min="0" value="0"></div>
+      <div class="form-field"><label for="education-requirement-required">Required?</label><select id="education-requirement-required"><option value="1">Yes</option><option value="0">No</option></select></div>
+      <div class="form-field"><label for="education-requirement-completed">Completed?</label><select id="education-requirement-completed"><option value="0">No</option><option value="1">Yes</option></select></div>
+      <div class="form-field modal-span-2"><label for="education-linked-document">Use existing document</label><select id="education-linked-document"><option value="">None</option></select></div>
+      <div class="modal-actions modal-span-2">
+        <button class="btn-outline" type="button" data-close-modal="education-requirement-modal-overlay">Cancel</button>
+        <button class="btn-primary" type="submit">Save Requirement</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Document Modal -->
+<div class="modal-overlay hidden" id="education-document-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="card-title" id="education-document-modal-title">Add Document</div>
+      <button class="modal-close" type="button" data-close-modal="education-document-modal-overlay">×</button>
+    </div>
+    <form id="education-document-form" class="modal-form-grid">
+      <input type="hidden" id="education-document-id">
+      <div class="form-field"><label for="education-document-title">Document Title</label><input id="education-document-title" type="text" required></div>
+      <div class="form-field"><label for="education-document-type">Document Type</label><select id="education-document-type"><option value="personal_statement">Personal Statement</option><option value="cv_resume">CV / Resume</option><option value="financial_statement">Financial Statement</option><option value="academic_transcript">Academic Transcript</option><option value="recommendation_letter">Recommendation Letter</option><option value="passport_copy">Passport Copy</option><option value="certificate">Certificate</option><option value="other">Other</option></select></div>
+      <div class="form-field"><label for="education-document-file">Upload / Replace File</label><input id="education-document-file" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"></div>
+      <div class="form-field"><label for="education-document-version">Version</label><input id="education-document-version" type="text" value="v1"></div>
+      <div class="form-field"><label for="education-document-expiration">Expiration Date (optional)</label><input id="education-document-expiration" type="date"></div>
+      <div class="form-field modal-span-2"><label for="education-document-notes">Notes</label><textarea id="education-document-notes"></textarea></div>
+      <div class="modal-actions modal-span-2">
+        <button class="btn-outline" type="button" data-close-modal="education-document-modal-overlay">Cancel</button>
+        <button class="btn-primary" type="submit">Save Document</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="skill-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="card-title" id="skill-modal-title">Add Skill</div>
+      <button class="modal-close" type="button" data-close-modal="skill-modal-overlay">×</button>
+    </div>
+    <form id="skill-modal-form" class="modal-form-grid">
+      <input type="hidden" id="skill-id">
+      <div class="form-field">
+        <label for="skill-name">Skill Name</label>
+        <input id="skill-name" type="text" required>
+      </div>
+      <div class="form-field">
+        <label for="skill-category">Category</label>
+        <select id="skill-category">
+          <option value="Technical">Technical</option>
+          <option value="Soft">Soft</option>
+          <option value="Creative">Creative</option>
+          <option value="Domain">Domain</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="skill-current-level">Current Level</label>
+        <select id="skill-current-level">
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
+          <option value="Expert">Expert</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="skill-target-level">Target Level</label>
+        <select id="skill-target-level">
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
+          <option value="Expert">Expert</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="skill-gap">Is a Gap</label>
+        <input id="skill-gap" type="checkbox">
+      </div>
+      <div class="form-field modal-span-2">
+        <label for="skill-notes">Notes</label>
+        <textarea id="skill-notes"></textarea>
+      </div>
+      <div class="modal-actions modal-span-2">
+        <button class="btn-outline" type="button" data-close-modal="skill-modal-overlay">Cancel</button>
+        <button class="btn-primary" type="submit">Save Skill</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="resource-audit-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="card-title" id="resource-audit-modal-title">Add Resource</div>
+      <button class="modal-close" type="button" data-close-modal="resource-audit-modal-overlay">×</button>
+    </div>
+    <form id="resource-audit-form" class="modal-form-grid">
+      <input type="hidden" id="resource-audit-id">
+      <div class="form-field">
+        <label for="resource-name">Resource Name</label>
+        <input id="resource-name" type="text" required>
+      </div>
+      <div class="form-field">
+        <label for="resource-type">Type</label>
+        <select id="resource-type">
+          <option value="book">Book</option>
+          <option value="course">Course</option>
+          <option value="podcast">Podcast</option>
+          <option value="youtube">YouTube</option>
+          <option value="mentor">Mentor</option>
+          <option value="tool">Tool</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="resource-status">Status</label>
+        <select id="resource-status">
+          <option value="active">Active</option>
+          <option value="paused">Paused</option>
+          <option value="archived">Archived</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="resource-url">URL</label>
+        <input id="resource-url" type="url">
+      </div>
+      <div class="form-field">
+        <label for="resource-rating">Rating</label>
+        <input id="resource-rating" type="number" min="1" max="5">
+      </div>
+      <div class="form-field">
+        <label for="resource-last-reviewed">Last Reviewed</label>
+        <input id="resource-last-reviewed" type="date">
+      </div>
+      <div class="form-field modal-span-2">
+        <label for="resource-notes">Notes</label>
+        <textarea id="resource-notes"></textarea>
+      </div>
+      <div class="modal-actions modal-span-2">
+        <button class="btn-outline" type="button" data-close-modal="resource-audit-modal-overlay">Cancel</button>
+        <button class="btn-primary" type="submit">Save Resource</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="college-app-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="card-title" id="college-app-modal-title">Add College Application</div>
+      <button class="modal-close" type="button" data-close-modal="college-app-modal-overlay">×</button>
+    </div>
+    <form id="college-app-form" class="modal-form-grid">
+      <input type="hidden" id="college-app-id">
+      <div class="form-field">
+        <label for="college-university-name">University Name</label>
+        <input id="college-university-name" type="text" required>
+      </div>
+      <div class="form-field">
+        <label for="college-program">Program / Course</label>
+        <input id="college-program" type="text" required>
+      </div>
+      <div class="form-field">
+        <label for="college-degree-level">Degree Level</label>
+        <select id="college-degree-level">
+          <option value="bachelor">Bachelor's</option>
+          <option value="master">Master's</option>
+          <option value="phd">PhD</option>
+          <option value="mba">MBA</option>
+          <option value="diploma">Diploma</option>
+          <option value="certificate">Certificate</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="college-country">Country</label>
+        <input id="college-country" type="text">
+      </div>
+      <div class="form-field">
+        <label for="college-deadline">Application Deadline</label>
+        <input id="college-deadline" type="date">
+      </div>
+      <div class="form-field">
+        <label for="college-start-date">Start Date</label>
+        <input id="college-start-date" type="date">
+      </div>
+      <div class="form-field">
+        <label for="college-application-status">Application Status</label>
+        <select id="college-application-status">
+          <option value="researching">Researching</option>
+          <option value="applied">Applied</option>
+          <option value="interview">Interview</option>
+          <option value="offer_received">Offer Received</option>
+          <option value="accepted">Accepted</option>
+          <option value="rejected">Rejected</option>
+          <option value="withdrawn">Withdrawn</option>
+          <option value="deferred">Deferred</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="college-portal-url">Application Portal URL</label>
+        <input id="college-portal-url" type="url">
+      </div>
+      <div class="form-field">
+        <label for="college-application-ref">Application ID / Reference Number</label>
+        <input id="college-application-ref" type="text">
+      </div>
+      <div class="form-field">
+        <label for="college-tuition-fee">Tuition Fee</label>
+        <input id="college-tuition-fee" type="number" min="0" step="0.01">
+      </div>
+      <div class="form-field">
+        <label for="college-scholarship-linked">Scholarship Linked</label>
+        <input id="college-scholarship-linked" type="text" list="college-scholarship-options">
+        <datalist id="college-scholarship-options"></datalist>
+      </div>
+      <div class="form-field">
+        <label for="college-acceptance-rate">Acceptance Rate (%)</label>
+        <input id="college-acceptance-rate" type="number" min="0" max="100" step="0.1">
+      </div>
+      <div class="form-field">
+        <label for="college-qs-rank">Overall Rank / QS Rank</label>
+        <input id="college-qs-rank" type="number" min="0" step="1">
+      </div>
+      <div class="form-field">
+        <label for="college-personal-statement-status">Personal Statement Status</label>
+        <select id="college-personal-statement-status">
+          <option value="not_started">Not Started</option>
+          <option value="draft">Draft</option>
+          <option value="reviewed">Reviewed</option>
+          <option value="final">Final</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="college-rec-letters-required">Recommendation Letters Required</label>
+        <input id="college-rec-letters-required" type="number" min="0" step="1" value="0">
+      </div>
+      <div class="form-field">
+        <label for="college-rec-letters-collected">Recommendation Letters Collected</label>
+        <input id="college-rec-letters-collected" type="number" min="0" step="1" value="0">
+      </div>
+      <div class="form-field modal-span-2">
+        <label for="college-notes">Notes</label>
+        <textarea id="college-notes"></textarea>
+      </div>
+      <div class="modal-actions modal-span-2">
+        <button class="btn-outline" type="button" data-close-modal="college-app-modal-overlay">Cancel</button>
+        <button class="btn-primary" type="submit">Save Application</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="college-essay-modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="card-title" id="college-essay-modal-title">Add Essay</div>
+      <button class="modal-close" type="button" data-close-modal="college-essay-modal-overlay">×</button>
+    </div>
+    <form id="college-essay-form" class="modal-form-grid">
+      <input type="hidden" id="college-essay-id">
+      <div class="form-field">
+        <label for="college-essay-application-id">University</label>
+        <select id="college-essay-application-id"></select>
+      </div>
+      <div class="form-field">
+        <label for="college-essay-status">Status</label>
+        <select id="college-essay-status">
+          <option value="not_started">Not Started</option>
+          <option value="drafting">Drafting</option>
+          <option value="reviewing">Reviewing</option>
+          <option value="final">Final</option>
+        </select>
+      </div>
+      <div class="form-field modal-span-2">
+        <label for="college-essay-prompt">Prompt</label>
+        <textarea id="college-essay-prompt"></textarea>
+      </div>
+      <div class="form-field">
+        <label for="college-essay-word-limit">Word Limit</label>
+        <input id="college-essay-word-limit" type="number" min="0" step="1">
+      </div>
+      <div class="form-field modal-span-2">
+        <label for="college-essay-draft-content">Draft Content</label>
+        <textarea id="college-essay-draft-content" rows="8"></textarea>
+      </div>
+      <div class="modal-actions modal-span-2">
+        <button class="btn-outline" type="button" data-close-modal="college-essay-modal-overlay">Cancel</button>
+        <button class="btn-primary" type="submit">Save Essay</button>
+      </div>
+    </form>
+  </div>
+</div>
+</div>

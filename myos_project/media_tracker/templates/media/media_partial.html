@@ -1,0 +1,87 @@
+<div class="page-content active" id="page-media" data-page-key="media" data-page-title="Media Dashboard">
+<div class="page-header">
+  <div>
+    <div class="page-title">Media Dashboard</div>
+    <div class="page-title-sub">Track movies, series, anime and animation from one place.</div>
+  </div>
+  <a class="btn-add" href="{% url 'add_media' %}" data-inapp-nav="true"><i class="fas fa-plus"></i> Add Media</a>
+</div>
+
+{% include 'media/_messages.html' %}
+{% url 'add_media' as add_media_url %}
+{% include 'media/_media_tabs.html' with tab_name='dashboard' %}
+<div class="media-tab">
+{% include 'media/_filters.html' with show_type_filter=True %}
+<div class="media-metrics-grid">
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Movies Watched</div>
+      <div class="metric-value">{{ global_analytics.movies_watched }}/{{ global_analytics.movies_total }}</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-film"></i></div>
+  </div>
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Series Completed</div>
+      <div class="metric-value">{{ global_analytics.series_completed }}/{{ global_analytics.series_total }}</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-check-circle"></i></div>
+  </div>
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Anime Episodes</div>
+      <div class="metric-value">{{ global_analytics.anime_episodes_watched }}</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-star"></i></div>
+  </div>
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Watch Time</div>
+      <div class="metric-value">{{ global_analytics.total_watch_time.hours }}h</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-clock"></i></div>
+  </div>
+</div>
+
+<div class="dash-card">{{ watch_time_message }}</div>
+
+<div class="media-metrics-grid">
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Movies</div>
+      <div class="metric-value">{{ movies_stats.total }}</div>
+      <div class="metric-trend">Completed {{ movies_stats.completed }} · {{ movies_stats.completion_rate }}%</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-film"></i></div>
+  </div>
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Series</div>
+      <div class="metric-value">{{ series_stats.total }}</div>
+      <div class="metric-trend">Completed {{ series_stats.completed }} · {{ series_stats.completion_rate }}%</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-tv"></i></div>
+  </div>
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Anime</div>
+      <div class="metric-value">{{ anime_stats.anime_count }}</div>
+      <div class="metric-trend">Movies {{ anime_stats.anime_movies_count }} · Series {{ anime_stats.anime_series_count }}</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-star"></i></div>
+  </div>
+  <div class="metric-link-card static media-metric-card">
+    <div class="metric-copy">
+      <div class="metric-label">Animation</div>
+      <div class="metric-value">{{ animation_stats.animation_count }}</div>
+      <div class="metric-trend">Movies {{ animation_stats.animation_movies_count }} · Series {{ animation_stats.animation_series_count }}</div>
+    </div>
+    <div class="metric-icon-wrap"><i class="fas fa-layer-group"></i></div>
+  </div>
+</div>
+
+<div class="section-divider"><span>Recently Added</span></div>
+
+{% include 'media/_media_table.html' with items=recent_media table_title='Media Library' table_subtitle='All tracked titles across movies, series, anime, and animation.' empty_text='No media tracked yet.' empty_icon='fas fa-layer-group' empty_action_url=add_media_url empty_action_label='Add Media' %}
+</div>
+</div>
