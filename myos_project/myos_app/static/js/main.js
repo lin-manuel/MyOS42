@@ -166,6 +166,9 @@ const uiState = {
 const scrollSpyMap = new Map();
 
 function isAuthenticated() {
+  // Django session auth is authoritative when present. The localStorage flag
+  // remains as a compatibility fallback for the existing client-side unlock.
+  if (document.body?.dataset?.authenticated === '1') return true;
   try {
     return localStorage.getItem(AUTH_STORAGE_KEY) === '1';
   } catch (err) {
@@ -1763,7 +1766,7 @@ function renderLedgerTable(rows = []) {
     <tr>
       <td>${escapeHtml(row.tx_date || '')}</td>
       <td>${escapeHtml(row.description || '')}</td>
-      <td><span class="tag category-pill" style="background:${escapeHtml(row.category?.color || '#8B5A2B')}33;color:${escapeHtml(row.category?.color || '#8B5A2B')}">${escapeHtml(row.category?.name || 'Uncategorized')}</span></td>
+      <td><span class="tag category-pill">${escapeHtml(row.category?.name || 'Uncategorized')}</span></td>
       <td>${escapeHtml((row.account || '').replace('_', ' '))}</td>
       <td>${formatTxnSign(row)}</td>
       <td>${(row.tags || []).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join(' ')}</td>
@@ -1828,7 +1831,7 @@ function renderBudgetCards(rows = []) {
   grid.innerHTML = rows.map((item) => `
     <div class="budget-card ${item.is_over_limit ? 'over-limit' : item.is_warning ? 'warning' : ''}">
       <div class="budget-card-head">
-        <span class="tag" style="background:${escapeHtml(item.category.color)}33;color:${escapeHtml(item.category.color)}">${escapeHtml(item.category.name)}</span>
+        <span class="tag">${escapeHtml(item.category.name)}</span>
         <div class="action-cell">
           <button class="btn-outline btn-mini" type="button" data-action="edit-budget" data-id="${item.id}">Edit</button>
           <button class="btn-outline btn-mini danger" type="button" data-action="delete-budget" data-id="${item.id}">Delete</button>
@@ -2002,10 +2005,11 @@ function renderFinanceCategories(rows = []) {
     list.innerHTML = '<div class="table-empty">No categories created yet.</div>';
     return;
   }
-  list.innerHTML = rows.map((row) => `
+  const categoryColors = getChartDatasetColors(rows.length);
+  list.innerHTML = rows.map((row, index) => `
     <div class="finance-category-item">
       <div class="category-main">
-        <span class="category-dot" style="background:${escapeHtml(row.color || '#8B5A2B')}"></span>
+        <span class="category-dot" style="background:${categoryColors[index]}"></span>
         <div>
           <div class="category-name">${escapeHtml(row.name || '')}</div>
           <div class="category-meta">${escapeHtml((row.kind || 'other').replace('_', ' '))}${row.is_active ? '' : ' · inactive'}</div>
@@ -2023,15 +2027,12 @@ function getChartBaseConfig(type = 'bar') {
   const rootStyle = getComputedStyle(document.documentElement);
   const bodyStyle = document.body ? getComputedStyle(document.body) : rootStyle;
   const read = (name, fallback) => bodyStyle.getPropertyValue(name).trim() || rootStyle.getPropertyValue(name).trim() || fallback;
-  const GOLD = read('--gold', '#E2B56D');
-  const GOLD_DEEP = read('--gold-deep', '#B98138');
-  const BRONZE = read('--bronze', '#8B5A2B');
-  const COCOA = read('--cocoa', '#6B3A1F');
-  const CREAM = '#F0D7A6';
-  const MUTED = read('--color-text-secondary', '#6f4a32');
-  const SUCCESS = read('--green-500', '#2a9d5c');
-  const DANGER = read('--red-500', '#c0392b');
-  const PALETTE = [GOLD, BRONZE, '#D4A35A', COCOA, GOLD_DEEP, SUCCESS, DANGER, CREAM];
+  const LEAF = read('--palette-leaf', '#5B8157');
+  const MOSS = read('--palette-moss', '#3A5A40');
+  const BEIGE = read('--palette-beige', '#A3B19A');
+  const WHITE = read('--palette-white', '#F5F5F5');
+  const MUTED = read('--color-text-secondary', MOSS);
+  const PALETTE = [LEAF, MOSS, BEIGE, '#789373', '#BEC8B6', '#466B4B'];
 
   return {
     type,
@@ -2046,40 +2047,40 @@ function getChartBaseConfig(type = 'bar') {
         legend: {
           labels: {
             color: MUTED,
-            font: { family: "'Quicksand', system-ui, sans-serif", size: 12, weight: '600' },
+            font: { family: "'Comfortaa', system-ui, sans-serif", size: 12, weight: '600' },
             padding: 16,
             pointStyleWidth: 8,
             usePointStyle: true,
           },
         },
         tooltip: {
-          backgroundColor: 'rgba(59,30,18,.94)',
-          bodyColor: CREAM,
-          bodyFont: { family: "'Quicksand', system-ui, sans-serif", size: 12 },
-          borderColor: 'rgba(240,215,166,.24)',
+          backgroundColor: MOSS,
+          bodyColor: WHITE,
+          bodyFont: { family: "'Comfortaa', system-ui, sans-serif", size: 12 },
+          borderColor: BEIGE,
           borderWidth: 1,
           boxPadding: 4,
           cornerRadius: 10,
           displayColors: true,
           padding: 12,
-          titleColor: GOLD,
-          titleFont: { family: "'Quicksand', system-ui, sans-serif", size: 13, weight: '700' },
+          titleColor: WHITE,
+          titleFont: { family: "'Comfortaa', system-ui, sans-serif", size: 13, weight: '700' },
         },
       },
       scales: (type === 'doughnut' || type === 'pie' || type === 'radar') ? undefined : {
         x: {
-          grid: { color: 'rgba(59,30,18,.06)', drawBorder: false },
+          grid: { color: 'rgba(58,90,64,.10)', drawBorder: false },
           ticks: {
             color: MUTED,
-            font: { family: "'Quicksand', system-ui, sans-serif", size: 11 },
+            font: { family: "'Comfortaa', system-ui, sans-serif", size: 11 },
           },
         },
         y: {
           beginAtZero: true,
-          grid: { color: 'rgba(59,30,18,.07)', drawBorder: false },
+          grid: { color: 'rgba(58,90,64,.10)', drawBorder: false },
           ticks: {
             color: MUTED,
-            font: { family: "'Quicksand', system-ui, sans-serif", size: 11 },
+            font: { family: "'Comfortaa', system-ui, sans-serif", size: 11 },
           },
         },
       },
@@ -2088,7 +2089,7 @@ function getChartBaseConfig(type = 'bar') {
   };
 }
 
-function chartGradient(ctx, colorTop = 'rgba(226,181,109,.55)', colorBottom = 'rgba(226,181,109,.03)') {
+function chartGradient(ctx, colorTop = 'rgba(91,129,87,.42)', colorBottom = 'rgba(91,129,87,.03)') {
   const gradient = ctx.createLinearGradient(0, 0, 0, 300);
   gradient.addColorStop(0, colorTop);
   gradient.addColorStop(1, colorBottom);
@@ -2175,8 +2176,8 @@ function renderFinanceCharts() {
     data: {
       labels: labelsA,
       datasets: [
-        { label: 'Income', data: charts.monthly_income_vs_expenses.income || [], backgroundColor: '#2f9c57', borderRadius: 8 },
-        { label: 'Expenses', data: charts.monthly_income_vs_expenses.expenses || [], backgroundColor: '#bf4a4a', borderRadius: 8 },
+        { label: 'Income', data: charts.monthly_income_vs_expenses.income || [], backgroundColor: '#5B8157', borderRadius: 8 },
+        { label: 'Expenses', data: charts.monthly_income_vs_expenses.expenses || [], backgroundColor: '#A3B19A', borderRadius: 8 },
       ],
     },
     options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } },
@@ -2187,7 +2188,7 @@ function renderFinanceCharts() {
     type: 'doughnut',
     data: {
       labels: catRows.map((r) => r.label),
-      datasets: [{ data: catRows.map((r) => r.value), backgroundColor: catRows.map((r) => r.color || '#8B5A2B') }],
+      datasets: [{ data: catRows.map((r) => r.value), backgroundColor: getChartDatasetColors(catRows.length) }],
     },
     options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } },
   });
@@ -2196,7 +2197,7 @@ function renderFinanceCharts() {
     type: 'line',
     data: {
       labels: charts.savings_growth?.labels || [],
-      datasets: [{ label: 'Savings', data: charts.savings_growth?.values || [], borderColor: '#E2B56D', backgroundColor: '#E2B56D33', tension: 0.35, fill: true }],
+      datasets: [{ label: 'Savings', data: charts.savings_growth?.values || [], borderColor: '#5B8157', backgroundColor: '#5B815733', tension: 0.35, fill: true }],
     },
     options: { maintainAspectRatio: false, plugins: { legend: { display: false } } },
   });
@@ -2206,7 +2207,7 @@ function renderFinanceCharts() {
     type: 'bar',
     data: {
       labels: budgetRows.map((r) => r.label),
-      datasets: [{ label: 'Utilization %', data: budgetRows.map((r) => r.value), backgroundColor: budgetRows.map((r) => r.color || '#8B5A2B') }],
+      datasets: [{ label: 'Utilization %', data: budgetRows.map((r) => r.value), backgroundColor: getChartDatasetColors(budgetRows.length) }],
     },
     options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } },
   });
@@ -2217,8 +2218,8 @@ function renderFinanceCharts() {
     data: {
       labels: appRows.map((r) => r.label),
       datasets: [
-        { label: 'Estimated', data: appRows.map((r) => r.estimated), backgroundColor: '#8B5A2B' },
-        { label: 'Actual', data: appRows.map((r) => r.actual), backgroundColor: '#E2B56D' },
+        { label: 'Estimated', data: appRows.map((r) => r.estimated), backgroundColor: '#3A5A40' },
+        { label: 'Actual', data: appRows.map((r) => r.actual), backgroundColor: '#5B8157' },
       ],
     },
     options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } },
@@ -2230,8 +2231,8 @@ function renderFinanceCharts() {
     data: {
       labels: roiRows.map((r) => r.label),
       datasets: [
-        { label: 'ROI Target %', data: roiRows.map((r) => r.target), backgroundColor: '#3B1E12' },
-        { label: 'ROI Actual %', data: roiRows.map((r) => r.actual), backgroundColor: '#2f9c57' },
+        { label: 'ROI Target %', data: roiRows.map((r) => r.target), backgroundColor: '#A3B19A' },
+        { label: 'ROI Actual %', data: roiRows.map((r) => r.actual), backgroundColor: '#5B8157' },
       ],
     },
     options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } },
@@ -3080,7 +3081,7 @@ function openCategoryModal(row = null) {
   document.getElementById('category-name').value = row?.name || '';
   document.getElementById('category-slug').value = row?.slug || '';
   document.getElementById('category-kind').value = row?.kind || 'expense';
-  document.getElementById('category-color').value = row?.color || '#8B5A2B';
+  document.getElementById('category-color').value = row?.color || '#5B8157';
   document.getElementById('category-icon').value = row?.icon || 'fa-wallet';
   document.getElementById('category-sort-order').value = row?.sort_order ?? 0;
   document.getElementById('category-active').value = row?.is_active === false ? '0' : '1';
@@ -3314,7 +3315,7 @@ function renderProjectsCharts(rows = []) {
       datasets: [
         {
           data: statusCounts,
-          backgroundColor: ['#E2B56D', '#8B5A2B', '#6B3A1F', '#2f9c57'],
+          backgroundColor: ['#5B8157', '#A3B19A', '#3A5A40', '#789373'],
         },
       ],
     },
@@ -3333,7 +3334,7 @@ function renderProjectsCharts(rows = []) {
         {
           label: 'Progress %',
           data: topProjects.map((row) => Number(row.progress || 0)),
-          backgroundColor: '#E2B56D',
+          backgroundColor: '#5B8157',
           borderRadius: 8,
         },
       ],
@@ -5620,7 +5621,7 @@ async function ensureFinanceCategoryId() {
     name: 'General',
     slug: 'general',
     kind: 'expense',
-    color: '#8B5A2B',
+    color: '#5B8157',
     icon: 'fa-wallet',
     is_active: true,
     sort_order: 0,
@@ -6111,10 +6112,9 @@ function initChart(canvasId, configBuilder) {
 }
 
 function initCharts() {
-  const coffee = getThemeColor('--coffee', '#3B1E12');
-  const gold = getThemeColor('--gold', '#E2B56D');
-  const bronze = getThemeColor('--bronze', '#8B5A2B');
-  const cocoa = getThemeColor('--cocoa', '#6B3A1F');
+  const leaf = getThemeColor('--palette-leaf', '#5B8157');
+  const beige = getThemeColor('--palette-beige', '#A3B19A');
+  const moss = getThemeColor('--palette-moss', '#3A5A40');
 
   initChart('projects-activity-chart', () => ({
     type: 'bar',
@@ -6123,7 +6123,7 @@ function initCharts() {
       datasets: [{
         label: 'Completed Tasks',
         data: [],
-        backgroundColor: [gold, gold, bronze, bronze, coffee, cocoa],
+        backgroundColor: [leaf, leaf, beige, beige, moss],
         borderRadius: 8,
       }],
     },
@@ -6142,7 +6142,7 @@ function initCharts() {
       labels: [],
       datasets: [{
         data: [],
-        backgroundColor: [gold, bronze, coffee],
+        backgroundColor: [leaf, beige, moss],
       }],
     },
     options: {
@@ -6159,32 +6159,33 @@ function applyChartThemeDefaults() {
   const text = getThemeColor('--color-text-primary', '#343a40');
   const muted = getThemeColor('--color-text-secondary', '#6f4a32');
   const border = getThemeColor('--color-border-subtle', 'rgba(59,30,18,.10)');
-  const accent = getThemeColor('--gold', '#E2B56D');
-  const coffee = getThemeColor('--coffee', '#3B1E12');
+  const accent = getThemeColor('--palette-leaf', '#5B8157');
+  const moss = getThemeColor('--palette-moss', '#3A5A40');
+  const beige = getThemeColor('--palette-beige', '#A3B19A');
 
   Chart.defaults.color = text;
-  Chart.defaults.font.family = "'Quicksand', system-ui, sans-serif";
+  Chart.defaults.font.family = "'Comfortaa', system-ui, sans-serif";
   Chart.defaults.borderColor = border;
-  Chart.defaults.backgroundColor = 'rgba(226,181,109,0.18)';
+  Chart.defaults.backgroundColor = 'rgba(91,129,87,0.18)';
   Chart.defaults.plugins.legend.labels.color = muted;
   Chart.defaults.plugins.legend.labels.usePointStyle = true;
-  Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(59,30,18,.94)';
-  Chart.defaults.plugins.tooltip.titleColor = accent;
-  Chart.defaults.plugins.tooltip.bodyColor = '#F0D7A6';
-  Chart.defaults.plugins.tooltip.borderColor = 'rgba(240,215,166,.24)';
+  Chart.defaults.plugins.tooltip.backgroundColor = moss;
+  Chart.defaults.plugins.tooltip.titleColor = '#F5F5F5';
+  Chart.defaults.plugins.tooltip.bodyColor = '#F5F5F5';
+  Chart.defaults.plugins.tooltip.borderColor = beige;
   Chart.defaults.plugins.tooltip.borderWidth = 1;
   Chart.defaults.plugins.tooltip.padding = 12;
   Chart.defaults.plugins.tooltip.cornerRadius = 10;
   Chart.defaults.plugins.tooltip.usePointStyle = true;
-  Chart.defaults.scale.grid.color = 'rgba(59,30,18,.07)';
+  Chart.defaults.scale.grid.color = 'rgba(58,90,64,.10)';
   Chart.defaults.scale.ticks.color = muted;
   Chart.defaults.elements.arc.borderColor = surface;
   Chart.defaults.elements.line.borderWidth = 2;
   Chart.defaults.elements.bar.borderRadius = 8;
   Chart.defaults.elements.bar.borderSkipped = false;
   Chart.defaults.datasets.bar.backgroundColor = accent;
-  Chart.defaults.datasets.line.backgroundColor = 'rgba(226,181,109,0.18)';
-  Chart.defaults.datasets.line.borderColor = coffee;
+  Chart.defaults.datasets.line.backgroundColor = 'rgba(91,129,87,0.18)';
+  Chart.defaults.datasets.line.borderColor = moss;
 }
 
 function showToast(message, type = 'default', duration = 4000) {

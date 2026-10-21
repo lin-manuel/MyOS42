@@ -3,12 +3,22 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
+from django.db import IntegrityError, transaction
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 
+from myos_app.models import UserProfile
+
 from .device_utils import generate_device_fingerprint, get_client_ip
-from .forms import LoginForm, PasswordResetConfirmForm, PasswordResetRequestForm
+from .forms import (
+    LoginForm,
+    PasswordResetConfirmForm,
+    PasswordResetRequestForm,
+    SignUpForm,
+)
 from .models import LoginActivity, TrustedDevice, User
 from .otp_utils import generate_otp, send_verification_email, store_otp, verify_otp
 
@@ -39,7 +49,7 @@ def _is_rate_limited(request, key_prefix, max_attempts=None, window_seconds=None
     """Returns True if this IP has exceeded max_attempts in the time window."""
     max_attempts = max_attempts if max_attempts is not None else getattr(settings, "LOGIN_RATE_LIMIT_ATTEMPTS", 10)
     window_seconds = window_seconds if window_seconds is not None else getattr(settings, "LOGIN_RATE_LIMIT_WINDOW_SECONDS", 300)
-    ip = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR", "unknown")).split(",")[0].strip()
+    ip = get_client_ip(request) or "unknown"
     cache_key = f"ratelimit:{key_prefix}:{ip}"
     attempts = cache.get(cache_key, 0)
     if attempts >= max_attempts:
@@ -48,6 +58,8 @@ def _is_rate_limited(request, key_prefix, max_attempts=None, window_seconds=None
     return False
 
 
+@never_cache
+@ensure_csrf_cookie
 def login_view(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
@@ -114,8 +126,53 @@ def login_view(request):
     return render(request, "accounts/login.html", {"form": form})
 
 
+@never_cache
+@ensure_csrf_cookie
+def signup_view(request):
+    if request.method == "POST":
+        if _is_rate_limited(request, "signup-ip", max_attempts=5, window_seconds=900):
+            form = SignUpForm(request.POST)
+            messages.error(
+                request,
+                "Too many account creation attempts. Please try again in 15 minutes.",
+            )
+            return render(request, "accounts/signup.html", {"form": form}, status=429)
+
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    user = form.save()
+                    UserProfile.objects.create(
+                        user=user,
+                        display_name=user.get_full_name().strip(),
+                        email=user.email,
+                        timezone=settings.TIME_ZONE,
+                    )
+            except IntegrityError:
+                form.add_error(None, "An account with that email or username already exists.")
+            else:
+                ip = get_client_ip(request)
+                fingerprint = generate_device_fingerprint(request)
+                _complete_login(request, user, False, ip, fingerprint)
+                messages.success(request, "Your MyOS account is ready.")
+                return redirect("dashboard")
+    else:
+        form = SignUpForm()
+
+    return render(request, "accounts/signup.html", {"form": form})
+
+
 def _complete_login(request, user, remember_me, ip, fingerprint):
     login(request, user)
+    UserProfile.objects.get_or_create(
+        user=user,
+        defaults={
+            "display_name": user.get_full_name().strip(),
+            "email": user.email,
+            "timezone": settings.TIME_ZONE,
+        },
+    )
     if not remember_me:
         request.session.set_expiry(settings.SHORT_SESSION_AGE)
     else:

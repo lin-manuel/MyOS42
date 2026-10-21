@@ -4,35 +4,101 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.text import slugify
+from accounts.tenant_context import current_tenant_user
 
 
-class UserProfile(models.Model):
+class TenantManager(models.Manager):
+    """Scope normal application queries to the user on the active request."""
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = current_tenant_user.get()
+        if user is not None and user.is_authenticated and not user.is_superuser:
+            field_names = {field.name for field in self.model._meta.get_fields()}
+            if "user" in field_names:
+                queryset = queryset.filter(user=user)
+            elif "vault" in field_names:
+                queryset = queryset.filter(vault__user=user)
+        return queryset
+
+
+class TenantOwnedModel(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="+",
+        null=True,
+        blank=True,
+    )
+    objects = TenantManager()
+    _all_objects = models.Manager()
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        current_user = current_tenant_user.get()
+        if current_user is not None and current_user.is_authenticated and not current_user.is_superuser:
+            if self._state.adding:
+                if self.user_id not in (None, current_user.pk):
+                    raise PermissionError("A record cannot be assigned to another user.")
+                self.user = current_user
+            else:
+                original_user_id = type(self)._all_objects.filter(pk=self.pk).values_list("user_id", flat=True).first()
+                if original_user_id not in (None, current_user.pk):
+                    raise PermissionError("A record cannot be changed by another user.")
+                if original_user_id is not None and self.user_id != original_user_id:
+                    raise PermissionError("A record cannot be moved between users.")
+                self.user = current_user
+            for field in self._meta.concrete_fields:
+                if not field.is_relation or field.many_to_many or field.name == "user":
+                    continue
+                related_id = getattr(self, field.attname, None)
+                related_model = field.related_model
+                if related_id and any(item.name == "user" for item in related_model._meta.get_fields()):
+                    related_manager = getattr(related_model, "_all_objects", related_model._base_manager)
+                    related_owner_id = related_manager.filter(pk=related_id).values_list("user_id", flat=True).first()
+                    if related_owner_id != current_user.pk:
+                        raise PermissionError("Records belonging to different users cannot be linked.")
+        super().save(*args, **kwargs)
+
+
+class UserProfile(TenantOwnedModel):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="myos_profile", null=True, blank=True
+    )
     display_name = models.CharField(max_length=120, blank=True, default="")
     email = models.EmailField(blank=True, default="")
     timezone = models.CharField(max_length=80, default="UTC")
     updated_at = models.DateTimeField(auto_now=True)
+    objects = TenantManager()
 
     def __str__(self):
         return self.display_name
 
 
-class NotificationPreference(models.Model):
+class NotificationPreference(TenantOwnedModel):
     scholarship_deadlines = models.BooleanField(default=True)
     task_due_alerts = models.BooleanField(default=True)
     diary_prompt = models.BooleanField(default=False)
     finance_alerts = models.BooleanField(default=True)
     updated_at = models.DateTimeField(auto_now=True)
+    objects = TenantManager()
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["user"], name="unique_user_notification_preferences")]
 
     def __str__(self):
         return "Notification Preferences"
 
 
-class Task(models.Model):
+class Task(TenantOwnedModel):
     title = models.CharField(max_length=255)
     is_done = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    objects = TenantManager()
 
     class Meta:
         ordering = ["sort_order", "id"]
@@ -41,7 +107,7 @@ class Task(models.Model):
         return self.title
 
 
-class DiaryEntry(models.Model):
+class DiaryEntry(TenantOwnedModel):
     entry_date = models.DateField()
     mood = models.CharField(max_length=80, blank=True, default="")
     content = models.TextField(blank=True, default="")
@@ -49,6 +115,7 @@ class DiaryEntry(models.Model):
     lessons = models.TextField(blank=True, default="")
     ideas = models.TextField(blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
+    objects = TenantManager()
 
     class Meta:
         ordering = ["-entry_date", "-id"]
@@ -57,25 +124,29 @@ class DiaryEntry(models.Model):
         return f"{self.entry_date} - {self.mood or 'No mood'}"
 
 
-class PageFormData(models.Model):
-    page_slug = models.CharField(max_length=50, unique=True)
+class PageFormData(TenantOwnedModel):
+    page_slug = models.CharField(max_length=50)
     data = models.JSONField(default=dict, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["page_slug"]
+        constraints = [models.UniqueConstraint(fields=["user", "page_slug"], name="unique_user_page_form_data")]
+
+    objects = TenantManager()
 
     def __str__(self):
         return self.page_slug
 
 
 def uploaded_document_path(instance, filename):
+    owner = f"user_{instance.user_id or 'unassigned'}"
     safe_page = (instance.page_slug or "general").replace("/", "_")
     safe_key = (instance.field_key or "files").replace("/", "_")
-    return f"uploads/{safe_page}/{safe_key}/{filename}"
+    return f"uploads/{owner}/{safe_page}/{safe_key}/{filename}"
 
 
-class UploadedDocument(models.Model):
+class UploadedDocument(TenantOwnedModel):
     page_slug = models.CharField(max_length=50, db_index=True)
     field_key = models.CharField(max_length=80, db_index=True)
     label = models.CharField(max_length=120, blank=True, default="")
@@ -84,6 +155,7 @@ class UploadedDocument(models.Model):
     content_type = models.CharField(max_length=120, blank=True, default="")
     file_size = models.PositiveIntegerField(default=0)
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    objects = TenantManager()
 
     class Meta:
         ordering = ["-uploaded_at", "-id"]
@@ -92,12 +164,14 @@ class UploadedDocument(models.Model):
         return f"{self.page_slug}:{self.field_key}:{self.original_name or self.file.name}"
 
 
-class TimeStampedModel(models.Model):
+class TimeStampedModel(TenantOwnedModel):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    objects = TenantManager()
 
     class Meta:
         abstract = True
+
 
 
 class BucketGoal(TimeStampedModel):
@@ -181,7 +255,7 @@ class Category(TimeStampedModel):
     )
 
     name = models.CharField(max_length=80)
-    slug = models.SlugField(max_length=90, unique=True)
+    slug = models.SlugField(max_length=90)
     kind = models.CharField(max_length=20, choices=KIND_CHOICES, default=KIND_EXPENSE)
     color = models.CharField(max_length=16, default="#8B5A2B")
     icon = models.CharField(max_length=40, default="fa-wallet")
@@ -190,6 +264,7 @@ class Category(TimeStampedModel):
 
     class Meta:
         ordering = ["sort_order", "name"]
+        constraints = [models.UniqueConstraint(fields=["user", "slug"], name="unique_user_category_slug")]
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -455,7 +530,7 @@ class FinanceAlert(TimeStampedModel):
         ordering = ["-created_at"]
         constraints = [
             models.UniqueConstraint(
-                fields=["alert_type", "related_model", "related_id", "period_key"],
+                fields=["user", "alert_type", "related_model", "related_id", "period_key"],
                 name="unique_finance_alert_scope",
             )
         ]
@@ -465,16 +540,19 @@ class FinanceAlert(TimeStampedModel):
 
 
 def academic_file_upload_path(instance, filename):
+    owner = f"user_{instance.user_id or 'unassigned'}"
     level = getattr(instance, "level_type", "general")
-    return f"uploads/education/levels/{level}/{filename}"
+    return f"uploads/{owner}/education/levels/{level}/{filename}"
 
 
 def exam_file_upload_path(instance, filename):
-    return f"uploads/education/exams/{instance.academic_level_id or 'general'}/{filename}"
+    owner = f"user_{instance.user_id or 'unassigned'}"
+    return f"uploads/{owner}/education/exams/{instance.academic_level_id or 'general'}/{filename}"
 
 
 def document_file_upload_path(instance, filename):
-    return f"uploads/education/documents/{instance.document_type}/{filename}"
+    owner = f"user_{instance.user_id or 'unassigned'}"
+    return f"uploads/{owner}/education/documents/{instance.document_type}/{filename}"
 
 
 class AcademicLevel(TimeStampedModel):
@@ -837,11 +915,19 @@ class WeeklyReflection(TimeStampedModel):
 
 
 def personal_vault_upload_path(instance, filename):
+    owner = f"user_{instance.user_id or 'unassigned'}"
     file_type = getattr(instance, "file_type", "general")
-    return f"uploads/personal_vault/{file_type}/{filename}"
+    return f"uploads/{owner}/personal_vault/{file_type}/{filename}"
 
 
 class PersonalIdentityVault(TimeStampedModel):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="personal_identity_vault",
+        null=True,
+        blank=True,
+    )
     GENDER_MALE = "male"
     GENDER_FEMALE = "female"
     GENDER_OTHER = "other"

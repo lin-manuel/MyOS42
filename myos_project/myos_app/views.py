@@ -11,6 +11,7 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.paginator import Paginator
 from django.db.models import Count, Q, Sum
@@ -164,6 +165,8 @@ def _require_education_access(request):
 
 
 def _require_personal_vault_access(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"ok": False, "error": "Authentication required."}, status=401)
     return None
 
 
@@ -254,6 +257,7 @@ def home(request):
     )
 
 
+@login_required
 def dashboard_page(request):
     return _render_page(
         request,
@@ -264,6 +268,7 @@ def dashboard_page(request):
     )
 
 
+@login_required
 def personal_page(request):
     return _render_page(request, "personal.html", "personal", partial_template="personal_partial.html")
 
@@ -491,16 +496,16 @@ def delete_bucket_goal(request, id):
     return _bucket_redirect(request)
 
 
-def _ensure_core_records():
+def _ensure_core_records(request):
     profile, _ = UserProfile.objects.get_or_create(
-        id=1,
+        user=request.user,
         defaults={
-            "display_name": "",
-            "email": "",
+            "display_name": request.user.get_full_name().strip(),
+            "email": request.user.email,
             "timezone": settings.TIME_ZONE,
         },
     )
-    notifications, _ = NotificationPreference.objects.get_or_create(id=1)
+    notifications, _ = NotificationPreference.objects.get_or_create(user=request.user)
     return profile, notifications
 
 
@@ -1557,7 +1562,9 @@ def calendar_events(request):
 
 @require_GET
 def bootstrap_data(request):
-    profile, notifications = _ensure_core_records()
+    if not request.user.is_authenticated:
+        return JsonResponse({"ok": False, "error": "Authentication required."}, status=401)
+    profile, notifications = _ensure_core_records(request)
     _, store = _get_reminder_store()
     tasks = [_task_to_dict(task, store["task_meta"]) for task in Task.objects.all()]
     diary_entries = [_entry_to_dict(entry) for entry in DiaryEntry.objects.all()[:12]]
@@ -1820,11 +1827,12 @@ def diary_export_csv(request):
 
 
 @require_GET
+@login_required
 def full_data_export(request):
     """Export all user data as JSON for portability."""
     _, store = _get_reminder_store()
-    profile, notifications = _ensure_core_records()
-    vault, contact, identity_docs, social = _get_or_create_personal_vault()
+    profile, notifications = _ensure_core_records(request)
+    vault, contact, identity_docs, social = _get_or_create_personal_vault(request)
     files = list(IdentityUploadedFile.objects.filter(vault=vault))
     digital_accounts = list(DigitalAccounts.objects.filter(vault=vault))
     password_refs = list(PasswordReferences.objects.filter(vault=vault))
@@ -1912,9 +1920,13 @@ def full_data_export(request):
 
 
 @require_POST
+@login_required
 def save_profile(request):
     payload = _parse_json(request)
-    profile, _ = UserProfile.objects.get_or_create(id=1)
+    profile, _ = UserProfile.objects.get_or_create(
+        user=request.user,
+        defaults={"display_name": request.user.get_full_name().strip(), "email": request.user.email, "timezone": settings.TIME_ZONE},
+    )
     profile.display_name = (payload.get("display_name") or profile.display_name).strip()
     profile.email = (payload.get("email") or profile.email).strip()
     profile.timezone = (payload.get("timezone") or profile.timezone).strip()
@@ -1925,7 +1937,7 @@ def save_profile(request):
 @require_POST
 def save_notifications(request):
     payload = _parse_json(request)
-    prefs, _ = NotificationPreference.objects.get_or_create(id=1)
+    prefs, _ = NotificationPreference.objects.get_or_create(user=request.user)
     prefs.scholarship_deadlines = bool(payload.get("scholarship_deadlines"))
     prefs.task_due_alerts = bool(payload.get("task_due_alerts"))
     prefs.diary_prompt = bool(payload.get("diary_prompt"))
@@ -4495,18 +4507,20 @@ def _decrypt_personal_sensitive(token):
         return ""
 
 
-def _get_or_create_personal_vault():
-    vault = PersonalIdentityVault.objects.first()
-    if not vault:
-        profile = UserProfile.objects.first()
-        first_name = ""
-        last_name = ""
-        if profile and profile.display_name:
-            parts = profile.display_name.split()
-            first_name = parts[0] if parts else ""
-            last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
-        vault = PersonalIdentityVault.objects.create(first_name=first_name, last_name=last_name, nationality="Kenyan")
-    contact, _ = ContactInfo.objects.get_or_create(vault=vault)
+def _get_or_create_personal_vault(request):
+    if not request.user.is_authenticated:
+        raise PermissionError("Authentication is required to access a personal vault.")
+    vault, _ = PersonalIdentityVault.objects.get_or_create(
+        user=request.user,
+        defaults={
+            "first_name": request.user.first_name,
+            "last_name": request.user.last_name,
+        },
+    )
+    contact, _ = ContactInfo.objects.get_or_create(
+        vault=vault,
+        defaults={"primary_email": request.user.email},
+    )
     identity_docs, _ = IdentityDocuments.objects.get_or_create(vault=vault)
     social, _ = SocialProfiles.objects.get_or_create(vault=vault)
     return vault, contact, identity_docs, social
@@ -4693,7 +4707,7 @@ def personal_vault_bootstrap(request):
     auth_error = _require_personal_vault_access(request)
     if auth_error:
         return auth_error
-    vault, contact, identity_docs, social = _get_or_create_personal_vault()
+    vault, contact, identity_docs, social = _get_or_create_personal_vault(request)
     files = list(IdentityUploadedFile.objects.filter(vault=vault))
     digital_accounts = list(DigitalAccounts.objects.filter(vault=vault))
     password_refs = list(PasswordReferences.objects.filter(vault=vault))
@@ -4725,7 +4739,7 @@ def personal_vault_step1_save(request):
     if auth_error:
         return auth_error
     payload = _parse_request_data(request)
-    vault, _, _, _ = _get_or_create_personal_vault()
+    vault, _, _, _ = _get_or_create_personal_vault(request)
 
     if "first_name" in payload:
         vault.first_name = (payload.get("first_name") or "").strip()
@@ -4761,7 +4775,7 @@ def personal_vault_step2_save(request):
     if auth_error:
         return auth_error
     payload = _parse_json(request)
-    vault, contact, _, _ = _get_or_create_personal_vault()
+    vault, contact, _, _ = _get_or_create_personal_vault(request)
     _ = vault
 
     primary_email = (payload.get("primary_email") or "").strip()
@@ -4800,7 +4814,7 @@ def personal_vault_step3_save(request):
     if auth_error:
         return auth_error
     payload = _parse_json(request)
-    _, _, identity_docs, _ = _get_or_create_personal_vault()
+    _, _, identity_docs, _ = _get_or_create_personal_vault(request)
 
     if "national_id" in payload:
         identity_docs.national_id_encrypted = _encrypt_personal_sensitive(payload.get("national_id"))
@@ -4822,7 +4836,7 @@ def personal_vault_identity_files(request):
     auth_error = _require_personal_vault_access(request)
     if auth_error:
         return auth_error
-    vault, _, _, _ = _get_or_create_personal_vault()
+    vault, _, _, _ = _get_or_create_personal_vault(request)
     rows = [_serialize_identity_file(item) for item in IdentityUploadedFile.objects.filter(vault=vault)]
     return JsonResponse({"ok": True, "rows": rows})
 
@@ -4833,7 +4847,7 @@ def personal_vault_identity_file_upload(request):
     if auth_error:
         return auth_error
     payload = _parse_request_data(request)
-    vault, _, _, _ = _get_or_create_personal_vault()
+    vault, _, _, _ = _get_or_create_personal_vault(request)
     file_type = (payload.get("file_type") or IdentityUploadedFile.TYPE_OTHER).strip()
     if file_type not in {choice[0] for choice in IdentityUploadedFile.FILE_TYPE_CHOICES}:
         return _json_error("Invalid identity document type")
@@ -4858,7 +4872,7 @@ def personal_vault_identity_file_delete(request, file_id):
     auth_error = _require_personal_vault_access(request)
     if auth_error:
         return auth_error
-    vault, _, _, _ = _get_or_create_personal_vault()
+    vault, _, _, _ = _get_or_create_personal_vault(request)
     item = get_object_or_404(IdentityUploadedFile, id=file_id, vault=vault)
     item.delete()
     return JsonResponse({"ok": True})
@@ -4869,7 +4883,7 @@ def personal_vault_digital_accounts(request):
     auth_error = _require_personal_vault_access(request)
     if auth_error:
         return auth_error
-    vault, _, _, _ = _get_or_create_personal_vault()
+    vault, _, _, _ = _get_or_create_personal_vault(request)
     rows = [_serialize_digital_account(item) for item in DigitalAccounts.objects.filter(vault=vault)]
     return JsonResponse({"ok": True, "rows": rows})
 
@@ -4880,7 +4894,7 @@ def personal_vault_digital_accounts_create(request):
     if auth_error:
         return auth_error
     payload = _parse_json(request)
-    vault, _, _, _ = _get_or_create_personal_vault()
+    vault, _, _, _ = _get_or_create_personal_vault(request)
 
     platform = (payload.get("platform") or "").strip()
     if platform not in {choice[0] for choice in DigitalAccounts.PLATFORM_CHOICES}:
@@ -4910,7 +4924,7 @@ def personal_vault_digital_accounts_update(request, account_id):
     if auth_error:
         return auth_error
     payload = _parse_json(request)
-    vault, _, _, _ = _get_or_create_personal_vault()
+    vault, _, _, _ = _get_or_create_personal_vault(request)
     item = get_object_or_404(DigitalAccounts, id=account_id, vault=vault)
 
     platform = (payload.get("platform") if "platform" in payload else item.platform or "").strip()
@@ -4938,7 +4952,7 @@ def personal_vault_digital_accounts_delete(request, account_id):
     auth_error = _require_personal_vault_access(request)
     if auth_error:
         return auth_error
-    vault, _, _, _ = _get_or_create_personal_vault()
+    vault, _, _, _ = _get_or_create_personal_vault(request)
     item = get_object_or_404(DigitalAccounts, id=account_id, vault=vault)
     item.delete()
     return JsonResponse({"ok": True})
@@ -4950,7 +4964,7 @@ def personal_vault_social_profiles_save(request):
     if auth_error:
         return auth_error
     payload = _parse_json(request)
-    _, _, _, social = _get_or_create_personal_vault()
+    _, _, _, social = _get_or_create_personal_vault(request)
 
     url_fields = [
         "linkedin",
@@ -4975,7 +4989,7 @@ def personal_vault_password_references(request):
     auth_error = _require_personal_vault_access(request)
     if auth_error:
         return auth_error
-    vault, _, _, _ = _get_or_create_personal_vault()
+    vault, _, _, _ = _get_or_create_personal_vault(request)
     rows = [_serialize_password_reference(item) for item in PasswordReferences.objects.filter(vault=vault)]
     return JsonResponse({"ok": True, "rows": rows})
 
@@ -4986,7 +5000,7 @@ def personal_vault_password_references_create(request):
     if auth_error:
         return auth_error
     payload = _parse_json(request)
-    vault, _, _, _ = _get_or_create_personal_vault()
+    vault, _, _, _ = _get_or_create_personal_vault(request)
     manager = (payload.get("password_manager") or PasswordReferences.MANAGER_BITWARDEN).strip()
     if manager not in {choice[0] for choice in PasswordReferences.PASSWORD_MANAGER_CHOICES}:
         return _json_error("Invalid password manager")
@@ -5013,7 +5027,7 @@ def personal_vault_password_references_update(request, reference_id):
     if auth_error:
         return auth_error
     payload = _parse_json(request)
-    vault, _, _, _ = _get_or_create_personal_vault()
+    vault, _, _, _ = _get_or_create_personal_vault(request)
     item = get_object_or_404(PasswordReferences, id=reference_id, vault=vault)
     manager = (payload.get("password_manager") if "password_manager" in payload else item.password_manager or "").strip()
     if manager not in {choice[0] for choice in PasswordReferences.PASSWORD_MANAGER_CHOICES}:
@@ -5039,7 +5053,7 @@ def personal_vault_password_references_delete(request, reference_id):
     auth_error = _require_personal_vault_access(request)
     if auth_error:
         return auth_error
-    vault, _, _, _ = _get_or_create_personal_vault()
+    vault, _, _, _ = _get_or_create_personal_vault(request)
     item = get_object_or_404(PasswordReferences, id=reference_id, vault=vault)
     item.delete()
     return JsonResponse({"ok": True})

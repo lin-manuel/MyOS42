@@ -1,0 +1,80 @@
+{% extends "accounts/auth_base.html" %}
+
+{% block title %}MyOS — Create Account{% endblock %}
+
+{% block content %}
+  <div class="auth-logo">
+    <div class="brand-name">MyOS</div>
+    <div class="brand-sub">Personal Operating System</div>
+  </div>
+
+  <h1>Create your account</h1>
+  <p class="auth-intro">Set up your personal command center. Use your email address to sign in.</p>
+
+  {% if request.user.is_authenticated %}
+    <div class="alert-banner" role="status">
+      You are currently signed in as {{ request.user.email }}. Creating this account will switch this browser to the new account.
+    </div>
+  {% endif %}
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert-banner" role="status">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" class="auth-form active signup-form">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="signup-error-summary" role="alert" aria-live="polite">
+        <strong>Please review the form:</strong>
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <div class="signup-name-fields">
+      <div class="field-group">
+        <label for="id_first_name">First name</label>
+        {{ form.first_name }}
+        {% for error in form.first_name.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+      </div>
+      <div class="field-group">
+        <label for="id_last_name">Last name</label>
+        {{ form.last_name }}
+        {% for error in form.last_name.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label for="id_username">Username</label>
+      {{ form.username }}
+      {% for error in form.username.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+    </div>
+
+    <div class="field-group">
+      <label for="id_email">Email address</label>
+      {{ form.email }}
+      {% for error in form.email.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+    </div>
+
+    <div class="field-group">
+      <label for="id_password1">Password</label>
+      {{ form.password1 }}
+      {% for error in form.password1.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+    </div>
+
+    <div class="field-group">
+      <label for="id_password2">Confirm password</label>
+      {{ form.password2 }}
+      {% for error in form.password2.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+    </div>
+
+    <button type="submit" class="btn-primary signup-submit">Create my account</button>
+  </form>
+
+  <div class="auth-switch-link auth-switch-signup">
+    <span>Already have an account?</span>
+    <a class="auth-signup-cta" href="{% url 'accounts:login' %}" role="button">Sign in</a>
+  </div>
+{% endblock %}

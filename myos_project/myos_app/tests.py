@@ -18,6 +18,7 @@ from .models import (
     DigitalAccounts,
     IdentityDocuments,
     PageFormData,
+    PersonalIdentityVault,
     Project,
     Task,
     Transaction,
@@ -29,10 +30,33 @@ class DashboardViewTests(TestCase):
         self.client = Client()
 
     def test_dashboard_loads(self):
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Welcome back")
+        self.assertContains(response, reverse("accounts:signup"))
+
+    def test_root_stays_on_login_page_for_signed_in_user(self):
+        user = get_user_model().objects.create_user(
+            email="root-login@example.com", username="root_login", password="T3st!Pass-091",
+        )
+        self.client.force_login(user)
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Welcome back")
+
+    def test_dashboard_loads_for_signed_in_user(self):
+        user = get_user_model().objects.create_user(
+            email="dashboard@example.com", username="dashboard", password="T3st!Pass-091",
+        )
+        self.client.force_login(user)
         response = self.client.get(reverse("dashboard"))
         self.assertEqual(response.status_code, 200)
 
     def test_bootstrap_returns_json(self):
+        user = get_user_model().objects.create_user(
+            email="bootstrap@example.com", username="bootstrap", password="T3st!Pass-091",
+        )
+        self.client.force_login(user)
         response = self.client.get(reverse("bootstrap_data"))
         self.assertEqual(response.status_code, 200)
         data = response.json()
@@ -262,10 +286,33 @@ class EducationApiTests(TestCase):
 class PersonalVaultApiTests(TestCase):
     def setUp(self):
         self.client = Client()
+        user = get_user_model().objects.create_user(
+            email="vault@example.com", username="vault", password="T3st!Pass-091",
+        )
+        self.client.force_login(user)
 
-    def test_personal_vault_bootstrap_is_accessible(self):
+    def test_personal_vault_bootstrap_requires_and_accepts_a_signed_in_user(self):
+        self.client.logout()
+        anonymous_response = self.client.get(reverse("personal_vault_bootstrap"))
+        self.assertEqual(anonymous_response.status_code, 401)
+        self.client.force_login(get_user_model().objects.get(email="vault@example.com"))
         response = self.client.get(reverse("personal_vault_bootstrap"))
         self.assertEqual(response.status_code, 200)
+
+    def test_each_user_gets_a_separate_identity_vault(self):
+        first_user = get_user_model().objects.get(email="vault@example.com")
+        first_response = self.client.get(reverse("personal_vault_bootstrap"))
+        self.assertEqual(first_response.status_code, 200)
+        first_vault = PersonalIdentityVault.objects.get(user=first_user)
+
+        second_user = get_user_model().objects.create_user(
+            email="second-vault@example.com", username="second-vault", password="T3st!Pass-092",
+        )
+        self.client.force_login(second_user)
+        second_response = self.client.get(reverse("personal_vault_bootstrap"))
+        self.assertEqual(second_response.status_code, 200)
+        second_vault = PersonalIdentityVault.objects.get(user=second_user)
+        self.assertNotEqual(second_vault.pk, first_vault.pk)
 
     def test_step3_encryption_and_bootstrap_roundtrip(self):
         payload = {

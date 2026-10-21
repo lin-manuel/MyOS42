@@ -35,7 +35,9 @@ from .models import (
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ("display_name", "email", "timezone", "updated_at")
+    list_display = ("user", "display_name", "email", "timezone", "updated_at")
+    list_select_related = ("user",)
+    search_fields = ("user__email", "display_name", "email")
 
 
 @admin.register(NotificationPreference)

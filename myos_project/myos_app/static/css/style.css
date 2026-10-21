@@ -1,3 +1,75 @@
+@font-face {
+  font-family: 'Comfortaa';
+  src: url('../fonts/comfortaa-regular.otf') format('opentype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Comfortaa';
+  src: url('../fonts/comfortaa-medium.otf') format('opentype');
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Comfortaa';
+  src: url('../fonts/comfortaa-semibold.otf') format('opentype');
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Comfortaa';
+  src: url('../fonts/comfortaa-bold.otf') format('opentype');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../fonts/montserrat-regular.otf') format('opentype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../fonts/montserrat-medium.otf') format('opentype');
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../fonts/montserrat-semibold.otf') format('opentype');
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../fonts/montserrat-bold.otf') format('opentype');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../fonts/montserrat-extrabold.otf') format('opentype');
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+}
+
 :root {
   --hue-brand: 210;
   --hue-success: 145;
@@ -111,7 +183,8 @@
   --duration-slow: 340ms;
   --duration-slower: 500ms;
 
-  --font-sans: 'Nunito Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: 'Comfortaa', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-heading: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, monospace;
   --text-xs: clamp(10px, 1.1vw, 11px);
   --text-sm: clamp(12px, 1.3vw, 13px);
@@ -174,7 +247,8 @@
    define the reusable product shell, cards, controls, badges, and dashboards.
 ---------------------------------------------------------------------------- */
 :root {
-  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: 'Comfortaa', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-heading: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-base: 1rem;
@@ -231,8 +305,17 @@ h4,
 h5,
 h6 {
   color: var(--color-text-primary);
-  font-family: var(--font-sans);
+  font-family: var(--font-heading);
   letter-spacing: 0;
+}
+
+.page-title,
+.hero-title,
+.modal-title,
+.brand-name,
+.bucket-section-title,
+.bucket-card-title {
+  font-family: var(--font-heading);
 }
 
 a {
@@ -2604,7 +2687,7 @@ html {
 body {
   background: var(--ca-gray-50);
   color: var(--ca-gray-800);
-  font-family: 'Nunito Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 16px;
   font-weight: 400;
   line-height: 1.6;
@@ -3547,7 +3630,7 @@ canvas {
   padding: 10px 20px;
   font-size: 14px;
   font-weight: 700;
-  font-family: 'Nunito Sans', sans-serif;
+  font-family: var(--font-sans);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -3572,7 +3655,7 @@ canvas {
   padding: 10px 20px;
   font-size: 14px;
   font-weight: 700;
-  font-family: 'Nunito Sans', sans-serif;
+  font-family: var(--font-sans);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -4638,7 +4721,7 @@ table th {
   border-radius: 100px;
   padding: 14px 20px;
   font-size: 15px;
-  font-family: 'Nunito Sans', sans-serif;
+  font-family: var(--font-sans);
   font-weight: 600;
   cursor: pointer;
   margin-bottom: 12px;
@@ -7751,7 +7834,8 @@ body[data-theme="light"] {
   --duration-slow: 400ms;
   --duration-slower: 700ms;
 
-  --font-sans: 'Quicksand', 'Nunito Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: 'Comfortaa', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-heading: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --text-xs: 0.70rem;
   --text-sm: 0.82rem;
   --text-base: 0.90rem;
@@ -9060,7 +9144,8 @@ body[data-theme="dark"] .media-table td {
 
 /* Final cascade lock for the 2026 MyOS design system. */
 :root {
-  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: 'Comfortaa', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-heading: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --color-bg-base: #f8fafc;
   --color-bg-surface: #ffffff;
   --color-text-primary: #0f172a;
@@ -9082,6 +9167,695 @@ body {
   font-family: var(--font-sans) !important;
   font-size: 16px !important;
   letter-spacing: 0 !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.page-title,
+.hero-title,
+.modal-title,
+.brand-name,
+.bucket-section-title,
+.bucket-card-title {
+  font-family: var(--font-heading) !important;
+}
+
+/* MyOS forest and cream palette. Keep this block last so older component
+   rules share the same colors across every page. */
+:root {
+  --palette-leaf: #5B8157;
+  --palette-white: #F5F5F5;
+  --palette-cream: #DAD7CD;
+  --palette-beige: #A3B19A;
+  --palette-moss: #3A5A40;
+
+  --color-bg-base: var(--palette-cream);
+  --color-bg-surface: var(--palette-white);
+  --color-bg-elevated: var(--palette-white);
+  --color-bg-sunken: #cfcec2;
+  --color-text-primary: var(--palette-moss);
+  --color-text-secondary: #536b58;
+  --color-text-tertiary: #71806f;
+  --color-border-subtle: rgba(58, 90, 64, 0.16);
+  --color-border-base: var(--palette-beige);
+  --color-border-strong: var(--palette-moss);
+  --color-brand: var(--palette-leaf);
+  --color-brand-hover: var(--palette-moss);
+  --color-brand-active: var(--palette-moss);
+  --color-brand-soft: #e8ebe3;
+  --color-brand-soft-strong: #d5ddcf;
+  --shadow-sm: 0 2px 8px rgba(58, 90, 64, 0.08), 0 1px 2px rgba(58, 90, 64, 0.05);
+
+  --blue-50: #f0f2ec;
+  --blue-100: #e5e9e0;
+  --blue-200: #d2dacb;
+  --blue-300: #b9c8b0;
+  --blue-400: #8fa786;
+  --blue-500: var(--palette-leaf);
+  --blue-600: var(--palette-leaf);
+  --blue-700: var(--palette-moss);
+  --blue-800: #314b36;
+  --blue-900: #293f2e;
+  --green-50: #edf1e9;
+  --green-100: #dce5d7;
+  --green-500: var(--palette-leaf);
+  --green-600: var(--palette-leaf);
+  --green-700: var(--palette-moss);
+  --ca-blue: var(--palette-leaf);
+  --ca-blue-dark: var(--palette-moss);
+  --ca-blue-light: #e8ebe3;
+  --ca-teal: var(--palette-leaf);
+  --ca-green: var(--palette-leaf);
+  --ca-green-light: #e8ebe3;
+  --ca-gray-50: var(--palette-cream);
+  --ca-gray-100: #e5e3da;
+  --ca-gray-200: var(--palette-beige);
+  --ca-gray-400: #879880;
+  --ca-gray-600: #536b58;
+  --ca-gray-800: var(--palette-moss);
+  --cream: var(--palette-cream);
+  --cocoa: var(--palette-moss);
+  --coffee: var(--palette-moss);
+  --bronze: var(--palette-leaf);
+  --gold: var(--palette-leaf);
+}
+
+html,
+body,
+#app,
+.app-shell,
+main.app-main {
+  background-color: var(--palette-cream) !important;
+  color: var(--palette-moss) !important;
+}
+
+body,
+input,
+select,
+textarea,
+button {
+  font-family: var(--font-body) !important;
+}
+
+h1, h2, h3, h4, h5, h6,
+.page-title, .hero-title, .modal-title,
+.brand-name, .bucket-section-title, .bucket-card-title {
+  color: var(--palette-moss) !important;
+  font-family: var(--font-heading) !important;
+}
+
+.sidebar.myos-sidebar {
+  border-color: var(--palette-moss) !important;
+  background: var(--palette-moss) !important;
+  color: var(--palette-white) !important;
+  box-shadow: 1px 0 0 rgba(58, 90, 64, 0.12) !important;
+}
+
+.sidebar .brand-name,
+.sidebar .nav-item,
+.sidebar .nav-item i,
+.sidebar .user-card,
+.sidebar .user-card *,
+.sidebar .sidebar-toggle-btn {
+  color: var(--palette-white) !important;
+}
+
+.sidebar .brand-sub,
+.sidebar .nav-section-label,
+.sidebar .sidebar-tip p {
+  color: rgba(245, 245, 245, 0.72) !important;
+}
+
+.sidebar .brand-mark,
+.user-avatar,
+.topbar-profile-avatar {
+  background: var(--palette-leaf) !important;
+  color: var(--palette-white) !important;
+  box-shadow: 0 8px 18px rgba(20, 40, 25, 0.18) !important;
+}
+
+.sidebar .sidebar-toggle-btn,
+.sidebar .user-card {
+  border-color: rgba(245, 245, 245, 0.2) !important;
+  background: rgba(245, 245, 245, 0.08) !important;
+}
+
+.sidebar .nav-item:hover {
+  background: rgba(245, 245, 245, 0.11) !important;
+  color: var(--palette-white) !important;
+}
+
+.sidebar .nav-item.active {
+  background: var(--palette-leaf) !important;
+  color: var(--palette-white) !important;
+  box-shadow: inset 3px 0 0 var(--palette-beige) !important;
+}
+
+.sidebar .nav-item.active i { color: var(--palette-white) !important; }
+
+.topbar {
+  border-color: var(--color-border-subtle) !important;
+  background: rgba(245, 245, 245, 0.96) !important;
+}
+
+.topbar-search,
+.topbar-profile,
+.sidebar-toggle-btn:not(.sidebar .sidebar-toggle-btn),
+.topbar-btn,
+.icon-action-btn,
+.modal-close,
+.user-card {
+  border-color: var(--color-border-subtle) !important;
+  background: var(--palette-white) !important;
+  color: var(--palette-moss) !important;
+}
+
+.topbar-search:focus-within,
+.auth-box .ds-field input:focus,
+.auth-box .ds-field select:focus,
+.auth-box .ds-field textarea:focus,
+.auth-shell .field-group input:focus,
+.ds-field input:focus,
+.ds-field select:focus,
+.ds-field textarea:focus {
+  border-color: var(--palette-leaf) !important;
+  box-shadow: 0 0 0 4px rgba(91, 129, 87, 0.16) !important;
+}
+
+.topbar-search input,
+.topbar-context-title,
+.topbar-profile-name,
+.ds-card-title,
+.ds-btn-secondary,
+.topbar-search i {
+  color: var(--palette-moss) !important;
+}
+
+.topbar-search input::placeholder,
+.topbar-context-kicker,
+.topbar-profile-meta,
+.topbar-profile-chevron,
+.search-shortcut,
+.command-hint,
+.ds-card-subtitle,
+.ds-field label,
+.help-text {
+  color: #667760 !important;
+}
+
+.ds-card,
+.dashboard-panel,
+.progress-card,
+.ca-progress-section,
+.metric-link-card,
+.item-card,
+.bucket-goal-card,
+.budget-card,
+.goal-card,
+.application-summary,
+.auth-box.ds-card {
+  border-color: var(--color-border-subtle) !important;
+  background-color: var(--palette-white) !important;
+  box-shadow: 0 8px 24px rgba(58, 90, 64, 0.09), 0 1px 3px rgba(58, 90, 64, 0.06) !important;
+}
+
+.hero-card {
+  border-color: var(--color-border-subtle) !important;
+  background: linear-gradient(120deg, var(--palette-white) 0%, #f0f0e9 100%) !important;
+  box-shadow: 0 12px 32px rgba(58, 90, 64, 0.1) !important;
+}
+
+.ds-eyebrow,
+.ds-card-title i,
+.ds-link,
+a,
+.auth-switch-link a {
+  color: var(--palette-leaf) !important;
+}
+
+.ds-link:hover,
+a:hover,
+.auth-switch-link a:hover {
+  color: var(--palette-moss) !important;
+}
+
+.ds-btn-primary,
+.topbar-btn--primary,
+.auth-shell .btn-primary,
+button.btn-primary,
+input.btn-primary {
+  border-color: var(--palette-leaf) !important;
+  background: var(--palette-leaf) !important;
+  color: var(--palette-white) !important;
+  box-shadow: 0 8px 18px rgba(58, 90, 64, 0.18) !important;
+}
+
+.ds-btn-primary:hover,
+.topbar-btn--primary:hover,
+.auth-shell .btn-primary:hover,
+button.btn-primary:hover {
+  border-color: var(--palette-moss) !important;
+  background: var(--palette-moss) !important;
+  color: var(--palette-white) !important;
+}
+
+.ds-btn-secondary:hover,
+.topbar-btn:hover,
+.icon-action-btn:hover,
+.modal-close:hover {
+  border-color: var(--palette-beige) !important;
+  background: #e8ebe3 !important;
+  color: var(--palette-moss) !important;
+}
+
+.progress-track,
+.progress-track-lg,
+progress,
+[role="progressbar"] {
+  background-color: var(--palette-beige) !important;
+}
+
+.progress-fill,
+.progress-bar,
+progress::-webkit-progress-value,
+[role="progressbar"] > span {
+  background-color: var(--palette-leaf) !important;
+}
+
+.completed,
+.is-complete,
+.check-icon,
+.fa-check,
+.text-success,
+.text-green-500,
+.text-green-600,
+.text-green-700 {
+  color: var(--palette-leaf) !important;
+}
+
+.auth-overlay {
+  background:
+    radial-gradient(ellipse at 18% 10%, rgba(163, 177, 154, 0.32), transparent 36%),
+    radial-gradient(ellipse at 86% 88%, rgba(91, 129, 87, 0.15), transparent 40%),
+    var(--palette-cream) !important;
+}
+
+.auth-box.ds-card,
+.auth-shell .auth-box {
+  border-color: var(--color-border-subtle) !important;
+  background: var(--palette-white) !important;
+}
+
+.auth-box .ds-field input,
+.auth-box .ds-field select,
+.auth-box .ds-field textarea,
+.auth-shell .field-group input,
+.ds-field input,
+.ds-field select,
+.ds-field textarea {
+  border-color: var(--color-border-subtle) !important;
+  background: #fbfbf8 !important;
+  color: var(--palette-moss) !important;
+}
+
+.auth-box .ds-field input::placeholder,
+.auth-shell .field-group input::placeholder,
+.ds-field input::placeholder,
+.ds-field textarea::placeholder {
+  color: #899587 !important;
+}
+
+.auth-intro,
+.auth-shell p,
+.checkbox-row label,
+.auth-shell .field-group label {
+  color: #536b58 !important;
+}
+
+.auth-error,
+.error-message,
+.alert-danger,
+.form-error {
+  border-color: var(--palette-beige) !important;
+  background: #e8ebe3 !important;
+  color: var(--palette-moss) !important;
+}
+
+/* Keep generated Tailwind color utilities in step until the bundle is rebuilt. */
+.text-primary-600,
+.hover\:text-primary-700:hover,
+.text-ca-blue,
+.text-ca-blue-dark { color: var(--palette-leaf) !important; }
+.bg-primary-600,
+.hover\:bg-primary-700:hover,
+.bg-ca-blue { background-color: var(--palette-leaf) !important; }
+.border-primary-600,
+.focus\:border-primary-500:focus { border-color: var(--palette-leaf) !important; }
+.text-neutral-950,
+.text-neutral-900,
+.text-neutral-800 { color: var(--palette-moss) !important; }
+.text-neutral-600,
+.text-neutral-500 { color: #667760 !important; }
+.bg-neutral-50 { background-color: var(--palette-cream) !important; }
+.bg-white { background-color: var(--palette-white) !important; }
+
+/* Final palette overrides for the page-specific legacy rules below. */
+html, body, #app, .app-shell, .app-main, main.app-main,
+body.auth-page, .auth-shell {
+  background-color: var(--palette-cream) !important;
+  background-image: none !important;
+  color: var(--palette-moss) !important;
+}
+
+.sidebar.myos-sidebar {
+  border-right-color: var(--color-border-subtle) !important;
+  background: var(--palette-white) !important;
+  color: var(--palette-moss) !important;
+}
+.sidebar .brand-name,
+.sidebar .nav-item,
+.sidebar .nav-item i,
+.sidebar .sidebar-toggle-btn,
+.sidebar .user-card,
+.sidebar .user-card *,
+.sidebar .sidebar-tip-title { color: var(--palette-moss) !important; }
+.sidebar .brand-sub,
+.sidebar .nav-section-label,
+.sidebar .sidebar-tip p { color: #667760 !important; }
+.sidebar .sidebar-toggle-btn,
+.sidebar .user-card { border-color: var(--color-border-subtle) !important; background: var(--palette-white) !important; }
+.sidebar .nav-item:hover { background: #e8ebe3 !important; color: var(--palette-moss) !important; }
+.sidebar .nav-item.active { background: #e8ebe3 !important; color: var(--palette-moss) !important; box-shadow: inset 3px 0 0 var(--palette-leaf) !important; }
+.sidebar .nav-item.active i { color: var(--palette-leaf) !important; }
+.sidebar .brand-mark,
+.user-avatar,
+.topbar-profile-avatar { background: var(--palette-leaf) !important; color: var(--palette-white) !important; }
+.sidebar .sidebar-tip { border-color: var(--color-border-subtle) !important; background: #e8ebe3 !important; }
+.sidebar .sidebar-tip a { background: var(--palette-leaf) !important; color: var(--palette-white) !important; }
+
+.topbar, .topbar-search, .topbar-profile,
+.topbar-btn:not(.topbar-btn--primary), .icon-action-btn,
+.ds-card, .dashboard-panel, .progress-card, .ca-progress-section,
+.metric-link-card, .item-card, .bucket-goal-card, .budget-card,
+.goal-card, .application-summary, .user-card {
+  border-color: var(--color-border-subtle) !important;
+  background-color: var(--palette-white) !important;
+}
+.topbar { background: rgba(245, 245, 245, 0.97) !important; }
+.ds-card, .dashboard-panel, .progress-card, .ca-progress-section,
+.metric-link-card, .item-card, .bucket-goal-card, .budget-card,
+.goal-card, .application-summary {
+  color: var(--palette-moss) !important;
+  box-shadow: 0 5px 16px rgba(58, 90, 64, 0.09) !important;
+}
+.hero-card { border-color: var(--color-border-subtle) !important; background: var(--palette-white) !important; }
+.ds-card-title, .topbar-context-title, .topbar-profile-name,
+.brand-name, .page-title, .user-name { color: var(--palette-moss) !important; }
+.ds-card-subtitle, .topbar-profile-meta, .user-email, .ds-field label { color: #667760 !important; }
+
+.ds-btn-primary, .topbar-btn--primary, .auth-shell .btn-primary,
+button.btn-primary, input.btn-primary, .sidebar-tip a {
+  border-color: var(--palette-leaf) !important;
+  background: var(--palette-leaf) !important;
+  color: var(--palette-white) !important;
+  box-shadow: 0 5px 12px rgba(58, 90, 64, 0.18) !important;
+}
+.ds-btn-primary:hover, .topbar-btn--primary:hover,
+.auth-shell .btn-primary:hover, button.btn-primary:hover {
+  border-color: var(--palette-moss) !important;
+  background: var(--palette-moss) !important;
+}
+.ds-link, .ds-eyebrow, .ds-card-title i, .auth-switch-link a,
+.text-primary-600, .text-ca-blue, .text-ca-blue-dark { color: var(--palette-leaf) !important; }
+.ds-link:hover, .auth-switch-link a:hover,
+.hover\:text-primary-700:hover { color: var(--palette-moss) !important; }
+
+.progress-track, .progress-track-lg, .progress-track *,
+.ca-progress-track, .education-progress-track { background-color: var(--palette-beige) !important; }
+.progress-fill, .progress-bar, .ca-progress-bar-fill,
+.education-progress-fill { background-color: var(--palette-leaf) !important; }
+.calendar-day.today { background: var(--palette-leaf) !important; color: var(--palette-white) !important; }
+.calendar-day.is-selected { border-color: var(--palette-leaf) !important; background: #e8ebe3 !important; color: var(--palette-moss) !important; }
+.reminder-pill--low, .metric-icon--success { background: #e8ebe3 !important; color: var(--palette-leaf) !important; }
+.metric-icon--amber { background: #e8ebe3 !important; color: var(--palette-moss) !important; }
+.amount-positive, .finance-amount.savings { color: var(--palette-leaf) !important; }
+
+.auth-overlay { background: var(--palette-cream) !important; }
+.auth-box, .auth-box.ds-card, .auth-shell .auth-box {
+  border-color: var(--color-border-subtle) !important;
+  background: var(--palette-white) !important;
+}
+.auth-box .ds-field input, .auth-box .ds-field select,
+.auth-box .ds-field textarea, .auth-shell .field-group input,
+.ds-field input, .ds-field select, .ds-field textarea {
+  border-color: var(--color-border-subtle) !important;
+  background: #fbfbf8 !important;
+  color: var(--palette-moss) !important;
+}
+.auth-box .ds-field input:focus, .auth-box .ds-field select:focus,
+.auth-box .ds-field textarea:focus, .auth-shell .field-group input:focus,
+.ds-field input:focus, .ds-field select:focus, .ds-field textarea:focus {
+  border-color: var(--palette-leaf) !important;
+  background: var(--palette-white) !important;
+  box-shadow: 0 0 0 4px rgba(91, 129, 87, 0.16) !important;
+}
+
+.bg-primary-600, .bg-ca-blue { background-color: var(--palette-leaf) !important; }
+.hover\:bg-primary-700:hover { background-color: var(--palette-moss) !important; }
+.border-primary-600, .focus\:border-primary-500:focus { border-color: var(--palette-leaf) !important; }
+.text-neutral-950, .text-neutral-900, .text-neutral-800 { color: var(--palette-moss) !important; }
+.text-neutral-600, .text-neutral-500 { color: #667760 !important; }
+.bg-neutral-50 { background-color: var(--palette-cream) !important; }
+.bg-white { background-color: var(--palette-white) !important; }
+
+html,
+body,
+#app,
+.app-shell,
+main.app-main {
+  background-color: #f4f7fb !important;
+}
+
+.ds-card,
+.dashboard-panel,
+.progress-card,
+.ca-progress-section,
+.metric-link-card,
+.item-card,
+.bucket-goal-card,
+.budget-card,
+.goal-card,
+.application-summary {
+  border-radius: 20px !important;
+  box-shadow: 0 8px 24px rgba(18, 38, 63, 0.055), 0 1px 3px rgba(18, 38, 63, 0.045) !important;
+}
+
+.hero-card {
+  border: 1px solid #e3ebf7 !important;
+  border-radius: 24px !important;
+  background: linear-gradient(120deg, #fff 0%, #f8fbff 68%, #eff5ff 100%) !important;
+  box-shadow: 0 12px 32px rgba(18, 38, 63, 0.075) !important;
+}
+
+.auth-overlay {
+  background:
+    radial-gradient(ellipse at 18% 10%, rgba(191, 219, 254, 0.55), transparent 36%),
+    radial-gradient(ellipse at 86% 88%, rgba(224, 231, 255, 0.72), transparent 40%),
+    #f5f7fb !important;
+}
+
+.auth-box.ds-card {
+  width: min(480px, 100%) !important;
+  padding: clamp(26px, 4vw, 38px) !important;
+  border: 1px solid rgba(210, 220, 235, 0.8) !important;
+  border-radius: 24px !important;
+  background: rgba(255, 255, 255, 0.97) !important;
+  box-shadow: 0 24px 70px rgba(30, 50, 80, 0.13), 0 3px 10px rgba(30, 50, 80, 0.06) !important;
+}
+
+.auth-box .ds-field input,
+.auth-box .ds-field select,
+.auth-box .ds-field textarea {
+  min-height: 50px !important;
+  border-radius: 14px !important;
+  background: #fbfcfe !important;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease !important;
+}
+
+.auth-box .ds-field input:focus,
+.auth-box .ds-field select:focus,
+.auth-box .ds-field textarea:focus {
+  border-color: #6c9af4 !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.11) !important;
+}
+
+.auth-box .ds-btn-primary {
+  min-height: 50px !important;
+  border-radius: 14px !important;
+  font-family: var(--font-heading) !important;
+  font-weight: 700 !important;
+}
+
+body.auth-page {
+  display: grid !important;
+  min-height: 100vh !important;
+  place-items: center !important;
+  padding: 24px !important;
+  background:
+    radial-gradient(ellipse at 18% 10%, rgba(191, 219, 254, 0.55), transparent 36%),
+    radial-gradient(ellipse at 86% 88%, rgba(224, 231, 255, 0.72), transparent 40%),
+    #f5f7fb !important;
+}
+
+.auth-shell {
+  width: min(520px, 100%) !important;
+}
+
+.auth-shell .auth-box {
+  width: 100% !important;
+  padding: clamp(26px, 4vw, 38px) !important;
+  border: 1px solid rgba(210, 220, 235, 0.8) !important;
+  border-radius: 24px !important;
+  background: rgba(255, 255, 255, 0.97) !important;
+  box-shadow: 0 24px 70px rgba(30, 50, 80, 0.13), 0 3px 10px rgba(30, 50, 80, 0.06) !important;
+}
+
+.auth-shell .auth-logo {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-bottom: 26px !important;
+  text-align: left !important;
+}
+
+.auth-shell .brand-name {
+  color: #101828 !important;
+  font-size: 1.55rem !important;
+  font-weight: 800 !important;
+}
+
+.auth-shell .brand-sub {
+  color: #64748b !important;
+}
+
+.auth-shell h1,
+.auth-shell h2,
+.auth-shell h3 {
+  margin: 0 0 18px !important;
+  color: #101828 !important;
+  font-family: var(--font-heading) !important;
+  font-size: 1.65rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.035em !important;
+}
+
+.auth-shell .auth-form {
+  gap: 16px !important;
+}
+
+.auth-shell .field-group {
+  display: grid !important;
+  gap: 8px !important;
+}
+
+.auth-shell .field-group label,
+.auth-shell .checkbox-row label {
+  color: #475569 !important;
+  font-family: var(--font-sans) !important;
+  font-size: 0.84rem !important;
+  font-weight: 700 !important;
+}
+
+.auth-shell .field-group input {
+  width: 100% !important;
+  min-height: 50px !important;
+  padding: 12px 14px !important;
+  border: 1px solid #dfe5ee !important;
+  border-radius: 14px !important;
+  background: #fbfcfe !important;
+  color: #101828 !important;
+  font-family: var(--font-sans) !important;
+  font-size: 0.94rem !important;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease !important;
+}
+
+.auth-shell .field-group input:focus {
+  border-color: #6c9af4 !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.11) !important;
+  outline: 0 !important;
+}
+
+.auth-shell .checkbox-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.auth-shell .btn-primary {
+  min-height: 50px !important;
+  border: 0 !important;
+  border-radius: 14px !important;
+  background: #2563eb !important;
+  color: #fff !important;
+  font-family: var(--font-heading) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.18) !important;
+}
+
+.auth-intro {
+  margin: -8px 0 22px !important;
+  color: #64748b !important;
+  font-size: 0.92rem !important;
+}
+
+.signup-name-fields {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+}
+
+.field-error {
+  color: #b42318 !important;
+  font-size: 0.78rem !important;
+  line-height: 1.4 !important;
+}
+
+.auth-switch-link {
+  margin: 20px 0 0 !important;
+  color: #64748b !important;
+  font-size: 0.86rem !important;
+  text-align: center !important;
+}
+
+.auth-switch-link a {
+  color: #245fe5 !important;
+  font-family: var(--font-heading) !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+}
+
+.auth-switch-link a:hover {
+  text-decoration: underline !important;
+  text-underline-offset: 3px !important;
+}
+
+.signup-submit {
+  width: 100% !important;
+  margin-top: 4px !important;
+}
+
+@media (max-width: 520px) {
+  .signup-name-fields {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
 }
 
 html,
@@ -10382,4 +11156,599 @@ body.sidebar-collapsed .sidebar.myos-sidebar .nav-item {
   .quick-add-options {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
+}
+
+/* Final local font and visual refresh. */
+html,
+body,
+#app,
+.app-shell,
+main.app-main {
+  background-color: #f4f7fb !important;
+}
+
+.ds-card,
+.dashboard-panel,
+.progress-card,
+.ca-progress-section,
+.metric-link-card,
+.item-card,
+.bucket-goal-card,
+.budget-card,
+.goal-card,
+.application-summary {
+  border-radius: 20px !important;
+  box-shadow: 0 8px 24px rgba(18, 38, 63, 0.055), 0 1px 3px rgba(18, 38, 63, 0.045) !important;
+}
+
+.hero-card {
+  border: 1px solid #e3ebf7 !important;
+  border-radius: 24px !important;
+  background: linear-gradient(120deg, #fff 0%, #f8fbff 68%, #eff5ff 100%) !important;
+  box-shadow: 0 12px 32px rgba(18, 38, 63, 0.075) !important;
+}
+
+.auth-overlay {
+  background:
+    radial-gradient(ellipse at 18% 10%, rgba(191, 219, 254, 0.55), transparent 36%),
+    radial-gradient(ellipse at 86% 88%, rgba(224, 231, 255, 0.72), transparent 40%),
+    #f5f7fb !important;
+}
+
+.auth-box.ds-card {
+  width: min(480px, 100%) !important;
+  padding: clamp(26px, 4vw, 38px) !important;
+  border: 1px solid rgba(210, 220, 235, 0.8) !important;
+  border-radius: 24px !important;
+  background: rgba(255, 255, 255, 0.97) !important;
+  box-shadow: 0 24px 70px rgba(30, 50, 80, 0.13), 0 3px 10px rgba(30, 50, 80, 0.06) !important;
+}
+
+.auth-box .ds-field input,
+.auth-box .ds-field select,
+.auth-box .ds-field textarea {
+  min-height: 50px !important;
+  border-radius: 14px !important;
+  background: #fbfcfe !important;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease !important;
+}
+
+.auth-box .ds-field input:focus,
+.auth-box .ds-field select:focus,
+.auth-box .ds-field textarea:focus {
+  border-color: #6c9af4 !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.11) !important;
+}
+
+.auth-box .ds-btn-primary {
+  min-height: 50px !important;
+  border-radius: 14px !important;
+  font-family: var(--font-heading) !important;
+  font-weight: 700 !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.page-title,
+.hero-title,
+.modal-title,
+.brand-name,
+.bucket-section-title,
+.bucket-card-title {
+  font-family: var(--font-heading) !important;
+}
+
+/* Final screenshot-matched forest and cream palette. */
+:root {
+  --palette-leaf: #5B8157;
+  --palette-white: #F5F5F5;
+  --palette-cream: #DAD7CD;
+  --palette-beige: #A3B19A;
+  --palette-moss: #3A5A40;
+  --color-bg-base: var(--palette-cream);
+  --color-bg-surface: var(--palette-white);
+  --color-bg-elevated: var(--palette-white);
+  --color-text-primary: var(--palette-moss);
+  --color-text-secondary: #536b58;
+  --color-text-tertiary: #71806f;
+  --color-border-subtle: rgba(58, 90, 64, .16);
+  --color-border-base: var(--palette-beige);
+  --color-brand: var(--palette-leaf);
+  --color-brand-hover: var(--palette-moss);
+  --shadow-sm: 0 2px 8px rgba(58, 90, 64, .08), 0 1px 2px rgba(58, 90, 64, .05);
+}
+
+html, body, #app, .app-shell, .app-main, main.app-main,
+body.auth-page, .auth-shell {
+  background: var(--palette-cream) !important;
+  background-image: none !important;
+  color: var(--palette-moss) !important;
+}
+body, input, select, textarea, button { font-family: var(--font-body) !important; }
+h1, h2, h3, h4, h5, h6, .page-title, .hero-title, .modal-title,
+.brand-name, .bucket-section-title, .bucket-card-title {
+  color: var(--palette-moss) !important;
+  font-family: var(--font-heading) !important;
+}
+
+/* White app sidebar, matching the reference's clean content navigation. */
+.sidebar.myos-sidebar {
+  border-right-color: var(--color-border-subtle) !important;
+  background: var(--palette-white) !important;
+  color: var(--palette-moss) !important;
+}
+.sidebar .brand-name, .sidebar .nav-item, .sidebar .nav-item i,
+.sidebar .sidebar-toggle-btn, .sidebar .user-card, .sidebar .user-card *,
+.sidebar .sidebar-tip-title { color: var(--palette-moss) !important; }
+.sidebar .brand-sub, .sidebar .nav-section-label, .sidebar .sidebar-tip p,
+.user-email, .topbar-profile-meta { color: #667760 !important; }
+.sidebar .sidebar-toggle-btn, .sidebar .user-card {
+  border-color: var(--color-border-subtle) !important;
+  background: var(--palette-white) !important;
+}
+.sidebar .nav-item:hover, .sidebar .nav-item.active {
+  background: #e8ebe3 !important;
+  color: var(--palette-moss) !important;
+}
+.sidebar .nav-item.active { box-shadow: inset 3px 0 0 var(--palette-leaf) !important; }
+.sidebar .nav-item.active i, .ds-eyebrow, .ds-link,
+.ds-card-title i, .auth-switch-link a { color: var(--palette-leaf) !important; }
+.sidebar .brand-mark, .user-avatar, .topbar-profile-avatar {
+  background: var(--palette-leaf) !important;
+  color: var(--palette-white) !important;
+}
+.sidebar .sidebar-tip { border-color: var(--color-border-subtle) !important; background: #e8ebe3 !important; }
+.sidebar .sidebar-tip a { background: var(--palette-leaf) !important; color: var(--palette-white) !important; }
+
+.topbar, .topbar-search, .topbar-profile, .topbar-btn:not(.topbar-btn--primary),
+.icon-action-btn, .ds-card, .dashboard-panel, .progress-card,
+.ca-progress-section, .metric-link-card, .item-card, .bucket-goal-card,
+.budget-card, .goal-card, .application-summary, .user-card {
+  border-color: var(--color-border-subtle) !important;
+  background-color: var(--palette-white) !important;
+}
+.topbar { background: rgba(245, 245, 245, .97) !important; }
+.ds-card, .dashboard-panel, .progress-card, .ca-progress-section,
+.metric-link-card, .item-card, .bucket-goal-card, .budget-card,
+.goal-card, .application-summary {
+  color: var(--palette-moss) !important;
+  box-shadow: 0 5px 16px rgba(58, 90, 64, .09) !important;
+}
+.hero-card { border-color: var(--color-border-subtle) !important; background: var(--palette-white) !important; }
+.ds-card-title, .topbar-context-title, .topbar-profile-name,
+.brand-name, .page-title, .user-name { color: var(--palette-moss) !important; }
+.ds-card-subtitle, .topbar-profile-meta, .ds-field label { color: #667760 !important; }
+
+.ds-btn-primary, .topbar-btn--primary, .auth-shell .btn-primary,
+button.btn-primary, input.btn-primary, .sidebar-tip a {
+  border-color: var(--palette-leaf) !important;
+  background: var(--palette-leaf) !important;
+  color: var(--palette-white) !important;
+  box-shadow: 0 5px 12px rgba(58, 90, 64, .18) !important;
+}
+.ds-btn-primary:hover, .topbar-btn--primary:hover,
+.auth-shell .btn-primary:hover, button.btn-primary:hover {
+  border-color: var(--palette-moss) !important;
+  background: var(--palette-moss) !important;
+}
+.ds-link:hover, .auth-switch-link a:hover, .hover\:text-primary-700:hover { color: var(--palette-moss) !important; }
+.progress-track, .progress-track-lg, .ca-progress-track, .education-progress-track { background: var(--palette-beige) !important; }
+.progress-fill, .progress-bar, .ca-progress-bar-fill, .education-progress-fill { background: var(--palette-leaf) !important; }
+.calendar-day.today { background: var(--palette-leaf) !important; color: var(--palette-white) !important; }
+.calendar-day.is-selected { border-color: var(--palette-leaf) !important; background: #e8ebe3 !important; color: var(--palette-moss) !important; }
+.reminder-pill--low, .metric-icon--success { background: #e8ebe3 !important; color: var(--palette-leaf) !important; }
+.metric-icon--amber { background: #e8ebe3 !important; color: var(--palette-moss) !important; }
+.amount-positive, .finance-amount.savings { color: var(--palette-leaf) !important; }
+
+.auth-overlay { background: var(--palette-cream) !important; }
+.auth-box, .auth-box.ds-card, .auth-shell .auth-box {
+  border-color: var(--color-border-subtle) !important;
+  background: var(--palette-white) !important;
+}
+.auth-box .ds-field input, .auth-box .ds-field select,
+.auth-box .ds-field textarea, .auth-shell .field-group input,
+.ds-field input, .ds-field select, .ds-field textarea {
+  border-color: var(--color-border-subtle) !important;
+  background: #fbfbf8 !important;
+  color: var(--palette-moss) !important;
+}
+.auth-box .ds-field input:focus, .auth-box .ds-field select:focus,
+.auth-box .ds-field textarea:focus, .auth-shell .field-group input:focus,
+.ds-field input:focus, .ds-field select:focus, .ds-field textarea:focus {
+  border-color: var(--palette-leaf) !important;
+  background: var(--palette-white) !important;
+  box-shadow: 0 0 0 4px rgba(91, 129, 87, .16) !important;
+}
+
+.text-primary-600, .text-ca-blue, .text-ca-blue-dark { color: var(--palette-leaf) !important; }
+.bg-primary-600, .bg-ca-blue { background-color: var(--palette-leaf) !important; }
+.hover\:bg-primary-700:hover { background-color: var(--palette-moss) !important; }
+.border-primary-600, .focus\:border-primary-500:focus { border-color: var(--palette-leaf) !important; }
+.text-neutral-950, .text-neutral-900, .text-neutral-800 { color: var(--palette-moss) !important; }
+.text-neutral-600, .text-neutral-500 { color: #667760 !important; }
+.bg-neutral-50 { background-color: var(--palette-cream) !important; }
+.bg-white { background-color: var(--palette-white) !important; }
+
+/* Signup flow: prominent entry point, accessible feedback, and a scrollable form. */
+body.auth-page {
+  place-items: start center !important;
+  padding: 28px 18px !important;
+}
+.auth-shell { margin: auto 0 !important; }
+.auth-shell .auth-box { width: 100% !important; }
+.auth-switch-signup {
+  display: grid !important;
+  justify-items: center !important;
+  gap: 10px !important;
+  margin-top: 22px !important;
+}
+.auth-signup-cta {
+  display: inline-flex !important;
+  min-height: 44px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 20px !important;
+  border: 1px solid var(--palette-leaf) !important;
+  border-radius: 12px !important;
+  background: var(--palette-leaf) !important;
+  color: var(--palette-white) !important;
+  font-family: var(--font-heading) !important;
+  font-size: .88rem !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  transition: background 150ms ease, transform 150ms ease !important;
+}
+.auth-signup-cta:hover {
+  background: var(--palette-moss) !important;
+  color: var(--palette-white) !important;
+  transform: translateY(-1px) !important;
+}
+.auth-shell .signup-form { display: flex !important; }
+.auth-shell .signup-name-fields { gap: 12px !important; }
+.auth-shell .signup-form .field-group { min-width: 0 !important; }
+.auth-shell .signup-form .field-group label {
+  color: var(--palette-moss) !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+.auth-shell .signup-form input {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 48px !important;
+  border: 1px solid var(--color-border-subtle) !important;
+  border-radius: 12px !important;
+  background: #fbfbf8 !important;
+  color: var(--palette-moss) !important;
+}
+.auth-shell .signup-form input:focus {
+  border-color: var(--palette-leaf) !important;
+  box-shadow: 0 0 0 4px rgba(91, 129, 87, .16) !important;
+  outline: none !important;
+}
+.auth-shell .signup-form input::placeholder { color: #899587 !important; }
+.auth-shell .signup-submit {
+  width: 100% !important;
+  min-height: 50px !important;
+  margin-top: 4px !important;
+  border-radius: 12px !important;
+  cursor: pointer !important;
+}
+.signup-error-summary {
+  padding: 12px 14px !important;
+  border: 1px solid var(--palette-beige) !important;
+  border-radius: 12px !important;
+  background: #e8ebe3 !important;
+  color: var(--palette-moss) !important;
+  font-size: .84rem !important;
+}
+.signup-error-summary ul { margin: 6px 0 0 !important; padding-left: 20px !important; }
+.auth-shell .field-error {
+  color: var(--palette-moss) !important;
+  font-size: .78rem !important;
+  line-height: 1.45 !important;
+}
+@media (max-width: 520px) {
+  body.auth-page { padding: 14px 10px !important; }
+  .auth-shell .auth-box { padding: 22px 18px !important; }
+  .auth-shell .signup-name-fields { grid-template-columns: 1fr !important; }
+}
+.auth-shell .auth-signup-cta:focus-visible,
+.auth-shell .signup-submit:focus-visible {
+  outline: 3px solid var(--palette-beige) !important;
+  outline-offset: 3px !important;
+}
+.auth-shell .alert-banner {
+  padding: 11px 13px !important;
+  border: 1px solid var(--palette-beige) !important;
+  border-radius: 12px !important;
+  background: #e8ebe3 !important;
+  color: var(--palette-moss) !important;
+  font-size: .84rem !important;
+  line-height: 1.5 !important;
+}
+/* The shared auth-link rule used leaf text on a leaf button, hiding its label. */
+.auth-switch-link a.auth-signup-cta,
+.auth-overlay a.auth-signup-cta {
+  color: var(--palette-white) !important;
+  font-size: .88rem !important;
+  line-height: 1.2 !important;
+  text-indent: 0 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+.auth-overlay .brand-mark {
+  background: var(--palette-leaf) !important;
+  color: var(--palette-white) !important;
+  box-shadow: 0 8px 18px rgba(58, 90, 64, .18) !important;
+}
+
+/* Page theme: normalize legacy personal, diary, bucket, education, project,
+   finance, and settings components to the requested MyOS palette. */
+:root {
+  --palette-leaf: #5B8157;
+  --palette-white: #F5F5F5;
+  --palette-cream: #DAD7CD;
+  --palette-beige: #A3B19A;
+  --palette-moss: #3A5A40;
+  --glass-surface: var(--palette-white);
+  --glass-bg: var(--palette-cream);
+  --coffee: var(--palette-moss);
+  --cocoa: var(--palette-moss);
+  --bronze: #536b58;
+  --gold: var(--palette-leaf);
+  --gold-deep: var(--palette-moss);
+  --accent-lime: var(--palette-leaf);
+  --accent-amber: var(--palette-beige);
+  --surface-3: var(--palette-moss);
+  --text-secondary: #536b58;
+  --color-bg-accent: #e8ebe3;
+  --color-bg-warning: #e8ebe3;
+  --color-bg-success: #e8ebe3;
+  --color-bg-danger: #e8ebe3;
+  --color-border-brand: var(--palette-leaf);
+  --color-text-on-brand: var(--palette-white);
+}
+
+.main.app-main,
+#main-content-swap {
+  background: var(--palette-cream) !important;
+  color: var(--palette-moss) !important;
+}
+#main-content-swap { min-height: calc(100vh - var(--topbar-height)) !important; }
+.page-content { background: transparent !important; color: var(--palette-moss) !important; }
+.page-content .page-title,
+.page-content h1, .page-content h2, .page-content h3,
+.page-content .card-title, .page-content .card-title-sub,
+.page-content .ca-settings-section-name {
+  color: var(--palette-moss) !important;
+}
+.page-content .page-title-sub,
+.page-content .card-subtitle,
+.page-content .muted-note,
+.page-content .subtitle-sm,
+.page-content .empty-state-text,
+.page-content .ca-settings-section-desc,
+.page-content .diary-streak-stats { color: #536b58 !important; }
+.page-content .form-field label,
+.page-content .education-toolbar label { color: var(--palette-moss) !important; }
+
+/* Shared page cards and panels. */
+#main-content-swap .dash-card,
+#main-content-swap .personal-vault-hero,
+#main-content-swap .personal-progress-card,
+#main-content-swap .diary-editor,
+#main-content-swap .finance-hero,
+#main-content-swap .education-hero,
+#main-content-swap .education-upload-dropzone,
+#main-content-swap .education-level-card,
+#main-content-swap .education-scholarship-card,
+#main-content-swap .education-expand,
+#main-content-swap .finance-stat-card,
+#main-content-swap .chart-card,
+#main-content-swap .ca-settings-section-card,
+#main-content-swap .bucket-summary-card,
+#main-content-swap .bucket-category-panel,
+#main-content-swap .bucket-board,
+#main-content-swap .bucket-side-card,
+#main-content-swap .bucket-goal-card,
+#main-content-swap .bucket-cat,
+#main-content-swap .application-summary,
+#main-content-swap .soft-panel,
+#main-content-swap .table-wrap,
+#main-content-swap .personal-photo-preview {
+  border-color: rgba(58, 90, 64, .16) !important;
+  background: var(--palette-white) !important;
+  color: var(--palette-moss) !important;
+  box-shadow: 0 4px 14px rgba(58, 90, 64, .07) !important;
+}
+#main-content-swap .dash-card::before,
+#main-content-swap .bucket-goal-card::after { background: none !important; }
+#main-content-swap .personal-vault-hero,
+#main-content-swap .finance-hero,
+#main-content-swap .education-hero { background: var(--palette-white) !important; }
+#main-content-swap .bucket-summary-card::before { background: var(--palette-leaf) !important; }
+#main-content-swap .bucket-summary-card--active,
+#main-content-swap .bucket-summary-card--done,
+#main-content-swap .bucket-summary-card--planned {
+  --bucket-summary-accent: var(--palette-leaf) !important;
+}
+#main-content-swap .bucket-side-card--focus,
+#main-content-swap .bucket-cat.active {
+  border-color: var(--palette-beige) !important;
+  background: #e8ebe3 !important;
+}
+#main-content-swap .bucket-goal-card--travel,
+#main-content-swap .bucket-goal-card--learning,
+#main-content-swap .bucket-goal-card--wealth,
+#main-content-swap .bucket-goal-card--experiences,
+#main-content-swap .bucket-goal-card--achievements {
+  --bucket-accent: var(--palette-leaf) !important;
+  --bucket-accent-bg: #e8ebe3 !important;
+}
+#main-content-swap .bucket-status.status-in-progress,
+#main-content-swap .bucket-status.status-not-started,
+#main-content-swap .bucket-status.status-completed,
+#main-content-swap .bucket-priority.priority-high,
+#main-content-swap .bucket-priority.priority-normal,
+#main-content-swap .bucket-priority.priority-low {
+  border-color: var(--palette-beige) !important;
+  background: #e8ebe3 !important;
+  color: var(--palette-moss) !important;
+}
+
+/* Buttons, tabs, progress and selected states. */
+#main-content-swap .btn-primary,
+#main-content-swap .btn-add,
+#main-content-swap .ca-btn-primary,
+#main-content-swap .ca-settings-trigger,
+#main-content-swap .ca-settings-option-btn:not(.ca-settings-option-btn--danger),
+#main-content-swap .bucket-empty-btn,
+#main-content-swap .tab-btn.active,
+#main-content-swap .tab-btn:hover {
+  border-color: var(--palette-leaf) !important;
+  background: var(--palette-leaf) !important;
+  color: var(--palette-white) !important;
+  box-shadow: 0 4px 12px rgba(58, 90, 64, .14) !important;
+}
+#main-content-swap .btn-primary:hover,
+#main-content-swap .btn-add:hover,
+#main-content-swap .ca-btn-primary:hover,
+#main-content-swap .ca-settings-trigger:hover,
+#main-content-swap .ca-settings-option-btn:not(.ca-settings-option-btn--danger):hover {
+  border-color: var(--palette-moss) !important;
+  background: var(--palette-moss) !important;
+  color: var(--palette-white) !important;
+}
+#main-content-swap .btn-outline,
+#main-content-swap .ca-btn-outline {
+  border-color: var(--palette-beige) !important;
+  background: var(--palette-white) !important;
+  color: var(--palette-moss) !important;
+}
+#main-content-swap .btn-outline:hover,
+#main-content-swap .ca-btn-outline:hover {
+  border-color: var(--palette-leaf) !important;
+  background: #e8ebe3 !important;
+  color: var(--palette-moss) !important;
+}
+#main-content-swap .tab-bar,
+#main-content-swap .finance-tab-bar,
+#main-content-swap .education-tab-bar {
+  border-color: var(--palette-beige) !important;
+  background: var(--palette-white) !important;
+}
+#main-content-swap .tab-btn { color: var(--palette-moss) !important; }
+#main-content-swap .tab-btn.active,
+#main-content-swap .tab-btn:hover { color: var(--palette-white) !important; }
+#main-content-swap .wizard-step {
+  border-color: var(--color-border-subtle) !important;
+  background: var(--palette-white) !important;
+  color: var(--palette-moss) !important;
+}
+#main-content-swap .wizard-step.active,
+#main-content-swap .wizard-step:hover {
+  border-color: var(--palette-leaf) !important;
+  background: #e8ebe3 !important;
+  color: var(--palette-moss) !important;
+}
+#main-content-swap .wizard-step.completed {
+  border-color: var(--palette-leaf) !important;
+  background: var(--palette-leaf) !important;
+  color: var(--palette-white) !important;
+}
+#main-content-swap .progress-track,
+#main-content-swap .streak-day { background: var(--palette-beige) !important; }
+#main-content-swap .progress-fill,
+#main-content-swap .streak-day.has-entry { background: var(--palette-leaf) !important; }
+#main-content-swap .wizard-step .step-num { color: inherit !important; }
+
+/* Personal vault and diary details, including legacy inline color styles. */
+#main-content-swap .compact-list > *,
+#main-content-swap .personal-tags > *,
+#main-content-swap .personal-tag-chip,
+#main-content-swap .personal-photo-layout > * {
+  border-color: var(--color-border-subtle) !important;
+  background: var(--palette-white) !important;
+  color: var(--palette-moss) !important;
+}
+#main-content-swap .mood-btn {
+  border-color: var(--palette-beige) !important;
+  background: var(--palette-white) !important;
+  color: var(--palette-moss) !important;
+}
+#main-content-swap .mood-btn.selected,
+#main-content-swap .mood-btn:hover {
+  border-color: var(--palette-leaf) !important;
+  background: var(--palette-leaf) !important;
+  color: var(--palette-white) !important;
+}
+#main-content-swap .diary-streak-badge {
+  border: 1px solid var(--palette-beige) !important;
+  background: #e8ebe3 !important;
+  color: var(--palette-moss) !important;
+}
+#main-content-swap .diary-current-date { color: var(--palette-moss) !important; }
+#main-content-swap .diary-streak-stats { border-color: var(--color-border-subtle) !important; }
+
+/* Matching inputs, tables and settings controls across all requested pages. */
+#main-content-swap input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
+#main-content-swap select,
+#main-content-swap textarea {
+  border-color: var(--color-border-subtle) !important;
+  background-color: var(--palette-white) !important;
+  color: var(--palette-moss) !important;
+}
+#main-content-swap input:focus,
+#main-content-swap select:focus,
+#main-content-swap textarea:focus {
+  border-color: var(--palette-leaf) !important;
+  box-shadow: 0 0 0 3px rgba(91, 129, 87, .14) !important;
+}
+#main-content-swap input::placeholder,
+#main-content-swap textarea::placeholder { color: #768473 !important; }
+#main-content-swap input[type="checkbox"],
+#main-content-swap input[type="radio"] { accent-color: var(--palette-leaf) !important; }
+#main-content-swap .ca-pref-row,
+#main-content-swap .settings-toggle-row,
+#main-content-swap .settings-menu-row {
+  border-color: var(--color-border-subtle) !important;
+  color: var(--palette-moss) !important;
+}
+#main-content-swap .ca-settings-section-header i,
+#main-content-swap .bucket-summary-icon,
+#main-content-swap .cat-icon,
+#main-content-swap .bucket-empty-icon {
+  border-color: var(--palette-beige) !important;
+  background: #e8ebe3 !important;
+  color: var(--palette-leaf) !important;
+}
+#main-content-swap .ca-settings-option-btn--danger,
+#main-content-swap .ca-settings-option-btn--danger:hover,
+#main-content-swap .ca-danger-text,
+#main-content-swap .settings-menu-row--danger {
+  border-color: var(--palette-beige) !important;
+  background: #e8ebe3 !important;
+  color: var(--palette-moss) !important;
+}
+#main-content-swap .tab-panel { background: transparent !important; }
+
+/* Keep app navigation and any remaining controls inside the same palette. */
+#app .sidebar.myos-sidebar .nav-item,
+#app .sidebar.myos-sidebar .nav-item i { color: var(--palette-moss) !important; }
+#app .sidebar.myos-sidebar .nav-item:hover,
+#app .sidebar.myos-sidebar .nav-item.active {
+  background: #e8ebe3 !important;
+  color: var(--palette-moss) !important;
+}
+#app .sidebar.myos-sidebar .nav-item.active { box-shadow: inset 3px 0 0 var(--palette-leaf) !important; }
+#app .sidebar.myos-sidebar .nav-item.active i { color: var(--palette-leaf) !important; }
+#main-content-swap button:not(.btn-primary):not(.btn-add):not(.ca-btn-primary):not(.bucket-empty-btn) {
+  border-color: var(--color-border-subtle);
+  color: var(--palette-moss);
 }

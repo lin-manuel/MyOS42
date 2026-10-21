@@ -8,14 +8,11 @@
   <meta name="csrf-token" content="{{ csrf_token }}">
   <meta name="htmx-config" content='{"defaultSwapDelay": 0, "defaultSettleDelay": 20, "historyCacheSize": 10}'>
   <meta name="view-transition" content="same-origin">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
-  <link rel="stylesheet" href="{% static 'css/tailwind.min.css' %}">
-  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=20260430-premium-ui">
+  <link rel="stylesheet" href="{% static 'css/tailwind.min.css' %}?v=20261021-local-fonts-2">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=20261021-palette-pages-1">
   <link rel="icon" type="image/png" href="{% static 'favicon.png' %}">
 </head>
 <body data-page="{{ active_page|default:'dashboard' }}" data-authenticated="{{ request.user.is_authenticated|yesno:'1,0' }}" data-theme="light" class="min-h-screen bg-neutral-50 font-sans text-neutral-950 antialiased">
@@ -36,24 +33,29 @@
           <div class="text-sm text-neutral-500">Personal Operating System</div>
         </div>
       </div>
-      <form class="auth-form active" id="login-form" onsubmit="handleLogin(event)">
+      <form method="post" action="{% url 'accounts:login' %}" class="auth-form active" id="login-form">
+        {% csrf_token %}
         <h1 class="mb-2 text-2xl font-bold tracking-tight text-neutral-950">Welcome back</h1>
         <p class="mb-6 text-sm text-neutral-500">Sign in to your personal command center.</p>
         <label class="ds-field">
           <span>Email Address</span>
-          <input type="email" placeholder="you@example.com" id="login-email" autocomplete="email" required autofocus>
+          <input type="email" name="email" placeholder="you@example.com" id="login-email" autocomplete="email" required autofocus>
         </label>
         <label class="ds-field">
           <span>Password</span>
-          <input id="login-password" type="password" placeholder="Password" autocomplete="current-password" required>
+          <input id="login-password" name="password" type="password" placeholder="Password" autocomplete="current-password" required>
         </label>
         <label class="mt-4 flex items-center gap-2 text-sm text-neutral-500">
-          <input class="ds-checkbox" type="checkbox" id="remember-me">
+          <input class="ds-checkbox" type="checkbox" name="remember_me" id="remember-me">
           Remember me on this device
         </label>
         <button type="submit" class="ds-btn ds-btn-primary mt-6 w-full">Sign In to MyOS</button>
         <a class="mt-4 block text-center text-sm font-medium text-primary-600 hover:text-primary-700" href="{% url 'accounts:password_reset_request' %}">Forgot password?</a>
       </form>
+      <div class="auth-switch-link auth-switch-signup">
+        <span>New to MyOS?</span>
+        <a class="auth-signup-cta" href="{% url 'accounts:signup' %}" role="button">Create an account</a>
+      </div>
     </div>
   </div>
 
@@ -373,7 +375,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.3/Sortable.min.js"></script>
   <div id="toast-container" role="region" aria-label="Notifications" aria-live="polite"></div>
-  <script src="{% static 'js/main.js' %}?v=20260430-premium-ui" defer></script>
+  <script src="{% static 'js/main.js' %}?v=20261021-auth-session-profile-1" defer></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const body = document.body;
