@@ -15,6 +15,16 @@ services:
     command: gunicorn myos_backend.wsgi:application --bind 0.0.0.0:8000 --workers 3
     env_file:
       - .env
+    environment:
+      DATABASE_ENGINE: postgres
+      DATABASE_NAME: myos
+      DATABASE_USER: myos
+      DATABASE_PASSWORD: myos
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DJANGO_SETTINGS_MODULE: config.settings.development
+      DJANGO_DEBUG: "True"
+      LOCALHOST_ONLY: "False"
     depends_on:
       - db
     ports:

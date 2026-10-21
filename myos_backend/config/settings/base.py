@@ -77,7 +77,8 @@ _parse_dotenv(BASE_DIR / ".env")
 SECRET_KEY = env("DJANGO_SECRET_KEY", "change-me-before-production")
 DEBUG = env_bool("DJANGO_DEBUG", False)
 ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", ["127.0.0.1", "localhost"])
-FERNET_KEY = env("FERNET_KEY", "8wqYkBpujISiFDUFxIr05oig3NbS1Ry6j8TDIrS9KuA=")
+# Never ship a reusable encryption key in source. Configure this per install.
+FERNET_KEY = env("FERNET_KEY", "")
 
 THIRD_PARTY_APPS = []
 if has_module("rest_framework"):
@@ -260,8 +261,8 @@ DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", "MyOS <no-reply@myos.local>")
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_HSTS_SECONDS = env_int("SECURE_HSTS_SECONDS", 0)
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", False)
+SECURE_HSTS_PRELOAD = env_bool("SECURE_HSTS_PRELOAD", False)
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 X_FRAME_OPTIONS = "DENY"
