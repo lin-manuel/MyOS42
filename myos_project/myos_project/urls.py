@@ -21,10 +21,17 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.templatetags.static import static as static_url
 from django.urls import path, include
 from django.views.generic.base import RedirectView
+from accounts.views import login_view
+
+
+def root_page(request):
+    """Always serve the sign-in page at the site root."""
+    return login_view(request)
 
 urlpatterns = [
     path('favicon.ico', RedirectView.as_view(url=static_url('favicon.png'), permanent=False)),
     path('admin/', admin.site.urls),
+    path('', root_page, name='root'),
     path('accounts/', include('accounts.urls')),
     path('', include('media_tracker.urls')),
     path('', include('myos_app.urls')),

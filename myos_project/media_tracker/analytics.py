@@ -14,14 +14,17 @@ from .services import calculate_completion_rate, calculate_watch_time
 CACHE_TIMEOUT_SECONDS = 300
 
 
-def _analytics_cache_key(prefix):
-    last_item_added = MediaItem.objects.aggregate(last=Max("date_added")).get("last")
-    last_progress_id = MediaProgress.objects.aggregate(last=Max("id")).get("last")
-    item_count = MediaItem.objects.count()
-    progress_count = MediaProgress.objects.count()
+def _analytics_cache_key(prefix, user):
+    items = MediaItem.objects.filter(user=user)
+    progress = MediaProgress.objects.filter(media_item__user=user)
+    last_item_added = items.aggregate(last=Max("date_added")).get("last")
+    last_progress_id = progress.aggregate(last=Max("id")).get("last")
+    item_count = items.count()
+    progress_count = progress.count()
     signature = "|".join(
         [
             str(prefix),
+            str(user.pk),
             str(item_count),
             str(progress_count),
             last_item_added.isoformat() if last_item_added else "",
@@ -62,19 +65,20 @@ def _month_series(queryset, field_name, value_name=None):
     ]
 
 
-def movies_analytics():
-    cache_key = _analytics_cache_key("movies")
+def movies_analytics(user):
+    cache_key = _analytics_cache_key("movies", user)
     cached = cache.get(cache_key)
     if cached is not None:
         return cached
 
-    items = list(MediaItem.objects.filter(category=MediaItem.Category.MOVIE))
+    movie_items = MediaItem.objects.filter(user=user, category=MediaItem.Category.MOVIE)
+    items = list(movie_items)
     watched = len([item for item in items if item.status == MediaItem.Status.COMPLETED])
     total = len(items)
     completion_rate = round((watched / total) * 100, 2) if total else 0.0
 
     per_month_rows = (
-        MediaItem.objects.filter(category=MediaItem.Category.MOVIE)
+        movie_items
         .annotate(month=TruncMonth("date_added"))
         .values("month")
         .annotate(total=Count("id"))
@@ -97,17 +101,17 @@ def movies_analytics():
     return result
 
 
-def series_analytics():
-    cache_key = _analytics_cache_key("series")
+def series_analytics(user):
+    cache_key = _analytics_cache_key("series", user)
     cached = cache.get(cache_key)
     if cached is not None:
         return cached
 
-    items = list(MediaItem.objects.filter(category=MediaItem.Category.SERIES))
+    items = list(MediaItem.objects.filter(user=user, category=MediaItem.Category.SERIES))
     completed = len([item for item in items if item.status == MediaItem.Status.COMPLETED])
     in_progress = len([item for item in items if item.status == MediaItem.Status.WATCHING])
 
-    progress_qs = MediaProgress.objects.filter(media_item__category=MediaItem.Category.SERIES)
+    progress_qs = MediaProgress.objects.filter(media_item__user=user, media_item__category=MediaItem.Category.SERIES)
     episodes_watched_per_month = _month_series(progress_qs, "date_watched", "episodes_watched")
 
     cutoff = timezone.now().date() - timedelta(days=56)
@@ -131,15 +135,15 @@ def series_analytics():
     return result
 
 
-def anime_analytics():
-    cache_key = _analytics_cache_key("anime")
+def anime_analytics(user):
+    cache_key = _analytics_cache_key("anime", user)
     cached = cache.get(cache_key)
     if cached is not None:
         return cached
 
-    items = list(MediaItem.objects.filter(category=MediaItem.Category.ANIME))
+    items = list(MediaItem.objects.filter(user=user, category=MediaItem.Category.ANIME))
     episodes_watched = (
-        MediaProgress.objects.filter(media_item__category=MediaItem.Category.ANIME).aggregate(total=Sum("episodes_watched"))["total"]
+        MediaProgress.objects.filter(media_item__user=user, media_item__category=MediaItem.Category.ANIME).aggregate(total=Sum("episodes_watched"))["total"]
         or 0
     )
     result = {
@@ -152,19 +156,19 @@ def anime_analytics():
     return result
 
 
-def global_media_analytics():
-    cache_key = _analytics_cache_key("global")
+def global_media_analytics(user):
+    cache_key = _analytics_cache_key("global", user)
     cached = cache.get(cache_key)
     if cached is not None:
         return cached
 
-    items = list(MediaItem.objects.all().prefetch_related("progress_entries"))
+    items = list(MediaItem.objects.filter(user=user).prefetch_related("progress_entries"))
     movies = [item for item in items if item.category == MediaItem.Category.MOVIE]
     series = [item for item in items if item.category == MediaItem.Category.SERIES]
     anime = [item for item in items if item.category == MediaItem.Category.ANIME]
 
     anime_episodes_watched = (
-        MediaProgress.objects.filter(media_item__category=MediaItem.Category.ANIME).aggregate(total=Sum("episodes_watched"))["total"]
+        MediaProgress.objects.filter(media_item__user=user, media_item__category=MediaItem.Category.ANIME).aggregate(total=Sum("episodes_watched"))["total"]
         or 0
     )
     watch_time = calculate_watch_time(items)

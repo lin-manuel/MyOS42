@@ -38,10 +38,9 @@
     <button type="submit" class="btn-primary" style="width:100%">Sign In to MyOS</button>
   </form>
 
-  <div style="margin-top:12px;padding:12px;border:1px solid var(--cream-soft);border-radius:12px;background:var(--white);font-size:.82rem;color:var(--bronze);line-height:1.5">
-    <div style="font-weight:600;color:var(--coffee);margin-bottom:6px">Account Access</div>
-    <div>This sign-in page only accepts existing users.</div>
-    <div>Create or update accounts directly in the database, then use those credentials here.</div>
+  <div class="auth-switch-link auth-switch-signup">
+    <span>New to MyOS?</span>
+    <a class="auth-signup-cta" href="{% url 'accounts:signup' %}">Create an account</a>
   </div>
 
   <div style="margin-top:14px;text-align:center;font-size:.85rem;color:var(--bronze)">

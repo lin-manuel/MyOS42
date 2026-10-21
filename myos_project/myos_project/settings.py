@@ -18,6 +18,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import environ
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -67,9 +68,12 @@ def _module_available(module_name):
 
 
 def _sqlite_database_config():
+    sqlite_path = Path(env("DATABASE_SQLITE_PATH", default=str(BASE_DIR / 'db.sqlite3')))
+    if not sqlite_path.is_absolute():
+        sqlite_path = BASE_DIR / sqlite_path
     return {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': sqlite_path,
     }
 
 
@@ -77,12 +81,17 @@ def _sqlite_database_config():
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("SECRET_KEY", default=os.getenv("DJANGO_SECRET_KEY", "unsafe-dev-secret-key"))
+DEBUG = env.bool("DEBUG", default=False)
+SECRET_KEY = env("SECRET_KEY", default=os.getenv("DJANGO_SECRET_KEY", ""))
 SECRET_KEY_FALLBACKS = env.list("SECRET_KEY_FALLBACKS", default=[])
 
-# Default to debug in local development so Django serves app static assets.
-# Production should explicitly set `DJANGO_DEBUG=0`.
-DEBUG = env.bool("DEBUG", default=False)
+if not SECRET_KEY:
+    if not DEBUG:
+        raise ImproperlyConfigured("Set SECRET_KEY before running with DEBUG=False.")
+    SECRET_KEY = "django-insecure-local-development-only"
+
+if not DEBUG and SECRET_KEY in {"your-very-long-random-secret-key", "unsafe-dev-secret-key"}:
+    raise ImproperlyConfigured("Replace the example SECRET_KEY before running with DEBUG=False.")
 
 default_hosts = ["127.0.0.1", "localhost", "testserver"]
 legacy_hosts = os.getenv("DJANGO_ALLOWED_HOSTS")
@@ -114,6 +123,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'accounts.middleware.RequireAuthenticatedAppMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -152,7 +162,10 @@ if DATABASE_URL:
         database_config = _sqlite_database_config()
     DATABASES = {'default': database_config}
 else:
-    if _postgres_backend_available():
+    database_engine = env("DATABASE_ENGINE", default="postgres").lower()
+    if database_engine == "sqlite":
+        DATABASES = {'default': _sqlite_database_config()}
+    elif _postgres_backend_available():
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
@@ -163,8 +176,10 @@ else:
                 'PORT': env("DATABASE_PORT", default="5432"),
             }
         }
-    else:
+    elif database_engine == "postgres":
         DATABASES = {'default': _sqlite_database_config()}
+    else:
+        raise ValueError("DATABASE_ENGINE must be 'sqlite' or 'postgres'.")
 
 AUTH_USER_MODEL = "accounts.User"
 
@@ -187,6 +202,9 @@ LOGIN_RATE_LIMIT_WINDOW_SECONDS = env.int("LOGIN_RATE_LIMIT_WINDOW_SECONDS", def
 DIARY_PAGE_SIZE = env.int("DIARY_PAGE_SIZE", default=20)
 SEARCH_MIN_QUERY_LENGTH = env.int("SEARCH_MIN_QUERY_LENGTH", default=2)
 SEARCH_RESULT_LIMIT = env.int("SEARCH_RESULT_LIMIT", default=20)
+# Only enable forwarded client IP parsing when a trusted reverse proxy strips
+# incoming X-Forwarded-For values and writes its own. Never trust it by default.
+TRUST_X_FORWARDED_FOR = env.bool("TRUST_X_FORWARDED_FOR", default=False)
 
 # Sessions — secure HttpOnly cookies
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
@@ -267,13 +285,14 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024
 SECURE_REFERRER_POLICY = "same-origin"
 
 if not DEBUG:
-    SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = "DENY"
-    SECURE_SSL_REDIRECT = True
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
+    SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=True)
+    SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=31536000)
+    # Subdomains and preload require every subdomain to support HTTPS. Keep
+    # them opt-in to avoid locking unrelated or local subdomains into HSTS.
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", default=False)
+    SECURE_HSTS_PRELOAD = env.bool("SECURE_HSTS_PRELOAD", default=False)
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 

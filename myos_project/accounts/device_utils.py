@@ -1,8 +1,11 @@
 import hashlib
+from django.conf import settings
 
 
 def get_client_ip(request) -> str:
-    x_forwarded = request.META.get("HTTP_X_FORWARDED_FOR")
+    # Client-supplied X-Forwarded-For is spoofable. Trust it only when the
+    # deployment explicitly configures a reverse proxy that overwrites it.
+    x_forwarded = request.META.get("HTTP_X_FORWARDED_FOR") if getattr(settings, "TRUST_X_FORWARDED_FOR", False) else None
     if x_forwarded:
         return x_forwarded.split(",")[0].strip()
     return request.META.get("REMOTE_ADDR", "")

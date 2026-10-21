@@ -1,7 +1,7 @@
 from collections import Counter
 
 from django.contrib import messages
-from django.db.models import Q, Sum
+from django.db.models import Sum
 from django.db.models.functions import TruncMonth
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
@@ -53,10 +53,7 @@ def _render_media_page(
 
 
 def _base_queryset(request):
-    queryset = MediaItem.objects.select_related("user")
-    if request.user.is_authenticated:
-        return queryset.filter(Q(user=request.user) | Q(user__isnull=True))
-    return queryset.filter(user__isnull=True)
+    return MediaItem.objects.filter(user=request.user).select_related("user")
 
 
 def _safe_int(value):
@@ -149,7 +146,7 @@ def media_dashboard(request):
     anime_qs = base_qs.filter(category=MediaItem.Category.ANIME)
     animation_qs = base_qs.filter(category=MediaItem.Category.ANIMATION)
 
-    global_analytics = global_media_analytics()
+    global_analytics = global_media_analytics(request.user)
     watch_hours = global_analytics.get("total_watch_time", {}).get("hours", 0)
 
     context = {
@@ -180,7 +177,7 @@ def movies_view(request):
         "active_page": "media",
         "movies": stats["items"],
         "stats": stats,
-        "analytics": movies_analytics(),
+        "analytics": movies_analytics(request.user),
         "filters": _filters_context(request),
         "status_choices": MediaItem.Status.choices,
     }
@@ -199,7 +196,7 @@ def series_view(request):
         "active_page": "media",
         "series": stats["items"],
         "stats": stats,
-        "analytics": series_analytics(),
+        "analytics": series_analytics(request.user),
         "filters": _filters_context(request),
         "status_choices": MediaItem.Status.choices,
     }
@@ -221,7 +218,7 @@ def anime_view(request):
         "anime_movies": [item for item in items if item.type == MediaItem.MediaType.MOVIE],
         "anime_series": [item for item in items if item.type == MediaItem.MediaType.SERIES],
         "stats": stats,
-        "analytics": anime_analytics(),
+        "analytics": anime_analytics(request.user),
         "filters": _filters_context(request),
         "status_choices": MediaItem.Status.choices,
         "type_choices": MediaItem.MediaType.choices,
@@ -419,14 +416,14 @@ def api_media_stats(request):
         "genre_distribution": _genre_distribution(items),
         "watch_time": calculate_watch_time(items),
         "episodes_per_month": _episodes_per_month(MediaProgress.objects.filter(media_item__in=queryset)),
-        "global": global_media_analytics(),
+        "global": global_media_analytics(request.user),
     }
     return JsonResponse(payload)
 
 
 @require_GET
 def api_media_movies(request):
-    analytics = movies_analytics()
+    analytics = movies_analytics(request.user)
     payload = {
         "completion_rate": analytics.get("completion_rate", 0.0),
         "genre_distribution": analytics.get("genre_distribution", []),
@@ -444,7 +441,7 @@ def api_media_movies(request):
 
 @require_GET
 def api_media_series(request):
-    analytics = series_analytics()
+    analytics = series_analytics(request.user)
     payload = {
         "completion_rate": analytics.get("completion_rate", 0.0),
         "genre_distribution": analytics.get("genre_distribution", []),
@@ -459,7 +456,7 @@ def api_media_series(request):
 
 @require_GET
 def api_media_anime(request):
-    analytics = anime_analytics()
+    analytics = anime_analytics(request.user)
     payload = {
         "completion_rate": analytics.get("anime_completion_rate", 0.0),
         "genre_distribution": analytics.get("anime_by_genre", []),
