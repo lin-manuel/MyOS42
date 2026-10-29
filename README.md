@@ -26,7 +26,7 @@ MyOS is a personal operating system for keeping everyday life in one place. The 
 
 Screenshots are stored in [`docs/screenshots/`](docs/screenshots/) so they remain available when the repository is moved or shared.
 
-## Run the web application locally
+## How To Run the web application locally
 
 The main server-rendered web app is in `myos_project/`:
 
