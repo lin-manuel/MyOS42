@@ -31,3 +31,4 @@ Thumbs.db
 
 # VS Code
 .vscode/
+/myos_project/imported_user_credentials.csv
